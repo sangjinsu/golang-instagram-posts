@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1080">
+  <title>EP.08 구조체 (Struct)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  padding: 40px;
+}
+
+/* 슬라이드 컨테이너 */
+.slide {
+  width: 1080px;
+  height: 1350px;
+  position: relative;
+  overflow: hidden;
+  font-family: 'Noto Sans KR', sans-serif;
+  color: #e0e0e0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 배경 그라데이션 */
+.slide-thumbnail { background: linear-gradient(135deg, #0f0f23 0%, #0a3d5c 40%, #00ADD8 100%); }
+.slide-concept   { background: linear-gradient(160deg, #0f0f23 0%, #1a1a3e 40%, #0d1b2a 100%); }
+.slide-code      { background: linear-gradient(160deg, #0d1117 0%, #161b22 50%, #0d1117 100%); }
+.slide-summary   { background: linear-gradient(160deg, #1a0a2e 0%, #16213e 50%, #0a1628 100%); }
+
+/* 장식 원 */
+.slide::before, .slide::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.06;
+  pointer-events: none;
+}
+.slide::before { width: 500px; height: 500px; background: #667eea; top: -150px; right: -100px; }
+.slide::after  { width: 350px; height: 350px; background: #f093fb; bottom: -100px; left: -80px; }
+
+/* 상단 바 */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 40px 60px 20px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+.series-tag { font-size: 26px; font-weight: 700; color: #00ADD8; }
+.ep-num     { font-size: 26px; font-weight: 700; color: rgba(255,255,255,0.4); }
+
+/* 타이포그래피 */
+.slide-title    { font-size: 48px; font-weight: 900; color: #fff; line-height: 1.3; margin-bottom: 24px; }
+.slide-subtitle { font-size: 32px; font-weight: 700; color: #00ADD8; margin-bottom: 20px; }
+.body-text      { font-size: 30px; font-weight: 400; color: #e0e0e0; line-height: 1.6; }
+.muted-text     { font-size: 26px; color: rgba(255,255,255,0.5); margin-bottom: 12px; }
+
+/* 코드 블록 */
+.code-block {
+  background: #0d1117;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 32px;
+  margin: 20px 0;
+  position: relative;
+  z-index: 1;
+  flex: 1;
+}
+.code-block pre {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 26px;
+  line-height: 1.7;
+  color: #e6edf3;
+  white-space: pre;
+  overflow: hidden;
+}
+
+/* 코드 구문 색상 */
+.kw  { color: #ff7b72; }
+.str { color: #a5d6ff; }
+.num { color: #79c0ff; }
+.cm  { color: #8b949e; }
+.tp  { color: #7ee787; }
+.fn  { color: #d2a8ff; }
+.op  { color: #ffa657; }
+
+/* 노트 박스 */
+.note-box {
+  background: rgba(0, 173, 216, 0.1);
+  border-left: 4px solid #00ADD8;
+  border-radius: 0 12px 12px 0;
+  padding: 20px 28px;
+  margin-top: auto;
+  position: relative;
+  z-index: 1;
+}
+.note-box p { font-size: 26px; color: #e0e0e0; line-height: 1.5; }
+
+/* === 썸네일 === */
+.thumb-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 80px 60px;
+  position: relative;
+  z-index: 1;
+}
+.thumb-series  { font-size: 36px; font-weight: 700; color: rgba(255,255,255,0.9); }
+.thumb-sub     { font-size: 48px; font-weight: 900; color: #fff; margin-top: 8px; }
+.thumb-divider { width: 80px; height: 4px; background: rgba(255,255,255,0.5); margin: 40px 0; border-radius: 2px; }
+.thumb-ep      { font-size: 64px; font-weight: 900; color: #fff; }
+.thumb-topic   { font-size: 56px; font-weight: 900; color: #fff; margin-top: 16px; }
+.thumb-hook    { font-size: 32px; color: rgba(255,255,255,0.8); margin-top: 32px; }
+.thumb-tags    { text-align: center; padding: 40px; font-size: 24px; color: rgba(255,255,255,0.4); position: relative; z-index: 1; }
+
+/* === 컨셉 === */
+.concept-body     { flex: 1; padding: 20px 60px 40px; display: flex; flex-direction: column; gap: 28px; position: relative; z-index: 1; }
+.concept-explain  { }
+.concept-compare  { background: rgba(255,255,255,0.04); border-radius: 16px; padding: 24px 28px; }
+.concept-features { background: rgba(0,173,216,0.08); border-radius: 16px; padding: 24px 28px; }
+
+/* === 코드 바디 === */
+.code-body { flex: 1; padding: 10px 60px 40px; display: flex; flex-direction: column; position: relative; z-index: 1; }
+
+/* === 요약 === */
+.summary-body   { flex: 1; padding: 20px 60px 40px; display: flex; flex-direction: column; gap: 24px; position: relative; z-index: 1; }
+.summary-points,
+.summary-tips   { background: rgba(255,255,255,0.04); border-radius: 16px; padding: 24px 28px; }
+.summary-next   { text-align: center; padding: 20px; background: rgba(0,173,216,0.08); border-radius: 16px; }
+.summary-cta    { text-align: center; padding: 24px; font-size: 28px; color: rgba(255,255,255,0.6); position: relative; z-index: 1; }
+
+  </style>
+</head>
+<body>
+
+<div class="slide slide-thumbnail" id="slide-1">
+  <div class="thumb-content">
+    <p class="thumb-series">Go 기초 문법</p>
+    <p class="thumb-sub">1분 정리 ⚡</p>
+    <div class="thumb-divider"></div>
+    <p class="thumb-ep">EP.08</p>
+    <h1 class="thumb-topic">구조체 (Struct)</h1>
+    <p class="thumb-hook">나만의 데이터 타입을 만들자! 🏗️</p>
+  </div>
+  <div class="thumb-tags">#Golang #개발 #프로그래밍</div>
+</div>
+
+<div class="slide slide-concept" id="slide-2">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.08</span>
+  </div>
+  <div class="concept-body">
+    <h2 class="slide-title">구조체란? 🤔</h2>
+    <div class="concept-explain">
+      <p class="body-text">관련 데이터를 하나의 타입으로 묶는 것</p>
+      <p class="body-text">이름표 붙은 서랍장과 같아요! 🗄️</p>
+      <p class="body-text">Go에서 데이터 캡슐화의 기본 단위!</p>
+    </div>
+    <div class="concept-compare">
+      <p class="muted-text">다른 언어에서는?</p>
+      <p class="body-text">→ Java/C#: class</p>
+      <p class="body-text">→ Python: dataclass</p>
+      <p class="body-text">→ C: struct</p>
+    </div>
+    <div class="concept-features">
+      <p class="slide-subtitle">Go 구조체의 특징</p>
+      <p class="body-text">→ type + struct로 선언 ✅</p>
+      <p class="body-text">→ 대문자 필드 = 외부 공개 (export) 🔓</p>
+      <p class="body-text">→ 선언 시 제로값으로 자동 초기화 ⭐</p>
+      <p class="body-text">→ 값 타입 + 메서드 부착 가능 💡</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-code" id="slide-3">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.08</span>
+  </div>
+  <div class="code-body">
+    <h2 class="slide-subtitle">구조체 선언과 생성</h2>
+    <div class="code-block">
+      <pre><span class="cm">// 구조체 정의 🏗️</span>
+<span class="kw">type</span> <span class="tp">User</span> <span class="kw">struct</span> {
+    Name  <span class="tp">string</span>
+    Age   <span class="tp">int</span>
+    Email <span class="tp">string</span>
+}
+
+<span class="cm">// 필드명 지정 ⭐ (권장!)</span>
+u <span class="op">:=</span> <span class="tp">User</span>{
+    Name:  <span class="str">&quot;상진수&quot;</span>,
+    Age:   <span class="num">28</span>,
+    Email: <span class="str">&quot;jinsu@dev.com&quot;</span>,
+}
+<span class="cm">// 제로값 초기화: var u User 💡</span></pre>
+    </div>
+    <div class="note-box">
+      <p>💡 필드명 지정 + 제로값 활용이 Go의 정석!</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-code" id="slide-4">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.08</span>
+  </div>
+  <div class="code-body">
+    <h2 class="slide-subtitle">필드 접근과 제로값</h2>
+    <div class="code-block">
+      <pre>u <span class="op">:=</span> <span class="tp">User</span>{
+    Name: <span class="str">&quot;홍길동&quot;</span>,
+    Age:  <span class="num">32</span>,
+}
+<span class="cm">// 필드 접근: 점(.) 연산자</span>
+fmt.<span class="fn">Println</span>(u.Name)  <span class="cm">// 홍길동</span>
+fmt.<span class="fn">Println</span>(u.Email) <span class="cm">// &quot;&quot; 제로값!</span>
+
+<span class="cm">// 필드 수정</span>
+u.Email <span class="op">=</span> <span class="str">&quot;sy@company.com&quot;</span>
+
+<span class="cm">// new()로 포인터 생성 ⭐</span>
+p <span class="op">:=</span> <span class="fn">new</span>(<span class="tp">User</span>) <span class="cm">// *User, 제로값</span>
+p.Name <span class="op">=</span> <span class="str">&quot;상진수&quot;</span></pre>
+    </div>
+    <div class="note-box">
+      <p>⭐ 미지정 필드는 제로값(&quot;&quot;, 0, false)!</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-code" id="slide-5">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.08</span>
+  </div>
+  <div class="code-body">
+    <h2 class="slide-subtitle">메서드 정의</h2>
+    <div class="code-block">
+      <pre><span class="kw">type</span> <span class="tp">Rect</span> <span class="kw">struct</span> {
+    W, H <span class="tp">float64</span>
+}
+
+<span class="cm">// 값 리시버: 읽기만 📖</span>
+<span class="kw">func</span> (r <span class="tp">Rect</span>) <span class="fn">Area</span>() <span class="tp">float64</span> {
+    <span class="kw">return</span> r.W <span class="op">*</span> r.H
+}
+
+<span class="cm">// 포인터 리시버: 수정 가능 ✏️</span>
+<span class="kw">func</span> (r <span class="op">*</span><span class="tp">Rect</span>) <span class="fn">Scale</span>(f <span class="tp">float64</span>) {
+    r.W <span class="op">*=</span> f
+    r.H <span class="op">*=</span> f <span class="cm">// 원본 수정!</span>
+}</pre>
+    </div>
+    <div class="note-box">
+      <p>💡 큰 구조체나 수정 필요 → 포인터 리시버!</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-code" id="slide-6">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.08</span>
+  </div>
+  <div class="code-body">
+    <h2 class="slide-subtitle">구조체 임베딩</h2>
+    <div class="code-block">
+      <pre><span class="cm">// 임베딩으로 코드 재사용 🧩</span>
+<span class="kw">type</span> <span class="tp">BaseModel</span> <span class="kw">struct</span> {
+    ID        <span class="tp">int</span>
+    CreatedAt <span class="tp">string</span>
+}
+<span class="kw">type</span> <span class="tp">Product</span> <span class="kw">struct</span> {
+    <span class="tp">BaseModel</span> <span class="cm">// 임베딩! ⭐</span>
+    Name  <span class="tp">string</span>
+    Price <span class="tp">int</span>
+}
+
+p <span class="op">:=</span> <span class="tp">Product</span>{}
+p.ID <span class="op">=</span> <span class="num">1</span>        <span class="cm">// 필드 승격!</span>
+p.Name <span class="op">=</span> <span class="str">&quot;노트북&quot;</span>
+<span class="cm">// p.BaseModel.ID와 동일 💡</span></pre>
+    </div>
+    <div class="note-box">
+      <p>💡 상속 대신 임베딩 — 필드와 메서드가 승격(promotion)!</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-code" id="slide-7">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.08</span>
+  </div>
+  <div class="code-body">
+    <h2 class="slide-subtitle">생성자 패턴과 태그</h2>
+    <div class="code-block">
+      <pre><span class="cm">// 생성자 패턴 ⭐ NewXxx</span>
+<span class="kw">func</span> <span class="fn">NewUser</span>(name <span class="tp">string</span>) <span class="op">*</span><span class="tp">User</span> {
+    <span class="kw">return</span> <span class="op">&amp;</span><span class="tp">User</span>{
+        Name:  name,
+        Email: name <span class="op">+</span> <span class="str">&quot;@dev.com&quot;</span>,
+    }
+}
+u <span class="op">:=</span> <span class="fn">NewUser</span>(<span class="str">&quot;상진수&quot;</span>)
+
+<span class="cm">// 구조체 태그 🏷️</span>
+<span class="kw">type</span> <span class="tp">Post</span> <span class="kw">struct</span> {
+    Title <span class="tp">string</span> <span class="str">`json:&quot;title&quot;`</span>
+    Body  <span class="tp">string</span> <span class="str">`json:&quot;body,omitempty&quot;`</span>
+    Views <span class="tp">int</span>    <span class="str">`json:&quot;-&quot;`</span>
+}</pre>
+    </div>
+    <div class="note-box">
+      <p>💡 omitempty: 빈값 생략, &quot;-&quot;: JSON 제외!</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-summary" id="slide-8">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.08</span>
+  </div>
+  <div class="summary-body">
+    <h2 class="slide-subtitle">📌 핵심 정리</h2>
+    <div class="summary-points">
+      <p class="body-text">✅ type + struct로 나만의 타입 정의</p>
+      <p class="body-text">✅ 대문자 필드 = 패키지 외부 공개</p>
+      <p class="body-text">✅ 제로값으로 안전한 초기화 가능</p>
+      <p class="body-text">✅ 리시버로 메서드를 붙일 수 있음</p>
+      <p class="body-text">✅ 임베딩으로 코드 재사용 (상속 대체)</p>
+    </div>
+    <div class="summary-tips">
+      <h3 class="slide-subtitle">💡 Go만의 꿀팁</h3>
+      <p class="body-text">💡 필드명 지정 방식으로 생성하세요</p>
+      <p class="body-text">💡 큰 구조체·수정 필요 → 포인터 리시버</p>
+      <p class="body-text">💡 NewXxx 생성자 + 포인터 반환이 관례</p>
+      <p class="body-text">💡 json 태그의 omitempty를 적극 활용!</p>
+    </div>
+    <div class="summary-next">
+      <p class="body-text">다음 편: EP.09 포인터 (Pointer) 👉</p>
+    </div>
+    <div class="summary-cta">
+      <p>💾 저장 | ❤️ 좋아요 | 👤 팔로우</p>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

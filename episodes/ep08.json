@@ -1,0 +1,119 @@
+{
+  "episode": 8,
+  "title": "구조체",
+  "title_en": "Struct",
+  "difficulty": "★★",
+  "hook": "나만의 데이터 타입을 만들자! 🏗️",
+  "next_ep": {
+    "number": 9,
+    "title": "포인터"
+  },
+  "slides": [
+    {
+      "slide_number": 1,
+      "type": "thumbnail",
+      "content": {
+        "series_name": "Go 기초 문법",
+        "series_sub": "1분 정리 ⚡",
+        "ep_label": "EP.08",
+        "topic": "구조체 (Struct)",
+        "hook": "나만의 데이터 타입을 만들자! 🏗️"
+      }
+    },
+    {
+      "slide_number": 2,
+      "type": "concept",
+      "content": {
+        "question": "구조체란? 🤔",
+        "explanation": [
+          "관련 데이터를 하나의 타입으로 묶는 것",
+          "이름표 붙은 서랍장과 같아요! 🗄️",
+          "Go에서 데이터 캡슐화의 기본 단위!"
+        ],
+        "comparison": {
+          "label": "다른 언어에서는?",
+          "items": [
+            "Java/C#: class",
+            "Python: dataclass",
+            "C: struct"
+          ]
+        },
+        "features": {
+          "label": "Go 구조체의 특징",
+          "items": [
+            "type + struct로 선언 ✅",
+            "대문자 필드 = 외부 공개 (export) 🔓",
+            "선언 시 제로값으로 자동 초기화 ⭐",
+            "값 타입 + 메서드 부착 가능 💡"
+          ]
+        }
+      }
+    },
+    {
+      "slide_number": 3,
+      "type": "code",
+      "content": {
+        "title": "구조체 선언과 생성",
+        "code": "// 구조체 정의 🏗️\ntype User struct {\n    Name  string\n    Age   int\n    Email string\n}\n\n// 필드명 지정 ⭐ (권장!)\nu := User{\n    Name:  \"상진수\",\n    Age:   28,\n    Email: \"jinsu@dev.com\",\n}\n// 제로값 초기화: var u User 💡",
+        "note": "💡 필드명 지정 + 제로값 활용이 Go의 정석!"
+      }
+    },
+    {
+      "slide_number": 4,
+      "type": "code",
+      "content": {
+        "title": "필드 접근과 제로값",
+        "code": "u := User{\n    Name: \"홍길동\",\n    Age:  32,\n}\n// 필드 접근: 점(.) 연산자\nfmt.Println(u.Name)  // 홍길동\nfmt.Println(u.Email) // \"\" 제로값!\n\n// 필드 수정\nu.Email = \"sy@company.com\"\n\n// new()로 포인터 생성 ⭐\np := new(User) // *User, 제로값\np.Name = \"상진수\"",
+        "note": "⭐ 미지정 필드는 제로값(\"\", 0, false)!"
+      }
+    },
+    {
+      "slide_number": 5,
+      "type": "code",
+      "content": {
+        "title": "메서드 정의",
+        "code": "type Rect struct {\n    W, H float64\n}\n\n// 값 리시버: 읽기만 📖\nfunc (r Rect) Area() float64 {\n    return r.W * r.H\n}\n\n// 포인터 리시버: 수정 가능 ✏️\nfunc (r *Rect) Scale(f float64) {\n    r.W *= f\n    r.H *= f // 원본 수정!\n}",
+        "note": "💡 큰 구조체나 수정 필요 → 포인터 리시버!"
+      }
+    },
+    {
+      "slide_number": 6,
+      "type": "code",
+      "content": {
+        "title": "구조체 임베딩",
+        "code": "// 임베딩으로 코드 재사용 🧩\ntype BaseModel struct {\n    ID        int\n    CreatedAt string\n}\ntype Product struct {\n    BaseModel // 임베딩! ⭐\n    Name  string\n    Price int\n}\n\np := Product{}\np.ID = 1        // 필드 승격!\np.Name = \"노트북\"\n// p.BaseModel.ID와 동일 💡",
+        "note": "💡 상속 대신 임베딩 — 필드와 메서드가 승격(promotion)!"
+      }
+    },
+    {
+      "slide_number": 7,
+      "type": "code",
+      "content": {
+        "title": "생성자 패턴과 태그",
+        "code": "// 생성자 패턴 ⭐ NewXxx\nfunc NewUser(name string) *User {\n    return &User{\n        Name:  name,\n        Email: name + \"@dev.com\",\n    }\n}\nu := NewUser(\"상진수\")\n\n// 구조체 태그 🏷️\ntype Post struct {\n    Title string `json:\"title\"`\n    Body  string `json:\"body,omitempty\"`\n    Views int    `json:\"-\"`\n}",
+        "note": "💡 omitempty: 빈값 생략, \"-\": JSON 제외!"
+      }
+    },
+    {
+      "slide_number": 8,
+      "type": "summary",
+      "content": {
+        "points": [
+          "✅ type + struct로 나만의 타입 정의",
+          "✅ 대문자 필드 = 패키지 외부 공개",
+          "✅ 제로값으로 안전한 초기화 가능",
+          "✅ 리시버로 메서드를 붙일 수 있음",
+          "✅ 임베딩으로 코드 재사용 (상속 대체)"
+        ],
+        "tips": [
+          "💡 필드명 지정 방식으로 생성하세요",
+          "💡 큰 구조체·수정 필요 → 포인터 리시버",
+          "💡 NewXxx 생성자 + 포인터 반환이 관례",
+          "💡 json 태그의 omitempty를 적극 활용!"
+        ],
+        "next_preview": "다음 편: EP.09 포인터 (Pointer) 👉",
+        "cta": "💾 저장 | ❤️ 좋아요 | 👤 팔로우"
+      }
+    }
+  ]
+}
