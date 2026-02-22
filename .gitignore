@@ -1,0 +1,12 @@
+# oh-my-claudecode runtime state
+.omc/
+
+# Python
+__pycache__/
+*.pyc
+
+# OS
+.DS_Store
+
+# Environment
+.env
