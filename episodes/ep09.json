@@ -1,0 +1,121 @@
+{
+  "episode": 9,
+  "title": "포인터",
+  "title_en": "Pointer",
+  "difficulty": "★★★",
+  "hook": "메모리를 다루는 Go만의 안전한 방법! 🎯",
+  "next_ep": {
+    "number": 10,
+    "title": "인터페이스"
+  },
+  "slides": [
+    {
+      "slide_number": 1,
+      "type": "thumbnail",
+      "content": {
+        "series_name": "Go 기초 문법",
+        "series_sub": "1분 정리 ⚡",
+        "ep_label": "EP.09",
+        "topic": "포인터 (Pointer)",
+        "hook": "메모리를 다루는 Go만의 안전한 방법! 🎯"
+      }
+    },
+    {
+      "slide_number": 2,
+      "type": "concept",
+      "content": {
+        "question": "포인터란? 🤔",
+        "explanation": [
+          "값이 저장된 메모리 주소를 가리키는 변수",
+          "주소를 통해 원본 데이터에 직접 접근/수정 가능",
+          "Go 컴파일러가 escape analysis로 스택/힙 자동 결정!",
+          "EP.08 구조체가 값 타입이라 복사된다고 했죠? 해결책! 🔑"
+        ],
+        "comparison": {
+          "label": "다른 언어와 비교",
+          "items": [
+            "C/C++: 포인터 산술 허용 (버그 위험)",
+            "Java/Python: 참조만 존재 (포인터 없음)",
+            "Rust: 소유권 + 빌림으로 안전 보장",
+            "Go: 포인터 지원 + 산술 차단 = 안전! 🛡️"
+          ]
+        },
+        "features": {
+          "label": "Go 포인터 핵심 특징",
+          "items": [
+            "& 주소 연산자, * 역참조 연산자 ✅",
+            "포인터 산술 불가 → 메모리 안전 보장 🛡️",
+            "제로값 nil, 초기화 전 사용 시 panic ⭐",
+            "구조체 포인터 자동 역참조 (.으로 접근) 💡"
+          ]
+        }
+      }
+    },
+    {
+      "slide_number": 3,
+      "type": "code",
+      "content": {
+        "title": "포인터 선언과 역참조",
+        "code": "val := 42\nptr := &val // &: 주소 획득\nfmt.Println(ptr)  // 0xc0000b2008\n\n// *: 역참조 (값 읽기)\nfmt.Println(*ptr) // 42\n\n// 역참조로 원본 값 변경 ⭐\n*ptr = 100\nfmt.Println(val)  // 100\n\n// 다양한 포인터 선언 방식\nvar p1 *int       // nil\np2 := new(int)    // 제로값 할당\np3 := &val        // 기존 변수 참조",
+        "note": "💡 &는 주소 획득, *는 역참조 + 값 수정"
+      }
+    },
+    {
+      "slide_number": 4,
+      "type": "code",
+      "content": {
+        "title": "구조체 포인터와 자동 역참조",
+        "code": "type Server struct {\n    Host string\n    Port int\n    TLS  bool\n}\n// &T{}는 할당 후 포인터 반환 ⭐\ns := &Server{\n    Host: \"0.0.0.0\",\n    Port: 8080,\n}\n// 자동 역참조: (*s).Host 불필요!\nfmt.Println(s.Host) // 0.0.0.0\ns.Port = 3000       // 직접 수정\ns.TLS = true        // 원본 변경 💡",
+        "note": "⭐ &T{} vs new(T): 결과는 동일한 *T"
+      }
+    },
+    {
+      "slide_number": 5,
+      "type": "code",
+      "content": {
+        "title": "값 전달 vs 포인터 전달",
+        "code": "// Go는 항상 pass by value!\nfunc reset(n int) {\n    n = 0 // 복사본만 변경\n}\n// 포인터 전달 → 원본 수정 가능\nfunc resetPtr(n *int) {\n    *n = 0 // 원본 변경 ⭐\n}\n\nscore := 95\nreset(score)\nfmt.Println(score)    // 95\nresetPtr(&score)\nfmt.Println(score)    // 0\n// 포인터 자체도 복사되어 전달됨 💡",
+        "note": "⭐ Go는 항상 pass by value, 포인터도 복사!"
+      }
+    },
+    {
+      "slide_number": 6,
+      "type": "code",
+      "content": {
+        "title": "nil 안전성과 방어 패턴",
+        "code": "var p *int // 제로값은 nil\n// *p → panic: nil dereference!\n\n// nil guard 패턴 ✅\nif p != nil {\n    fmt.Println(*p)\n}\n// 생성자에서 nil 반환 활용 ⭐\nfunc FindUser(id int) *User {\n    if id <= 0 {\n        return nil // 없음 표현\n    }\n    return &User{ID: id}\n}\n// if u := FindUser(1); u != nil",
+        "note": "⚠️ nil 역참조 = panic! 항상 nil guard 필수"
+      }
+    },
+    {
+      "slide_number": 7,
+      "type": "code",
+      "content": {
+        "title": "포인터 리시버와 참조 타입",
+        "code": "// 포인터 리시버: 상태 변경 ✏️\nfunc (s *Server) SetHost(h string) {\n    s.Host = h // 원본 수정\n}\n// 값 리시버: 읽기 전용 📖\nfunc (s Server) Addr() string {\n    return s.Host + \":\" + ...\n}\n// slice·map·chan은 내부 포인터 💡\nfunc fill(s []int) {\n    s[0] = 999 // 원본 변경됨\n}\n// 포인터 사용 기준 ⭐\n// 큰 구조체, 상태 변경, nil 표현\n// 공유 데이터, 인터페이스 구현",
+        "note": "💡 값/포인터 리시버 혼용은 지양하세요!"
+      }
+    },
+    {
+      "slide_number": 8,
+      "type": "summary",
+      "content": {
+        "points": [
+          "✅ &로 주소 획득, *로 역참조 및 수정",
+          "✅ 포인터 산술 차단 → 메모리 안전 보장",
+          "✅ nil 제로값 + nil guard로 panic 방지",
+          "✅ 구조체 포인터 자동 역참조 (.접근)",
+          "✅ pass by value 원칙, 포인터로 원본 수정"
+        ],
+        "tips": [
+          "💡 큰 구조체·상태 변경 → 포인터 리시버",
+          "💡 slice·map·chan은 포인터 전달 불필요",
+          "💡 &T{}와 new(T)는 동일한 *T 반환",
+          "💡 NewXxx() → *Xxx 생성자 패턴이 관례"
+        ],
+        "next_preview": "다음 편: EP.10 인터페이스 (Interface) 👉",
+        "cta": "💾 저장 | ❤️ 좋아요 | 👤 팔로우"
+      }
+    }
+  ]
+}

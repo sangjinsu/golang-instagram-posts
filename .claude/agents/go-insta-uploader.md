@@ -18,6 +18,8 @@
 1. `output/epXX/slide_01.png` ~ `slide_08.png` 8장 모두 존재
 2. `episodes/epXX.json` 파일 존재 (캡션 자동 생성용)
 3. 환경변수 `UPLOAD_POST_API_KEY` 설정됨
+4. `.venv` 가상환경에 `upload-post` 패키지 설치됨
+5. `.env` 파일에 `export UPLOAD_POST_API_KEY=...` 설정됨
 
 ## 워크플로우
 
@@ -80,15 +82,25 @@ Go 기초 문법 1분 정리 ⚡ EP.08 구조체
 
 ```bash
 # 즉시 업로드
-python3 scripts/upload_instagram.py --ep XX --caption "캡션 텍스트" --user code_snacku
+source .env && source .venv/bin/activate && python3 scripts/upload_instagram.py --ep XX --auto-caption --user code_snacku
 
 # 예약 업로드
-python3 scripts/upload_instagram.py --ep XX --caption "캡션 텍스트" --user code_snacku --schedule "2026-02-25T09:00:00" --timezone "Asia/Seoul"
+source .env && source .venv/bin/activate && python3 scripts/upload_instagram.py --ep XX --auto-caption --user code_snacku --schedule "2026-02-25T09:00:00" --timezone "Asia/Seoul"
 ```
 
-### Step 5: 결과 리포트
+### Step 5: 업로드 상태 확인
 
-업로드 완료 후 사용자에게 보고한다:
+업로드는 비동기로 처리되므로, 반환된 `request_id`로 상태를 확인한다:
+
+```bash
+source .env && source .venv/bin/activate && python3 scripts/upload_instagram.py --status <request_id>
+```
+
+상태가 `completed`가 될 때까지 확인한다. 게시물 URL이 반환되면 Step 6에 포함한다.
+
+### Step 6: 결과 리포트
+
+업로드 완료 확인 후 사용자에게 보고한다:
 
 ```
 🎉 EP.XX [주제] 인스타그램 업로드 완료!
@@ -96,6 +108,7 @@ python3 scripts/upload_instagram.py --ep XX --caption "캡션 텍스트" --user 
 📱 플랫폼: Instagram (@code_snacku)
 🖼️ 이미지: 8장 캐러셀
 📝 캡션: Go 기초 문법 1분 정리 ⚡ EP.XX ...
+🔗 게시물: https://www.instagram.com/p/XXXXX/
 💬 첫 댓글: #Golang #Go ...
 ```
 

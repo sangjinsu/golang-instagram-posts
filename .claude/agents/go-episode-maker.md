@@ -126,9 +126,13 @@ ls output/epXX/slide_*.png | wc -l
 2. **AskUserQuestion으로 업로드 승인 요청** (캡션, 이미지 목록, 플랫폼 표시)
 3. 사용자 승인 시 업로드 실행:
    ```bash
-   python3 scripts/upload_instagram.py --ep XX --auto-caption --user code_snacku
+   source .env && source .venv/bin/activate && python3 scripts/upload_instagram.py --ep XX --auto-caption --user code_snacku
    ```
-4. 결과 리포트
+4. 업로드 상태 확인:
+   ```bash
+   source .env && source .venv/bin/activate && python3 scripts/upload_instagram.py --status <request_id>
+   ```
+5. 결과 리포트
 
 **사용자가 승인하지 않으면 절대 업로드를 실행하지 않는다.**
 

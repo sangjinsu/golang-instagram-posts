@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1080">
+  <title>EP.09 포인터 (Pointer)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  padding: 40px;
+}
+
+/* 슬라이드 컨테이너 */
+.slide {
+  width: 1080px;
+  height: 1350px;
+  position: relative;
+  overflow: hidden;
+  font-family: 'Noto Sans KR', sans-serif;
+  color: #e0e0e0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 배경 그라데이션 */
+.slide-thumbnail { background: linear-gradient(135deg, #0f0f23 0%, #0a3d5c 40%, #00ADD8 100%); }
+.slide-concept   { background: linear-gradient(160deg, #0f0f23 0%, #1a1a3e 40%, #0d1b2a 100%); }
+.slide-code      { background: linear-gradient(160deg, #0d1117 0%, #161b22 50%, #0d1117 100%); }
+.slide-summary   { background: linear-gradient(160deg, #1a0a2e 0%, #16213e 50%, #0a1628 100%); }
+
+/* 장식 원 */
+.slide::before, .slide::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.06;
+  pointer-events: none;
+}
+.slide::before { width: 500px; height: 500px; background: #667eea; top: -150px; right: -100px; }
+.slide::after  { width: 350px; height: 350px; background: #f093fb; bottom: -100px; left: -80px; }
+
+/* 상단 바 */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 40px 60px 20px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+.series-tag { font-size: 26px; font-weight: 700; color: #00ADD8; }
+.ep-num     { font-size: 26px; font-weight: 700; color: rgba(255,255,255,0.4); }
+
+/* 타이포그래피 */
+.slide-title    { font-size: 48px; font-weight: 900; color: #fff; line-height: 1.3; margin-bottom: 24px; }
+.slide-subtitle { font-size: 32px; font-weight: 700; color: #00ADD8; margin-bottom: 20px; }
+.body-text      { font-size: 30px; font-weight: 400; color: #e0e0e0; line-height: 1.6; }
+.muted-text     { font-size: 26px; color: rgba(255,255,255,0.5); margin-bottom: 12px; }
+
+/* 코드 블록 */
+.code-block {
+  background: #0d1117;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 32px;
+  margin: 20px 0;
+  position: relative;
+  z-index: 1;
+  flex: 1;
+}
+.code-block pre {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 26px;
+  line-height: 1.7;
+  color: #e6edf3;
+  white-space: pre;
+  overflow: hidden;
+}
+
+/* 코드 구문 색상 */
+.kw  { color: #ff7b72; }
+.str { color: #a5d6ff; }
+.num { color: #79c0ff; }
+.cm  { color: #8b949e; }
+.tp  { color: #7ee787; }
+.fn  { color: #d2a8ff; }
+.op  { color: #ffa657; }
+
+/* 노트 박스 */
+.note-box {
+  background: rgba(0, 173, 216, 0.1);
+  border-left: 4px solid #00ADD8;
+  border-radius: 0 12px 12px 0;
+  padding: 20px 28px;
+  margin-top: auto;
+  position: relative;
+  z-index: 1;
+}
+.note-box p { font-size: 26px; color: #e0e0e0; line-height: 1.5; }
+
+/* === 썸네일 === */
+.thumb-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 80px 60px;
+  position: relative;
+  z-index: 1;
+}
+.thumb-series  { font-size: 36px; font-weight: 700; color: rgba(255,255,255,0.9); }
+.thumb-sub     { font-size: 48px; font-weight: 900; color: #fff; margin-top: 8px; }
+.thumb-divider { width: 80px; height: 4px; background: rgba(255,255,255,0.5); margin: 40px 0; border-radius: 2px; }
+.thumb-ep      { font-size: 64px; font-weight: 900; color: #fff; }
+.thumb-topic   { font-size: 56px; font-weight: 900; color: #fff; margin-top: 16px; }
+.thumb-hook    { font-size: 32px; color: rgba(255,255,255,0.8); margin-top: 32px; }
+.thumb-tags    { text-align: center; padding: 40px; font-size: 24px; color: rgba(255,255,255,0.4); position: relative; z-index: 1; }
+
+/* === 컨셉 === */
+.concept-body     { flex: 1; padding: 20px 60px 40px; display: flex; flex-direction: column; gap: 28px; position: relative; z-index: 1; }
+.concept-explain  { }
+.concept-compare  { background: rgba(255,255,255,0.04); border-radius: 16px; padding: 24px 28px; }
+.concept-features { background: rgba(0,173,216,0.08); border-radius: 16px; padding: 24px 28px; }
+
+/* === 코드 바디 === */
+.code-body { flex: 1; padding: 10px 60px 40px; display: flex; flex-direction: column; position: relative; z-index: 1; }
+
+/* === 요약 === */
+.summary-body   { flex: 1; padding: 20px 60px 40px; display: flex; flex-direction: column; gap: 24px; position: relative; z-index: 1; }
+.summary-points,
+.summary-tips   { background: rgba(255,255,255,0.04); border-radius: 16px; padding: 24px 28px; }
+.summary-next   { text-align: center; padding: 20px; background: rgba(0,173,216,0.08); border-radius: 16px; }
+.summary-cta    { text-align: center; padding: 24px; font-size: 28px; color: rgba(255,255,255,0.6); position: relative; z-index: 1; }
+
+  </style>
+</head>
+<body>
+
+<div class="slide slide-thumbnail" id="slide-1">
+  <div class="thumb-content">
+    <p class="thumb-series">Go 기초 문법</p>
+    <p class="thumb-sub">1분 정리 ⚡</p>
+    <div class="thumb-divider"></div>
+    <p class="thumb-ep">EP.09</p>
+    <h1 class="thumb-topic">포인터 (Pointer)</h1>
+    <p class="thumb-hook">메모리를 다루는 Go만의 안전한 방법! 🎯</p>
+  </div>
+  <div class="thumb-tags">#Golang #개발 #프로그래밍</div>
+</div>
+
+<div class="slide slide-concept" id="slide-2">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.09</span>
+  </div>
+  <div class="concept-body">
+    <h2 class="slide-title">포인터란? 🤔</h2>
+    <div class="concept-explain">
+      <p class="body-text">값이 저장된 메모리 주소를 가리키는 변수</p>
+      <p class="body-text">주소를 통해 원본 데이터에 직접 접근/수정 가능</p>
+      <p class="body-text">Go 컴파일러가 escape analysis로 스택/힙 자동 결정!</p>
+      <p class="body-text">EP.08 구조체가 값 타입이라 복사된다고 했죠? 해결책! 🔑</p>
+    </div>
+    <div class="concept-compare">
+      <p class="muted-text">다른 언어와 비교</p>
+      <p class="body-text">→ C/C++: 포인터 산술 허용 (버그 위험)</p>
+      <p class="body-text">→ Java/Python: 참조만 존재 (포인터 없음)</p>
+      <p class="body-text">→ Rust: 소유권 + 빌림으로 안전 보장</p>
+      <p class="body-text">→ Go: 포인터 지원 + 산술 차단 = 안전! 🛡️</p>
+    </div>
+    <div class="concept-features">
+      <p class="slide-subtitle">Go 포인터 핵심 특징</p>
+      <p class="body-text">→ &amp; 주소 연산자, * 역참조 연산자 ✅</p>
+      <p class="body-text">→ 포인터 산술 불가 → 메모리 안전 보장 🛡️</p>
+      <p class="body-text">→ 제로값 nil, 초기화 전 사용 시 panic ⭐</p>
+      <p class="body-text">→ 구조체 포인터 자동 역참조 (.으로 접근) 💡</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-code" id="slide-3">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.09</span>
+  </div>
+  <div class="code-body">
+    <h2 class="slide-subtitle">포인터 선언과 역참조</h2>
+    <div class="code-block">
+      <pre>val <span class="op">:=</span> <span class="num">42</span>
+ptr <span class="op">:=</span> <span class="op">&amp;</span>val <span class="cm">// &amp;: 주소 획득</span>
+fmt.<span class="fn">Println</span>(ptr)  <span class="cm">// 0xc0000b2008</span>
+
+<span class="cm">// *: 역참조 (값 읽기)</span>
+fmt.<span class="fn">Println</span>(<span class="op">*</span>ptr) <span class="cm">// 42</span>
+
+<span class="cm">// 역참조로 원본 값 변경 ⭐</span>
+<span class="op">*</span>ptr <span class="op">=</span> <span class="num">100</span>
+fmt.<span class="fn">Println</span>(val)  <span class="cm">// 100</span>
+
+<span class="cm">// 다양한 포인터 선언 방식</span>
+<span class="kw">var</span> p1 <span class="op">*</span><span class="tp">int</span>       <span class="cm">// nil</span>
+p2 <span class="op">:=</span> <span class="fn">new</span>(<span class="tp">int</span>)    <span class="cm">// 제로값 할당</span>
+p3 <span class="op">:=</span> <span class="op">&amp;</span>val        <span class="cm">// 기존 변수 참조</span></pre>
+    </div>
+    <div class="note-box">
+      <p>💡 &amp;는 주소 획득, *는 역참조 + 값 수정</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-code" id="slide-4">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.09</span>
+  </div>
+  <div class="code-body">
+    <h2 class="slide-subtitle">구조체 포인터와 자동 역참조</h2>
+    <div class="code-block">
+      <pre><span class="kw">type</span> <span class="tp">Server</span> <span class="kw">struct</span> {
+    Host <span class="tp">string</span>
+    Port <span class="tp">int</span>
+    TLS  <span class="tp">bool</span>
+}
+<span class="cm">// &amp;T{}는 할당 후 포인터 반환 ⭐</span>
+s <span class="op">:=</span> <span class="op">&amp;</span><span class="tp">Server</span>{
+    Host: <span class="str">&quot;0.0.0.0&quot;</span>,
+    Port: <span class="num">8080</span>,
+}
+<span class="cm">// 자동 역참조: (*s).Host 불필요!</span>
+fmt.<span class="fn">Println</span>(s.Host) <span class="cm">// 0.0.0.0</span>
+s.Port <span class="op">=</span> <span class="num">3000</span>       <span class="cm">// 직접 수정</span>
+s.TLS <span class="op">=</span> <span class="kw">true</span>        <span class="cm">// 원본 변경 💡</span></pre>
+    </div>
+    <div class="note-box">
+      <p>⭐ &amp;T{} vs new(T): 결과는 동일한 *T</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-code" id="slide-5">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.09</span>
+  </div>
+  <div class="code-body">
+    <h2 class="slide-subtitle">값 전달 vs 포인터 전달</h2>
+    <div class="code-block">
+      <pre><span class="cm">// Go는 항상 pass by value!</span>
+<span class="kw">func</span> <span class="fn">reset</span>(n <span class="tp">int</span>) {
+    n <span class="op">=</span> <span class="num">0</span> <span class="cm">// 복사본만 변경</span>
+}
+<span class="cm">// 포인터 전달 → 원본 수정 가능</span>
+<span class="kw">func</span> <span class="fn">resetPtr</span>(n <span class="op">*</span><span class="tp">int</span>) {
+    <span class="op">*</span>n <span class="op">=</span> <span class="num">0</span> <span class="cm">// 원본 변경 ⭐</span>
+}
+
+score <span class="op">:=</span> <span class="num">95</span>
+<span class="fn">reset</span>(score)
+fmt.<span class="fn">Println</span>(score)    <span class="cm">// 95</span>
+<span class="fn">resetPtr</span>(<span class="op">&amp;</span>score)
+fmt.<span class="fn">Println</span>(score)    <span class="cm">// 0</span>
+<span class="cm">// 포인터 자체도 복사되어 전달됨 💡</span></pre>
+    </div>
+    <div class="note-box">
+      <p>⭐ Go는 항상 pass by value, 포인터도 복사!</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-code" id="slide-6">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.09</span>
+  </div>
+  <div class="code-body">
+    <h2 class="slide-subtitle">nil 안전성과 방어 패턴</h2>
+    <div class="code-block">
+      <pre><span class="kw">var</span> p <span class="op">*</span><span class="tp">int</span> <span class="cm">// 제로값은 nil</span>
+<span class="cm">// *p → panic: nil dereference!</span>
+
+<span class="cm">// nil guard 패턴 ✅</span>
+<span class="kw">if</span> p <span class="op">!=</span> <span class="kw">nil</span> {
+    fmt.<span class="fn">Println</span>(<span class="op">*</span>p)
+}
+<span class="cm">// 생성자에서 nil 반환 활용 ⭐</span>
+<span class="kw">func</span> <span class="fn">FindUser</span>(id <span class="tp">int</span>) <span class="op">*</span>User {
+    <span class="kw">if</span> id <span class="op">&lt;=</span> <span class="num">0</span> {
+        <span class="kw">return</span> <span class="kw">nil</span> <span class="cm">// 없음 표현</span>
+    }
+    <span class="kw">return</span> <span class="op">&amp;</span>User{ID: id}
+}
+<span class="cm">// if u := FindUser(1); u != nil</span></pre>
+    </div>
+    <div class="note-box">
+      <p>⚠️ nil 역참조 = panic! 항상 nil guard 필수</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-code" id="slide-7">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.09</span>
+  </div>
+  <div class="code-body">
+    <h2 class="slide-subtitle">포인터 리시버와 참조 타입</h2>
+    <div class="code-block">
+      <pre><span class="cm">// 포인터 리시버: 상태 변경 ✏️</span>
+<span class="kw">func</span> (s <span class="op">*</span><span class="tp">Server</span>) <span class="fn">SetHost</span>(h <span class="tp">string</span>) {
+    s.Host <span class="op">=</span> h <span class="cm">// 원본 수정</span>
+}
+<span class="cm">// 값 리시버: 읽기 전용 📖</span>
+<span class="kw">func</span> (s <span class="tp">Server</span>) <span class="fn">Addr</span>() <span class="tp">string</span> {
+    <span class="kw">return</span> s.Host <span class="op">+</span> <span class="str">&quot;:&quot;</span> <span class="op">+</span> ...
+}
+<span class="cm">// slice·map·chan은 내부 포인터 💡</span>
+<span class="kw">func</span> <span class="fn">fill</span>(s []<span class="tp">int</span>) {
+    s[<span class="num">0</span>] <span class="op">=</span> <span class="num">999</span> <span class="cm">// 원본 변경됨</span>
+}
+<span class="cm">// 포인터 사용 기준 ⭐</span>
+<span class="cm">// 큰 구조체, 상태 변경, nil 표현</span>
+<span class="cm">// 공유 데이터, 인터페이스 구현</span></pre>
+    </div>
+    <div class="note-box">
+      <p>💡 값/포인터 리시버 혼용은 지양하세요!</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-summary" id="slide-8">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.09</span>
+  </div>
+  <div class="summary-body">
+    <h2 class="slide-subtitle">📌 핵심 정리</h2>
+    <div class="summary-points">
+      <p class="body-text">✅ &amp;로 주소 획득, *로 역참조 및 수정</p>
+      <p class="body-text">✅ 포인터 산술 차단 → 메모리 안전 보장</p>
+      <p class="body-text">✅ nil 제로값 + nil guard로 panic 방지</p>
+      <p class="body-text">✅ 구조체 포인터 자동 역참조 (.접근)</p>
+      <p class="body-text">✅ pass by value 원칙, 포인터로 원본 수정</p>
+    </div>
+    <div class="summary-tips">
+      <h3 class="slide-subtitle">💡 Go만의 꿀팁</h3>
+      <p class="body-text">💡 큰 구조체·상태 변경 → 포인터 리시버</p>
+      <p class="body-text">💡 slice·map·chan은 포인터 전달 불필요</p>
+      <p class="body-text">💡 &amp;T{}와 new(T)는 동일한 *T 반환</p>
+      <p class="body-text">💡 NewXxx() → *Xxx 생성자 패턴이 관례</p>
+    </div>
+    <div class="summary-next">
+      <p class="body-text">다음 편: EP.10 인터페이스 (Interface) 👉</p>
+    </div>
+    <div class="summary-cta">
+      <p>💾 저장 | ❤️ 좋아요 | 👤 팔로우</p>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
