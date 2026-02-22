@@ -18,8 +18,8 @@ import argparse
 SLIDE_COUNT = 8
 DEFAULT_USER = "code_snacku"
 DEFAULT_HASHTAGS = (
-    "#Golang #Go #개발 #프로그래밍 #코딩 #개발자 "
-    "#GoLang기초 #Go언어 #백엔드 #서버개발"
+    "#golang #go #개발 #프로그래밍 #코딩 #개발자 "
+    "#golang #go #백엔드 #서버개발"
 )
 
 
