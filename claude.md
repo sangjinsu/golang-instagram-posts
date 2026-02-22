@@ -118,15 +118,24 @@ go-insta-content/
 ├── templates/
 │   └── base.html          ← 기본 HTML 템플릿
 ├── episodes/
-│   └── ep08.json          ← 에피소드별 콘텐츠 데이터
+│   ├── ep01.json          ← 변수와 상수
+│   ├── ep02.json          ← 자료형 (Data Types)
+│   ├── ep03.json          ← 조건문 (if, switch)
+│   ├── ep04.json          ← 반복문 (for)
+│   ├── ep05.json          ← 함수 (Function)
+│   ├── ep06.json          ← 배열과 슬라이스 (Array & Slice)
+│   ├── ep07.json          ← 맵 (Map)
+│   └── ep08.json          ← 구조체 (Struct)
 ├── output/
+│   ├── ep01/ ~ ep07/     ← 에피소드별 slide_01~08.png
 │   └── ep08/
 │       ├── slide_01.png
 │       ├── ...
 │       └── slide_08.png
 └── scripts/
     ├── generate_html.py   ← JSON → HTML 변환
-    └── export_images.py   ← HTML → PNG 변환
+    ├── export_images.py   ← HTML → PNG 변환
+    └── upload_instagram.py ← 인스타그램 업로드
 ```
 
 ## 작업 명령어
