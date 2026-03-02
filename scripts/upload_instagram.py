@@ -16,7 +16,6 @@ import sys
 import json
 import argparse
 
-SLIDE_COUNT = 8
 DEFAULT_USER = "code_snacku"
 DEFAULT_HASHTAGS = (
     "#golang #go #개발 #프로그래밍 #코딩 #개발자 "
@@ -24,12 +23,30 @@ DEFAULT_HASHTAGS = (
 )
 
 
+def load_episode_json(ep_num):
+    """episodes/epXX.json을 로드하여 반환한다."""
+    json_path = os.path.join("episodes", f"ep{ep_num:02d}.json")
+    try:
+        with open(json_path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except FileNotFoundError:
+        print(f"  ❌ {json_path} 파일을 찾을 수 없습니다.")
+        sys.exit(1)
+
+
+def get_slide_count(ep_num):
+    """episodes/epXX.json에서 슬라이드 수를 읽어 반환한다."""
+    data = load_episode_json(ep_num)
+    return len(data.get("slides", []))
+
+
 def build_slide_paths(ep_num):
-    """에피소드 번호로 slide_01~08.png 경로 리스트를 만든다."""
+    """에피소드 번호로 슬라이드 PNG 경로 리스트를 만든다 (JSON 기반 동적 감지)."""
     output_dir = os.path.join("output", f"ep{ep_num:02d}")
+    slide_count = get_slide_count(ep_num)
     return [
         os.path.join(output_dir, f"slide_{i:02d}.png")
-        for i in range(1, SLIDE_COUNT + 1)
+        for i in range(1, slide_count + 1)
     ]
 
 
@@ -46,14 +63,7 @@ def check_slides_exist(paths):
 
 def generate_caption(ep_num):
     """episodes/epXX.json에서 캡션을 자동 생성한다."""
-    json_path = os.path.join("episodes", f"ep{ep_num:02d}.json")
-    if not os.path.exists(json_path):
-        print(f"  ❌ {json_path} 파일을 찾을 수 없습니다.")
-        sys.exit(1)
-
-    with open(json_path, "r", encoding="utf-8") as f:
-        data = json.load(f)
-
+    data = load_episode_json(ep_num)
     title = data.get("title", "")
     hook = data.get("hook", "")
     ep_label = f"EP.{ep_num:02d}"
