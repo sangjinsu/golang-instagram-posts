@@ -1,0 +1,130 @@
+{
+  "episode": 13,
+  "title": "에러 처리",
+  "title_en": "Error Handling",
+  "difficulty": "★★☆",
+  "hook": "에러는 값이다! Go만의 철학 🛡️",
+  "next_ep": {
+    "number": 14,
+    "title": "패키지와 모듈"
+  },
+  "slides": [
+    {
+      "slide_number": 1,
+      "type": "thumbnail",
+      "content": {
+        "series_name": "Go 기초 문법",
+        "series_sub": "1분 정리 ⚡",
+        "ep_label": "EP.13",
+        "topic": "에러 처리 (Error Handling)",
+        "hook": "에러는 값이다! Go만의 철학 🛡️"
+      }
+    },
+    {
+      "slide_number": 2,
+      "type": "concept",
+      "content": {
+        "question": "에러 처리란? 🤔",
+        "explanation": [
+          "Go에는 try-catch가 없다! 🚫",
+          "error는 인터페이스, 에러도 '값'이다 ⭐",
+          "함수가 (결과, error)를 함께 반환! 📦",
+          "if err != nil 패턴으로 직접 처리 🔍"
+        ],
+        "comparison": {
+          "label": "try-catch vs Go 에러",
+          "items": [
+            "try-catch: 예외를 던지고 잡는 방식",
+            "Go: 에러를 값으로 반환하는 방식",
+            "Go 철학: 에러를 숨기지 말고 명시적으로! ✅",
+            "에러 = 프로그램의 정상 흐름 일부! 💡"
+          ]
+        },
+        "features": {
+          "label": "에러 처리 핵심 특징",
+          "items": [
+            "error 인터페이스 = Error() string ✅",
+            "다중 반환값으로 에러 전달 ⚡",
+            "errors.New(), fmt.Errorf() 생성 🔧",
+            "errors.Is(), errors.As() 비교 🎯"
+          ]
+        }
+      }
+    },
+    {
+      "slide_number": 3,
+      "type": "code",
+      "content": {
+        "title": "기본 에러 처리",
+        "code": "func divide(a, b float64) (float64, error) {\n    if b == 0 {\n        return 0, errors.New(\"0으로 나눌 수 없음\")\n    }\n    return a / b, nil // 성공 시 nil\n}\n\nfunc main() {\n    result, err := divide(10, 0)\n    if err != nil {\n        fmt.Println(\"에러:\", err)\n        return\n    }\n    fmt.Println(result)\n}",
+        "note": "⭐ if err != nil = Go의 가장 유명한 패턴!"
+      }
+    },
+    {
+      "slide_number": 4,
+      "type": "code",
+      "content": {
+        "title": "에러 생성 방법",
+        "code": "// 1. errors.New() - 간단한 에러\nerr1 := errors.New(\"파일을 찾을 수 없음\")\n\n// 2. fmt.Errorf() - 포맷팅 에러\nerr2 := fmt.Errorf(\"포트 %d 사용 중\", 8080)\n\n// 3. 센티널 에러 - 미리 정의!\nvar (\n    ErrNotFound = errors.New(\"not found\")\n    ErrTimeout  = errors.New(\"timeout\")\n)\n\n// 센티널 에러 비교\nif err == ErrNotFound {\n    fmt.Println(\"찾을 수 없습니다\")\n}",
+        "note": "💡 센티널 에러 = 패키지 수준 전역 에러 상수!"
+      }
+    },
+    {
+      "slide_number": 5,
+      "type": "code",
+      "content": {
+        "title": "커스텀 에러 타입",
+        "code": "type ApiError struct {\n    Code    int\n    Message string\n}\n// error 인터페이스 구현\nfunc (e *ApiError) Error() string {\n    return fmt.Sprintf(\n        \"[%d] %s\", e.Code, e.Message,\n    )\n}\nfunc fetchUser(id int) error {\n    return &ApiError{\n        Code: 404, Message: \"유저 없음\",\n    }\n}\n// 출력: [404] 유저 없음",
+        "note": "⭐ Error() string만 구현하면 에러 타입!"
+      }
+    },
+    {
+      "slide_number": 6,
+      "type": "code",
+      "content": {
+        "title": "에러 래핑 (Go 1.13+)",
+        "code": "// %w로 에러 래핑 (원본 보존!)\nfunc readConfig() error {\n    _, err := os.Open(\"config.yaml\")\n    if err != nil {\n        return fmt.Errorf(\n            \"설정 로드 실패: %w\", err,\n        )\n    }\n    return nil\n}\n// errors.Is() - 에러 체인 검색\nif errors.Is(err, os.ErrNotExist) {\n    fmt.Println(\"파일이 없습니다\")\n}\n// errors.As() - 타입 추출\nvar apiErr *ApiError\nerrors.As(err, &apiErr)",
+        "note": "💡 %w 래핑 → Is/As로 체인 탐색 가능!"
+      }
+    },
+    {
+      "slide_number": 7,
+      "type": "code",
+      "content": {
+        "title": "defer, panic, recover",
+        "code": "func safeDiv(a, b int) (result int) {\n    defer func() {\n        if r := recover(); r != nil {\n            fmt.Println(\"복구:\", r)\n            result = 0\n        }\n    }()\n    return a / b // b=0이면 panic!\n}\n\nfunc main() {\n    fmt.Println(safeDiv(10, 0)) // 0\n    // panic(\"심각한 오류!\") 직접 호출\n    // recover()는 defer 안에서만!\n}",
+        "note": "⚠️ panic은 정말 복구 불가능할 때만 사용!"
+      }
+    },
+    {
+      "slide_number": 8,
+      "type": "code",
+      "content": {
+        "title": "실전: 에러 처리 패턴",
+        "code": "func getUser(id int) (*User, error) {\n    row, err := db.Query(id)\n    if err != nil {\n        return nil, fmt.Errorf(\n            \"DB 조회 실패(id=%d): %w\",\n            id, err,\n        )\n    }\n    user, err := parseUser(row)\n    if err != nil {\n        return nil, fmt.Errorf(\n            \"파싱 실패: %w\", err,\n        )\n    }\n    return user, nil\n}",
+        "note": "⭐ 에러에 맥락 추가 → 디버깅이 쉬워진다!"
+      }
+    },
+    {
+      "slide_number": 9,
+      "type": "summary",
+      "content": {
+        "points": [
+          "✅ error는 인터페이스, 에러는 '값'이다",
+          "✅ if err != nil로 명시적 처리",
+          "✅ errors.New, fmt.Errorf로 생성",
+          "✅ %w 래핑 + Is/As로 체인 탐색",
+          "✅ panic/recover는 최후의 수단"
+        ],
+        "tips": [
+          "💡 에러를 무시하지 말고 항상 처리하라",
+          "💡 에러에 맥락(context)을 추가하라",
+          "💡 센티널 에러로 에러 종류를 구분하라",
+          "💡 커스텀 에러 타입으로 정보를 담아라"
+        ],
+        "next_preview": "다음 편: EP.14 패키지와 모듈 👉",
+        "cta": "💾 저장 | ❤️ 좋아요 | 👤 팔로우"
+      }
+    }
+  ]
+}

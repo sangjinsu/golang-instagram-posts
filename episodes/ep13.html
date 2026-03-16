@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1080">
+  <title>EP.13 에러 처리 (Error Handling)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  padding: 40px;
+}
+
+/* 슬라이드 컨테이너 */
+.slide {
+  width: 1080px;
+  height: 1350px;
+  position: relative;
+  overflow: hidden;
+  font-family: 'Noto Sans KR', sans-serif;
+  color: #e0e0e0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 배경 그라데이션 */
+.slide-thumbnail { background: linear-gradient(135deg, #0f0f23 0%, #0a3d5c 40%, #00ADD8 100%); }
+.slide-concept   { background: linear-gradient(160deg, #0f0f23 0%, #1a1a3e 40%, #0d1b2a 100%); }
+.slide-code      { background: linear-gradient(160deg, #0d1117 0%, #161b22 50%, #0d1117 100%); }
+.slide-summary   { background: linear-gradient(160deg, #1a0a2e 0%, #16213e 50%, #0a1628 100%); }
+
+/* 장식 원 */
+.slide::before, .slide::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.06;
+  pointer-events: none;
+}
+.slide::before { width: 500px; height: 500px; background: #667eea; top: -150px; right: -100px; }
+.slide::after  { width: 350px; height: 350px; background: #f093fb; bottom: -100px; left: -80px; }
+
+/* 상단 바 */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 40px 60px 20px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+.series-tag { font-size: 26px; font-weight: 700; color: #00ADD8; }
+.ep-num     { font-size: 26px; font-weight: 700; color: rgba(255,255,255,0.4); }
+
+/* 타이포그래피 */
+.slide-title    { font-size: 48px; font-weight: 900; color: #fff; line-height: 1.3; margin-bottom: 24px; }
+.slide-subtitle { font-size: 32px; font-weight: 700; color: #00ADD8; margin-bottom: 20px; }
+.body-text      { font-size: 30px; font-weight: 400; color: #e0e0e0; line-height: 1.6; }
+.muted-text     { font-size: 26px; color: rgba(255,255,255,0.5); margin-bottom: 12px; }
+
+/* 코드 블록 */
+.code-block {
+  background: #0d1117;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 32px;
+  margin: 20px 0;
+  position: relative;
+  z-index: 1;
+  flex: 1;
+}
+.code-block pre {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 26px;
+  line-height: 1.7;
+  color: #e6edf3;
+  white-space: pre;
+  overflow: hidden;
+}
+
+/* 코드 구문 색상 */
+.kw  { color: #ff7b72; }
+.str { color: #a5d6ff; }
+.num { color: #79c0ff; }
+.cm  { color: #8b949e; }
+.tp  { color: #7ee787; }
+.fn  { color: #d2a8ff; }
+.op  { color: #ffa657; }
+
+/* 노트 박스 */
+.note-box {
+  background: rgba(0, 173, 216, 0.1);
+  border-left: 4px solid #00ADD8;
+  border-radius: 0 12px 12px 0;
+  padding: 20px 28px;
+  margin-top: auto;
+  position: relative;
+  z-index: 1;
+}
+.note-box p { font-size: 26px; color: #e0e0e0; line-height: 1.5; }
+
+/* === 썸네일 === */
+.thumb-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 80px 60px;
+  position: relative;
+  z-index: 1;
+}
+.thumb-series  { font-size: 36px; font-weight: 700; color: rgba(255,255,255,0.9); }
+.thumb-sub     { font-size: 48px; font-weight: 900; color: #fff; margin-top: 8px; }
+.thumb-divider { width: 80px; height: 4px; background: rgba(255,255,255,0.5); margin: 40px 0; border-radius: 2px; }
+.thumb-ep      { font-size: 64px; font-weight: 900; color: #fff; }
+.thumb-topic   { font-size: 56px; font-weight: 900; color: #fff; margin-top: 16px; }
+.thumb-hook    { font-size: 32px; color: rgba(255,255,255,0.8); margin-top: 32px; }
+.thumb-tags    { text-align: center; padding: 40px; font-size: 24px; color: rgba(255,255,255,0.4); position: relative; z-index: 1; }
+
+/* === 컨셉 === */
+.concept-body     { flex: 1; padding: 20px 60px 40px; display: flex; flex-direction: column; gap: 28px; position: relative; z-index: 1; }
+.concept-explain  { }
+.concept-compare  { background: rgba(255,255,255,0.04); border-radius: 16px; padding: 24px 28px; }
+.concept-features { background: rgba(0,173,216,0.08); border-radius: 16px; padding: 24px 28px; }
+
+/* === 코드 바디 === */
+.code-body { flex: 1; padding: 10px 60px 40px; display: flex; flex-direction: column; position: relative; z-index: 1; }
+
+/* === 요약 === */
+.summary-body   { flex: 1; padding: 20px 60px 40px; display: flex; flex-direction: column; gap: 24px; position: relative; z-index: 1; }
+.summary-points,
+.summary-tips   { background: rgba(255,255,255,0.04); border-radius: 16px; padding: 24px 28px; }
+.summary-next   { text-align: center; padding: 20px; background: rgba(0,173,216,0.08); border-radius: 16px; }
+.summary-cta    { text-align: center; padding: 24px; font-size: 28px; color: rgba(255,255,255,0.6); position: relative; z-index: 1; }
+
+  </style>
+</head>
+<body>
+
+<div class="slide slide-thumbnail" id="slide-1">
+  <div class="thumb-content">
+    <p class="thumb-series">Go 기초 문법</p>
+    <p class="thumb-sub">1분 정리 ⚡</p>
+    <div class="thumb-divider"></div>
+    <p class="thumb-ep">EP.13</p>
+    <h1 class="thumb-topic">에러 처리 (Error Handling)</h1>
+    <p class="thumb-hook">에러는 값이다! Go만의 철학 🛡️</p>
+  </div>
+  <div class="thumb-tags">#Golang #개발 #프로그래밍</div>
+</div>
+
+<div class="slide slide-concept" id="slide-2">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.13</span>
+  </div>
+  <div class="concept-body">
+    <h2 class="slide-title">에러 처리란? 🤔</h2>
+    <div class="concept-explain">
+      <p class="body-text">Go에는 try-catch가 없다! 🚫</p>
+      <p class="body-text">error는 인터페이스, 에러도 '값'이다 ⭐</p>
+      <p class="body-text">함수가 (결과, error)를 함께 반환! 📦</p>
+      <p class="body-text">if err != nil 패턴으로 직접 처리 🔍</p>
+    </div>
+    <div class="concept-compare">
+      <p class="muted-text">try-catch vs Go 에러</p>
+      <p class="body-text">→ try-catch: 예외를 던지고 잡는 방식</p>
+      <p class="body-text">→ Go: 에러를 값으로 반환하는 방식</p>
+      <p class="body-text">→ Go 철학: 에러를 숨기지 말고 명시적으로! ✅</p>
+      <p class="body-text">→ 에러 = 프로그램의 정상 흐름 일부! 💡</p>
+    </div>
+    <div class="concept-features">
+      <p class="slide-subtitle">에러 처리 핵심 특징</p>
+      <p class="body-text">→ error 인터페이스 = Error() string ✅</p>
+      <p class="body-text">→ 다중 반환값으로 에러 전달 ⚡</p>
+      <p class="body-text">→ errors.New(), fmt.Errorf() 생성 🔧</p>
+      <p class="body-text">→ errors.Is(), errors.As() 비교 🎯</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-code" id="slide-3">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.13</span>
+  </div>
+  <div class="code-body">
+    <h2 class="slide-subtitle">기본 에러 처리</h2>
+    <div class="code-block">
+      <pre><span class="kw">func</span> <span class="fn">divide</span>(a, b <span class="tp">float64</span>) (<span class="tp">float64</span>, <span class="tp">error</span>) {
+    <span class="kw">if</span> b <span class="op">==</span> <span class="num">0</span> {
+        <span class="kw">return</span> <span class="num">0</span>, errors.<span class="fn">New</span>(<span class="str">&quot;0으로 나눌 수 없음&quot;</span>)
+    }
+    <span class="kw">return</span> a <span class="op">/</span> b, <span class="num">nil</span> <span class="cm">// 성공 시 nil</span>
+}
+
+<span class="kw">func</span> <span class="fn">main</span>() {
+    result, err <span class="op">:=</span> <span class="fn">divide</span>(<span class="num">10</span>, <span class="num">0</span>)
+    <span class="kw">if</span> err <span class="op">!=</span> <span class="num">nil</span> {
+        fmt.<span class="fn">Println</span>(<span class="str">&quot;에러:&quot;</span>, err)
+        <span class="kw">return</span>
+    }
+    fmt.<span class="fn">Println</span>(result)
+}</pre>
+    </div>
+    <div class="note-box">
+      <p>⭐ if err != nil = Go의 가장 유명한 패턴!</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-code" id="slide-4">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.13</span>
+  </div>
+  <div class="code-body">
+    <h2 class="slide-subtitle">에러 생성 방법</h2>
+    <div class="code-block">
+      <pre><span class="cm">// 1. errors.New() - 간단한 에러</span>
+err1 <span class="op">:=</span> errors.<span class="fn">New</span>(<span class="str">&quot;파일을 찾을 수 없음&quot;</span>)
+
+<span class="cm">// 2. fmt.Errorf() - 포맷팅 에러</span>
+err2 <span class="op">:=</span> fmt.<span class="fn">Errorf</span>(<span class="str">&quot;포트 %d 사용 중&quot;</span>, <span class="num">8080</span>)
+
+<span class="cm">// 3. 센티널 에러 - 미리 정의!</span>
+<span class="kw">var</span> (
+    ErrNotFound <span class="op">=</span> errors.<span class="fn">New</span>(<span class="str">&quot;not found&quot;</span>)
+    ErrTimeout  <span class="op">=</span> errors.<span class="fn">New</span>(<span class="str">&quot;timeout&quot;</span>)
+)
+
+<span class="cm">// 센티널 에러 비교</span>
+<span class="kw">if</span> err <span class="op">==</span> ErrNotFound {
+    fmt.<span class="fn">Println</span>(<span class="str">&quot;찾을 수 없습니다&quot;</span>)
+}</pre>
+    </div>
+    <div class="note-box">
+      <p>💡 센티널 에러 = 패키지 수준 전역 에러 상수!</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-code" id="slide-5">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.13</span>
+  </div>
+  <div class="code-body">
+    <h2 class="slide-subtitle">커스텀 에러 타입</h2>
+    <div class="code-block">
+      <pre><span class="kw">type</span> <span class="tp">ApiError</span> <span class="kw">struct</span> {
+    Code    <span class="tp">int</span>
+    Message <span class="tp">string</span>
+}
+<span class="cm">// error 인터페이스 구현</span>
+<span class="kw">func</span> (e <span class="op">*</span><span class="tp">ApiError</span>) <span class="fn">Error</span>() <span class="tp">string</span> {
+    <span class="kw">return</span> fmt.<span class="fn">Sprintf</span>(
+        <span class="str">&quot;[%d] %s&quot;</span>, e.Code, e.Message,
+    )
+}
+<span class="kw">func</span> <span class="fn">fetchUser</span>(id <span class="tp">int</span>) <span class="tp">error</span> {
+    <span class="kw">return</span> <span class="op">&amp;</span><span class="tp">ApiError</span>{
+        Code: <span class="num">404</span>, Message: <span class="str">&quot;유저 없음&quot;</span>,
+    }
+}
+<span class="cm">// 출력: [404] 유저 없음</span></pre>
+    </div>
+    <div class="note-box">
+      <p>⭐ Error() string만 구현하면 에러 타입!</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-code" id="slide-6">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.13</span>
+  </div>
+  <div class="code-body">
+    <h2 class="slide-subtitle">에러 래핑 (Go 1.13+)</h2>
+    <div class="code-block">
+      <pre><span class="cm">// %w로 에러 래핑 (원본 보존!)</span>
+<span class="kw">func</span> <span class="fn">readConfig</span>() <span class="tp">error</span> {
+    _, err <span class="op">:=</span> os.<span class="fn">Open</span>(<span class="str">&quot;config.yaml&quot;</span>)
+    <span class="kw">if</span> err <span class="op">!=</span> <span class="num">nil</span> {
+        <span class="kw">return</span> fmt.<span class="fn">Errorf</span>(
+            <span class="str">&quot;설정 로드 실패: %w&quot;</span>, err,
+        )
+    }
+    <span class="kw">return</span> <span class="num">nil</span>
+}
+<span class="cm">// errors.Is() - 에러 체인 검색</span>
+<span class="kw">if</span> errors.<span class="fn">Is</span>(err, os.ErrNotExist) {
+    fmt.<span class="fn">Println</span>(<span class="str">&quot;파일이 없습니다&quot;</span>)
+}
+<span class="cm">// errors.As() - 타입 추출</span>
+<span class="kw">var</span> apiErr <span class="op">*</span><span class="tp">ApiError</span>
+errors.<span class="fn">As</span>(err, <span class="op">&amp;</span>apiErr)</pre>
+    </div>
+    <div class="note-box">
+      <p>💡 %w 래핑 → Is/As로 체인 탐색 가능!</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-code" id="slide-7">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.13</span>
+  </div>
+  <div class="code-body">
+    <h2 class="slide-subtitle">defer, panic, recover</h2>
+    <div class="code-block">
+      <pre><span class="kw">func</span> <span class="fn">safeDiv</span>(a, b <span class="tp">int</span>) (result <span class="tp">int</span>) {
+    <span class="kw">defer</span> <span class="kw">func</span>() {
+        <span class="kw">if</span> r <span class="op">:=</span> <span class="fn">recover</span>(); r <span class="op">!=</span> <span class="num">nil</span> {
+            fmt.<span class="fn">Println</span>(<span class="str">&quot;복구:&quot;</span>, r)
+            result <span class="op">=</span> <span class="num">0</span>
+        }
+    }()
+    <span class="kw">return</span> a <span class="op">/</span> b <span class="cm">// b=0이면 panic!</span>
+}
+
+<span class="kw">func</span> <span class="fn">main</span>() {
+    fmt.<span class="fn">Println</span>(<span class="fn">safeDiv</span>(<span class="num">10</span>, <span class="num">0</span>)) <span class="cm">// 0</span>
+    <span class="cm">// panic(&quot;심각한 오류!&quot;) 직접 호출</span>
+    <span class="cm">// recover()는 defer 안에서만!</span>
+}</pre>
+    </div>
+    <div class="note-box">
+      <p>⚠️ panic은 정말 복구 불가능할 때만 사용!</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-code" id="slide-8">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.13</span>
+  </div>
+  <div class="code-body">
+    <h2 class="slide-subtitle">실전: 에러 처리 패턴</h2>
+    <div class="code-block">
+      <pre><span class="kw">func</span> <span class="fn">getUser</span>(id <span class="tp">int</span>) (<span class="op">*</span><span class="tp">User</span>, <span class="tp">error</span>) {
+    row, err <span class="op">:=</span> db.<span class="fn">Query</span>(id)
+    <span class="kw">if</span> err <span class="op">!=</span> <span class="num">nil</span> {
+        <span class="kw">return</span> <span class="num">nil</span>, fmt.<span class="fn">Errorf</span>(
+            <span class="str">&quot;DB 조회 실패(id=%d): %w&quot;</span>,
+            id, err,
+        )
+    }
+    user, err <span class="op">:=</span> <span class="fn">parseUser</span>(row)
+    <span class="kw">if</span> err <span class="op">!=</span> <span class="num">nil</span> {
+        <span class="kw">return</span> <span class="num">nil</span>, fmt.<span class="fn">Errorf</span>(
+            <span class="str">&quot;파싱 실패: %w&quot;</span>, err,
+        )
+    }
+    <span class="kw">return</span> user, <span class="num">nil</span>
+}</pre>
+    </div>
+    <div class="note-box">
+      <p>⭐ 에러에 맥락 추가 → 디버깅이 쉬워진다!</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-summary" id="slide-8">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.13</span>
+  </div>
+  <div class="summary-body">
+    <h2 class="slide-subtitle">📌 핵심 정리</h2>
+    <div class="summary-points">
+      <p class="body-text">✅ error는 인터페이스, 에러는 '값'이다</p>
+      <p class="body-text">✅ if err != nil로 명시적 처리</p>
+      <p class="body-text">✅ errors.New, fmt.Errorf로 생성</p>
+      <p class="body-text">✅ %w 래핑 + Is/As로 체인 탐색</p>
+      <p class="body-text">✅ panic/recover는 최후의 수단</p>
+    </div>
+    <div class="summary-tips">
+      <h3 class="slide-subtitle">💡 Go만의 꿀팁</h3>
+      <p class="body-text">💡 에러를 무시하지 말고 항상 처리하라</p>
+      <p class="body-text">💡 에러에 맥락(context)을 추가하라</p>
+      <p class="body-text">💡 센티널 에러로 에러 종류를 구분하라</p>
+      <p class="body-text">💡 커스텀 에러 타입으로 정보를 담아라</p>
+    </div>
+    <div class="summary-next">
+      <p class="body-text">다음 편: EP.14 패키지와 모듈 👉</p>
+    </div>
+    <div class="summary-cta">
+      <p>💾 저장 | ❤️ 좋아요 | 👤 팔로우</p>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

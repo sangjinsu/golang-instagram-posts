@@ -1,0 +1,130 @@
+{
+  "episode": 11,
+  "title": "고루틴",
+  "title_en": "Goroutine",
+  "difficulty": "★★★",
+  "hook": "수천 개의 동시 작업을 가볍게! 🚀",
+  "next_ep": {
+    "number": 12,
+    "title": "Channel"
+  },
+  "slides": [
+    {
+      "slide_number": 1,
+      "type": "thumbnail",
+      "content": {
+        "series_name": "Go 기초 문법",
+        "series_sub": "1분 정리 ⚡",
+        "ep_label": "EP.11",
+        "topic": "고루틴 (Goroutine)",
+        "hook": "수천 개의 동시 작업을 가볍게! 🚀"
+      }
+    },
+    {
+      "slide_number": 2,
+      "type": "concept",
+      "content": {
+        "question": "고루틴이란? 🤔",
+        "explanation": [
+          "Go 런타임이 관리하는 경량 실행 단위",
+          "go 키워드 하나로 동시 실행 시작! ⭐",
+          "OS 스레드보다 훨씬 가볍고 빠름 (초기 ~2KB)",
+          "수만 개를 동시에 실행해도 OK! 🚀"
+        ],
+        "comparison": {
+          "label": "OS 스레드 vs 고루틴",
+          "items": [
+            "스레드: ~1MB 스택, OS가 스케줄링",
+            "고루틴: ~2KB 스택, Go 런타임 스케줄링",
+            "스레드: 수천 개 → 성능 저하",
+            "고루틴: 수만 개도 거뜬! 💪"
+          ]
+        },
+        "features": {
+          "label": "고루틴 핵심 특징",
+          "items": [
+            "go 키워드로 간단히 실행 ✅",
+            "M:N 스케줄링 (고루틴:OS스레드) ⚡",
+            "스택 크기 자동 확장/축소 📏",
+            "동기화: sync 패키지 + Channel 🔒"
+          ]
+        }
+      }
+    },
+    {
+      "slide_number": 3,
+      "type": "code",
+      "content": {
+        "title": "기본 고루틴 실행",
+        "code": "func hello(name string) {\n    fmt.Printf(\"안녕, %s!\\n\", name)\n}\n\nfunc main() {\n    // go 키워드 하나로 동시 실행!\n    go hello(\"Go\")\n    go hello(\"세계\")\n\n    // 익명 함수 고루틴\n    go func() {\n        fmt.Println(\"익명 고루틴!\")\n    }()\n    time.Sleep(time.Second)\n}",
+        "note": "⚠️ time.Sleep은 임시! 다음 슬라이드에서 해결"
+      }
+    },
+    {
+      "slide_number": 4,
+      "type": "code",
+      "content": {
+        "title": "sync.WaitGroup으로 완료 대기",
+        "code": "func worker(id int, wg *sync.WaitGroup) {\n    defer wg.Done() // 완료 시 카운터 -1\n    fmt.Printf(\"워커 %d 작업중\\n\", id)\n    time.Sleep(time.Second)\n    fmt.Printf(\"워커 %d 완료\\n\", id)\n}\nfunc main() {\n    var wg sync.WaitGroup\n    for i := 1; i <= 5; i++ {\n        wg.Add(1) // 카운터 +1\n        go worker(i, &wg)\n    }\n    wg.Wait() // 카운터 0이 될 때까지\n    fmt.Println(\"전체 작업 완료!\")\n}",
+        "note": "⭐ Add → go → Done → Wait 패턴이 기본!"
+      }
+    },
+    {
+      "slide_number": 5,
+      "type": "code",
+      "content": {
+        "title": "클로저 변수 캡처 주의!",
+        "code": "// ❌ 클로저 변수 캡처 문제\nfor i := 0; i < 3; i++ {\n    go func() {\n        fmt.Println(i) // 3,3,3 😱\n    }()\n}\n// ✅ 파라미터로 전달 (해결법)\nfor i := 0; i < 3; i++ {\n    go func(n int) {\n        fmt.Println(n) // 0,1,2 ✅\n    }(i)\n}\n// ✅ Go 1.22+ 루프변수 스코프 수정\n// 각 반복마다 새 변수 생성!\n// 1.22 이후는 기본 동작으로 해결",
+        "note": "💡 Go 1.22 이전이면 반드시 파라미터 전달!"
+      }
+    },
+    {
+      "slide_number": 6,
+      "type": "code",
+      "content": {
+        "title": "sync.Mutex로 공유 자원 보호",
+        "code": "var mu sync.Mutex\ncount := 0\n\nvar wg sync.WaitGroup\nfor i := 0; i < 5; i++ {\n    wg.Add(1)\n    go func() {\n        defer wg.Done()\n        mu.Lock()\n        count++ // 안전한 접근\n        mu.Unlock()\n    }()\n}\nwg.Wait()\nfmt.Println(count) // 정확히 5 ✅",
+        "note": "⚠️ Mutex 없이 동시 수정 → 데이터 레이스!"
+      }
+    },
+    {
+      "slide_number": 7,
+      "type": "code",
+      "content": {
+        "title": "실무 패턴: 워커 풀",
+        "code": "// 워커 풀: N개 워커가 작업 소비 ⭐\njobs := make(chan int, 100)\nvar wg sync.WaitGroup\nfor w := 0; w < 3; w++ {\n    wg.Add(1)\n    go func() {\n        defer wg.Done()\n        for j := range jobs {\n            process(j)\n        }\n    }()\n}\n// 작업 전송 후 채널 닫기\nfor j := 0; j < 20; j++ { jobs <- j }\nclose(jobs); wg.Wait()",
+        "note": "💡 다음 슬라이드에서 errgroup 패턴!"
+      }
+    },
+    {
+      "slide_number": 8,
+      "type": "code",
+      "content": {
+        "title": "errgroup: 고루틴 에러 관리",
+        "code": "// errgroup: 고루틴 에러 관리 ⭐\n// \"golang.org/x/sync/errgroup\"\ng, ctx := errgroup.WithContext(ctx)\nurls := []string{\n    \"https://api.a.com\",\n    \"https://api.b.com\",\n}\nfor _, url := range urls {\n    g.Go(func() error {\n        return fetch(ctx, url)\n    })\n}\n// 모든 완료 대기 + 첫 에러 반환\nif err := g.Wait(); err != nil {\n    log.Fatal(err) // 에러 전파!\n}",
+        "note": "⭐ errgroup = WaitGroup + 에러 전파 + 취소!"
+      }
+    },
+    {
+      "slide_number": 9,
+      "type": "summary",
+      "content": {
+        "points": [
+          "✅ go 키워드 하나로 고루틴 실행",
+          "✅ 초기 ~2KB, 수만 개 동시 실행 가능",
+          "✅ sync.WaitGroup으로 완료 대기",
+          "✅ 클로저 캡처 주의 (파라미터 전달)",
+          "✅ sync.Mutex로 공유 자원 보호"
+        ],
+        "tips": [
+          "💡 고루틴은 함수 호출만큼 가볍게 사용",
+          "💡 go test -race로 데이터 레이스 탐지",
+          "💡 워커 풀로 동시성 제어",
+          "💡 errgroup으로 에러 전파 + 취소"
+        ],
+        "next_preview": "다음 편: EP.12 Channel 👉",
+        "cta": "💾 저장 | ❤️ 좋아요 | 👤 팔로우"
+      }
+    }
+  ]
+}

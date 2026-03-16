@@ -1,0 +1,130 @@
+{
+  "episode": 12,
+  "title": "채널",
+  "title_en": "Channel",
+  "difficulty": "★★★",
+  "hook": "고루틴의 대화 통로! 📨",
+  "next_ep": {
+    "number": 13,
+    "title": "Error Handling"
+  },
+  "slides": [
+    {
+      "slide_number": 1,
+      "type": "thumbnail",
+      "content": {
+        "series_name": "Go 기초 문법",
+        "series_sub": "1분 정리 ⚡",
+        "ep_label": "EP.12",
+        "topic": "채널 (Channel)",
+        "hook": "고루틴의 대화 통로! 📨"
+      }
+    },
+    {
+      "slide_number": 2,
+      "type": "concept",
+      "content": {
+        "question": "채널이란? 🤔",
+        "explanation": [
+          "고루틴 간 데이터를 주고받는 파이프 🔗",
+          "make(chan type)으로 생성, <- 로 송수신! ⭐",
+          "보내고 받을 때까지 자동 블로킹 (동기화 내장)",
+          "타입 안전: chan int, chan string 등 📦"
+        ],
+        "comparison": {
+          "label": "공유 메모리 vs 채널",
+          "items": [
+            "공유 메모리: Mutex 필요, 실수 위험",
+            "채널: 메시지 전달, 자연스러운 동기화",
+            "Go 철학: 메모리 공유 ❌ 통신으로 공유 ✅",
+            "채널 = 안전한 고루틴 대화 통로! 💬"
+          ]
+        },
+        "features": {
+          "label": "채널 핵심 특징",
+          "items": [
+            "make(chan T)로 간단히 생성 ✅",
+            "ch <- val 송신, val := <-ch 수신 ⚡",
+            "방향 지정 가능 (송신/수신 전용) 🔒",
+            "close + range로 깔끔한 종료 패턴 🎯"
+          ]
+        }
+      }
+    },
+    {
+      "slide_number": 3,
+      "type": "code",
+      "content": {
+        "title": "기본 채널 사용",
+        "code": "ch := make(chan string)\n\ngo func() {\n    ch <- \"안녕, 채널!\" // 송신\n}()\n\nmsg := <-ch // 수신 (블로킹 대기)\nfmt.Println(msg)\n\n// 여러 값 전달\nnums := make(chan int)\ngo func() {\n    nums <- 1\n    nums <- 2\n    nums <- 3\n}()\nfmt.Println(<-nums, <-nums, <-nums)",
+        "note": "⭐ 수신자 없으면 송신 블로킹, 그 반대도 마찬가지!"
+      }
+    },
+    {
+      "slide_number": 4,
+      "type": "code",
+      "content": {
+        "title": "버퍼드 채널",
+        "code": "// 언버퍼드: 수신자 있어야 송신 가능\nch1 := make(chan int)\n\n// 버퍼드: 버퍼 꽉 찰 때까지 논블로킹!\nch2 := make(chan int, 3)\nch2 <- 1  // 바로 진행 ✅\nch2 <- 2  // 바로 진행 ✅\nch2 <- 3  // 바로 진행 ✅\n// ch2 <- 4 // 블로킹! 버퍼 꽉 참 😱\n\nfmt.Println(len(ch2)) // 3 (현재 개수)\nfmt.Println(cap(ch2)) // 3 (버퍼 크기)\nfmt.Println(<-ch2)    // 1 (FIFO)",
+        "note": "💡 버퍼 크기 = 비동기 처리 가능한 양!"
+      }
+    },
+    {
+      "slide_number": 5,
+      "type": "code",
+      "content": {
+        "title": "채널 방향 지정",
+        "code": "// 송신 전용: chan<- int\nfunc producer(ch chan<- int) {\n    for i := 0; i < 5; i++ {\n        ch <- i\n    }\n    close(ch)\n}\n// 수신 전용: <-chan int\nfunc consumer(ch <-chan int) {\n    for v := range ch {\n        fmt.Println(v)\n    }\n}\nfunc main() {\n    ch := make(chan int)\n    go producer(ch)\n    consumer(ch) // 0,1,2,3,4\n}",
+        "note": "⭐ 방향 지정 → 실수 방지 + 의도 명확!"
+      }
+    },
+    {
+      "slide_number": 6,
+      "type": "code",
+      "content": {
+        "title": "range와 close",
+        "code": "ch := make(chan int)\n\ngo func() {\n    for i := 1; i <= 5; i++ {\n        ch <- i\n    }\n    close(ch) // 더 이상 안 보냄!\n}()\n\n// range: 채널 닫힐 때까지 수신\nfor v := range ch {\n    fmt.Println(v) // 1, 2, 3, 4, 5\n}\n\n// 닫힌 채널 확인\nv, ok := <-ch\nfmt.Println(v, ok) // 0 false",
+        "note": "⚠️ 닫힌 채널에 송신하면 panic! 주의!"
+      }
+    },
+    {
+      "slide_number": 7,
+      "type": "code",
+      "content": {
+        "title": "select 문",
+        "code": "ch1 := make(chan string)\nch2 := make(chan string)\n\ngo func() { ch1 <- \"하나\" }()\ngo func() { ch2 <- \"둘\" }()\n\ntime.Sleep(time.Millisecond)\n\n// 먼저 도착하는 채널 수신!\nselect {\ncase v := <-ch1:\n    fmt.Println(v)\ncase v := <-ch2:\n    fmt.Println(v)\ncase <-time.After(time.Second):\n    fmt.Println(\"타임아웃!\")\n}",
+        "note": "💡 select = 다중 채널의 switch문!"
+      }
+    },
+    {
+      "slide_number": 8,
+      "type": "code",
+      "content": {
+        "title": "실전: Worker Pool 패턴",
+        "code": "func worker(id int, jobs <-chan int,\n    results chan<- int) {\n    for j := range jobs {\n        fmt.Printf(\"워커%d: 작업%d\\n\", id, j)\n        results <- j * 2\n    }\n}\nfunc main() {\n    jobs := make(chan int, 100)\n    results := make(chan int, 100)\n    for w := 1; w <= 3; w++ {\n        go worker(w, jobs, results)\n    }\n    for j := 1; j <= 9; j++ { jobs <- j }\n    close(jobs)\n    for i := 0; i < 9; i++ {\n        fmt.Println(<-results)\n    }\n}",
+        "note": "⭐ 워커 풀 = 채널 활용의 대표 실무 패턴!"
+      }
+    },
+    {
+      "slide_number": 9,
+      "type": "summary",
+      "content": {
+        "points": [
+          "✅ make(chan type)으로 채널 생성",
+          "✅ <- 연산자로 송신/수신",
+          "✅ 버퍼드 채널로 비동기 처리",
+          "✅ close + range로 깔끔한 종료",
+          "✅ select로 다중 채널 대기"
+        ],
+        "tips": [
+          "💡 \"메모리 공유 대신 통신으로 공유하라\"",
+          "💡 채널 방향 지정으로 안전성 확보",
+          "💡 select + time.After = 타임아웃 패턴",
+          "💡 워커 풀 = 실무 필수 패턴"
+        ],
+        "next_preview": "다음 편: EP.13 Error Handling 👉",
+        "cta": "💾 저장 | ❤️ 좋아요 | 👤 팔로우"
+      }
+    }
+  ]
+}

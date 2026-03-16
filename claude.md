@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 한국 개발자 커뮤니티를 위한 **"Go 기초 문법 1분 정리"** 인스타그램 카드뉴스 시리즈를 자동으로 생성하는 시스템이다.
 
-**현재 상태**: 프로젝트 스펙 정의 완료, 구현 대기 중. 스크립트, 템플릿, 에피소드 JSON 파일 미생성.
+**현재 상태**: EP01~EP13 완료. EP14 다음 예정.
 
 **핵심 워크플로우:**
 ```
@@ -26,11 +26,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 | 05 | 함수 (Function) | ✅ 완료 |
 | 06 | 배열과 슬라이스 (Array & Slice) | ✅ 완료 |
 | 07 | 맵 (Map) | ✅ 완료 |
-| 08 | 구조체 (Struct) | 🔜 다음 |
-| 09 | 포인터 (Pointer) | ⬜ |
-| 10 | 인터페이스 (Interface) | ⬜ |
-| 11 | Goroutine | ⬜ |
-| 12 | Channel | ⬜ |
+| 08 | 구조체 (Struct) | ✅ 완료 |
+| 09 | 포인터 (Pointer) | ✅ 완료 |
+| 10 | 인터페이스 (Interface) | ✅ 완료 |
+| 11 | Goroutine | ✅ 완료 |
+| 12 | Channel | ✅ 완료 |
+| 13 | Error Handling | ✅ 완료 |
+| 14 | 패키지와 모듈 (Package & Module) | 🔜 다음 |
 
 ## 슬라이드 구조 (8장 고정)
 
@@ -125,10 +127,17 @@ go-insta-content/
 │   ├── ep05.json          ← 함수 (Function)
 │   ├── ep06.json          ← 배열과 슬라이스 (Array & Slice)
 │   ├── ep07.json          ← 맵 (Map)
-│   └── ep08.json          ← 구조체 (Struct)
+│   ├── ep08.json          ← 구조체 (Struct)
+│   ├── ep09.json          ← 포인터 (Pointer)
+│   ├── ep10.json          ← 인터페이스 (Interface)
+│   ├── ep11.json          ← 고루틴 (Goroutine)
+│   ├── ep12.json          ← 채널 (Channel)
+│   └── ep13.json          ← 에러 처리 (Error Handling)
+├── .env                   ← API 키 (UPLOAD_POST_API_KEY 등)
+├── .venv/                 ← Python 가상환경 (pip3 설치용)
 ├── output/
-│   ├── ep01/ ~ ep07/     ← 에피소드별 slide_01~08.png
-│   └── ep08/
+│   ├── ep01/ ~ ep13/     ← 에피소드별 slide_01~08.png
+│   └── ep13/
 │       ├── slide_01.png
 │       ├── ...
 │       └── slide_08.png
@@ -140,21 +149,51 @@ go-insta-content/
 
 ## 작업 명령어
 
+> **주의**: macOS 환경에서 `python` 명령이 없을 수 있음. 반드시 `python3`을 사용할 것.
+
+### 환경 설정
+- **Python 가상환경**: `.venv/` 디렉토리에 venv가 존재함. macOS의 externally-managed-environment 제한으로 시스템 pip 사용 불가.
+- **패키지 설치**: 반드시 venv를 활성화한 후 설치할 것.
+- **환경변수**: `.env` 파일에 `UPLOAD_POST_API_KEY` 등 API 키가 저장되어 있음. 스크립트 실행 전 `source .env` 필요.
+
+```bash
+# venv 활성화 + .env 로드
+source .venv/bin/activate && source .env
+
+# 패키지 설치 (venv 활성화 후)
+pip3 install <패키지명>
+```
+
 ### 에피소드 전체 생성
 ```bash
 # 1. 콘텐츠 JSON 작성
 # 2. HTML 생성
-python scripts/generate_html.py --ep 08
+python3 scripts/generate_html.py --ep 08
 # 3. PNG 이미지 변환
-python scripts/export_images.py --ep 08
+python3 scripts/export_images.py --ep 08
 ```
 
 ### 개별 단계 실행
 ```bash
 # HTML만 미리보기
-python scripts/generate_html.py --ep 08 --preview
+python3 scripts/generate_html.py --ep 08 --preview
 # 특정 슬라이드만 재생성
-python scripts/export_images.py --ep 08 --slide 3
+python3 scripts/export_images.py --ep 08 --slide 3
+```
+
+### 인스타그램 업로드
+```bash
+# venv + .env 필수
+source .venv/bin/activate && source .env
+
+# dry-run (파라미터 확인만)
+python3 scripts/upload_instagram.py --ep 12 --auto-caption --dry-run
+
+# 실제 업로드
+python3 scripts/upload_instagram.py --ep 12 --auto-caption
+
+# 업로드 상태 확인
+python3 scripts/upload_instagram.py --status <request_id>
 ```
 
 ## 콘텐츠 작성 원칙
