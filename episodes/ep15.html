@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1080">
+  <title>EP.15 JSON 처리 (JSON)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  padding: 40px;
+}
+
+/* 슬라이드 컨테이너 */
+.slide {
+  width: 1080px;
+  height: 1350px;
+  position: relative;
+  overflow: hidden;
+  font-family: 'Noto Sans KR', sans-serif;
+  color: #e0e0e0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 배경 그라데이션 */
+.slide-thumbnail { background: linear-gradient(135deg, #0f0f23 0%, #0a3d5c 40%, #00ADD8 100%); }
+.slide-concept   { background: linear-gradient(160deg, #0f0f23 0%, #1a1a3e 40%, #0d1b2a 100%); }
+.slide-code      { background: linear-gradient(160deg, #0d1117 0%, #161b22 50%, #0d1117 100%); }
+.slide-summary   { background: linear-gradient(160deg, #1a0a2e 0%, #16213e 50%, #0a1628 100%); }
+
+/* 장식 원 */
+.slide::before, .slide::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.06;
+  pointer-events: none;
+}
+.slide::before { width: 500px; height: 500px; background: #667eea; top: -150px; right: -100px; }
+.slide::after  { width: 350px; height: 350px; background: #f093fb; bottom: -100px; left: -80px; }
+
+/* 상단 바 */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 40px 60px 20px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+.series-tag { font-size: 26px; font-weight: 700; color: #00ADD8; }
+.ep-num     { font-size: 26px; font-weight: 700; color: rgba(255,255,255,0.4); }
+
+/* 타이포그래피 */
+.slide-title    { font-size: 48px; font-weight: 900; color: #fff; line-height: 1.3; margin-bottom: 24px; }
+.slide-subtitle { font-size: 32px; font-weight: 700; color: #00ADD8; margin-bottom: 20px; }
+.body-text      { font-size: 30px; font-weight: 400; color: #e0e0e0; line-height: 1.6; }
+.muted-text     { font-size: 26px; color: rgba(255,255,255,0.5); margin-bottom: 12px; }
+
+/* 코드 블록 */
+.code-block {
+  background: #0d1117;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 32px;
+  margin: 20px 0;
+  position: relative;
+  z-index: 1;
+  flex: 1;
+}
+.code-block pre {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 26px;
+  line-height: 1.7;
+  color: #e6edf3;
+  white-space: pre;
+  overflow: hidden;
+}
+
+/* 코드 구문 색상 */
+.kw  { color: #ff7b72; }
+.str { color: #a5d6ff; }
+.num { color: #79c0ff; }
+.cm  { color: #8b949e; }
+.tp  { color: #7ee787; }
+.fn  { color: #d2a8ff; }
+.op  { color: #ffa657; }
+
+/* 노트 박스 */
+.note-box {
+  background: rgba(0, 173, 216, 0.1);
+  border-left: 4px solid #00ADD8;
+  border-radius: 0 12px 12px 0;
+  padding: 20px 28px;
+  margin-top: auto;
+  position: relative;
+  z-index: 1;
+}
+.note-box p { font-size: 26px; color: #e0e0e0; line-height: 1.5; }
+
+/* === 썸네일 === */
+.thumb-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 80px 60px;
+  position: relative;
+  z-index: 1;
+}
+.thumb-series  { font-size: 36px; font-weight: 700; color: rgba(255,255,255,0.9); }
+.thumb-sub     { font-size: 48px; font-weight: 900; color: #fff; margin-top: 8px; }
+.thumb-divider { width: 80px; height: 4px; background: rgba(255,255,255,0.5); margin: 40px 0; border-radius: 2px; }
+.thumb-ep      { font-size: 64px; font-weight: 900; color: #fff; }
+.thumb-topic   { font-size: 56px; font-weight: 900; color: #fff; margin-top: 16px; }
+.thumb-hook    { font-size: 32px; color: rgba(255,255,255,0.8); margin-top: 32px; }
+.thumb-tags    { text-align: center; padding: 40px; font-size: 24px; color: rgba(255,255,255,0.4); position: relative; z-index: 1; }
+
+/* === 컨셉 === */
+.concept-body     { flex: 1; padding: 20px 60px 40px; display: flex; flex-direction: column; gap: 28px; position: relative; z-index: 1; }
+.concept-explain  { }
+.concept-compare  { background: rgba(255,255,255,0.04); border-radius: 16px; padding: 24px 28px; }
+.concept-features { background: rgba(0,173,216,0.08); border-radius: 16px; padding: 24px 28px; }
+
+/* === 코드 바디 === */
+.code-body { flex: 1; padding: 10px 60px 40px; display: flex; flex-direction: column; position: relative; z-index: 1; }
+
+/* === 요약 === */
+.summary-body   { flex: 1; padding: 20px 60px 40px; display: flex; flex-direction: column; gap: 24px; position: relative; z-index: 1; }
+.summary-points,
+.summary-tips   { background: rgba(255,255,255,0.04); border-radius: 16px; padding: 24px 28px; }
+.summary-next   { text-align: center; padding: 20px; background: rgba(0,173,216,0.08); border-radius: 16px; }
+.summary-cta    { text-align: center; padding: 24px; font-size: 28px; color: rgba(255,255,255,0.6); position: relative; z-index: 1; }
+
+  </style>
+</head>
+<body>
+
+<div class="slide slide-thumbnail" id="slide-1">
+  <div class="thumb-content">
+    <p class="thumb-series">Go 기초 문법</p>
+    <p class="thumb-sub">1분 정리 ⚡</p>
+    <div class="thumb-divider"></div>
+    <p class="thumb-ep">EP.15</p>
+    <h1 class="thumb-topic">JSON 처리 (JSON)</h1>
+    <p class="thumb-hook">Go에서 JSON, 구조체 하나면 끝! 🔄</p>
+  </div>
+  <div class="thumb-tags">#Golang #개발 #프로그래밍</div>
+</div>
+
+<div class="slide slide-concept" id="slide-2">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.15</span>
+  </div>
+  <div class="concept-body">
+    <h2 class="slide-title">JSON 처리란? 🤔</h2>
+    <div class="concept-explain">
+      <p class="body-text">encoding/json 패키지로 처리! 📦</p>
+      <p class="body-text">Marshal = 구조체 → JSON 변환 ➡️</p>
+      <p class="body-text">Unmarshal = JSON → 구조체 변환 ⬅️</p>
+      <p class="body-text">구조체 태그로 필드명 매핑! 🏷️</p>
+    </div>
+    <div class="concept-compare">
+      <p class="muted-text">다른 언어와 비교</p>
+      <p class="body-text">→ Python: json.dumps / json.loads</p>
+      <p class="body-text">→ JS: JSON.stringify / JSON.parse</p>
+      <p class="body-text">→ Java: Jackson, Gson 라이브러리</p>
+      <p class="body-text">→ Go: 표준 라이브러리 내장! ⚡</p>
+    </div>
+    <div class="concept-features">
+      <p class="slide-subtitle">Go JSON 핵심 특징</p>
+      <p class="body-text">→ 구조체 태그 `json:&quot;name&quot;` 매핑 ✅</p>
+      <p class="body-text">→ Marshal/Unmarshal 한 쌍이면 끝 🔧</p>
+      <p class="body-text">→ omitempty로 빈 값 자동 제외 🎯</p>
+      <p class="body-text">→ 중첩 구조체도 자동 처리! 📦</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-code" id="slide-3">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.15</span>
+  </div>
+  <div class="code-body">
+    <h2 class="slide-subtitle">구조체 → JSON (Marshal)</h2>
+    <div class="code-block">
+      <pre><span class="kw">type</span> <span class="tp">User</span> <span class="kw">struct</span> {
+    Name  <span class="tp">string</span> <span class="str">`json:&quot;name&quot;`</span>
+    Email <span class="tp">string</span> <span class="str">`json:&quot;email&quot;`</span>
+    Age   <span class="tp">int</span>    <span class="str">`json:&quot;age&quot;`</span>
+}
+
+<span class="kw">func</span> <span class="fn">main</span>() {
+    user <span class="op">:=</span> <span class="tp">User</span>{
+        Name: <span class="str">&quot;고퍼&quot;</span>, Email: <span class="str">&quot;go@go.dev&quot;</span>,
+        Age: <span class="num">10</span>,
+    }
+<span class="cm">    // 구조체 → JSON 바이트</span>
+    data, err <span class="op">:=</span> json.<span class="fn">Marshal</span>(user)
+    <span class="kw">if</span> err <span class="op">!=</span> <span class="kw">nil</span> { log.<span class="fn">Fatal</span>(err) }
+    fmt.<span class="fn">Println</span>(<span class="tp">string</span>(data))
+<span class="cm">    // {&quot;name&quot;:&quot;고퍼&quot;,&quot;email&quot;:&quot;go@go.dev&quot;,&quot;age&quot;:10}</span></pre>
+    </div>
+    <div class="note-box">
+      <p>⭐ json.Marshal = Go 객체를 JSON으로 변환!</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-code" id="slide-4">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.15</span>
+  </div>
+  <div class="code-body">
+    <h2 class="slide-subtitle">JSON → 구조체 (Unmarshal)</h2>
+    <div class="code-block">
+      <pre>jsonStr <span class="op">:=</span> <span class="str">`{</span>
+    <span class="str">&quot;name&quot;</span>: <span class="str">&quot;고퍼&quot;</span>,
+    <span class="str">&quot;email&quot;</span>: <span class="str">&quot;go@go.dev&quot;</span>,
+    <span class="str">&quot;age&quot;</span>: <span class="num">10</span>
+}<span class="str">`</span>
+
+<span class="kw">var</span> user <span class="tp">User</span>
+err <span class="op">:=</span> json.<span class="fn">Unmarshal</span>(
+    []<span class="tp">byte</span>(jsonStr), <span class="op">&amp;</span>user,
+)
+<span class="kw">if</span> err <span class="op">!=</span> <span class="kw">nil</span> {
+    log.<span class="fn">Fatal</span>(err)
+}
+fmt.<span class="fn">Println</span>(user.Name)  <span class="cm">// 고퍼</span>
+fmt.<span class="fn">Println</span>(user.Email) <span class="cm">// go@go.dev</span>
+fmt.<span class="fn">Println</span>(user.Age)   <span class="cm">// 10</span></pre>
+    </div>
+    <div class="note-box">
+      <p>💡 Unmarshal 두 번째 인자는 반드시 포인터(&amp;)!</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-code" id="slide-5">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.15</span>
+  </div>
+  <div class="code-body">
+    <h2 class="slide-subtitle">구조체 태그 활용</h2>
+    <div class="code-block">
+      <pre><span class="kw">type</span> <span class="tp">Product</span> <span class="kw">struct</span> {
+    ID    <span class="tp">int</span>    <span class="str">`json:&quot;id&quot;`</span>
+    Name  <span class="tp">string</span> <span class="str">`json:&quot;name&quot;`</span>
+<span class="cm">    // omitempty: 빈 값이면 JSON에서 제외</span>
+    Desc  <span class="tp">string</span> <span class="str">`json:&quot;desc,omitempty&quot;`</span>
+<span class="cm">    // -: JSON 변환에서 완전 제외</span>
+    Secret <span class="tp">string</span> <span class="str">`json:&quot;-&quot;`</span>
+}
+p <span class="op">:=</span> <span class="tp">Product</span>{ID: <span class="num">1</span>, Name: <span class="str">&quot;Go북&quot;</span>}
+data, _ <span class="op">:=</span> json.<span class="fn">Marshal</span>(p)
+fmt.<span class="fn">Println</span>(<span class="tp">string</span>(data))
+<span class="cm">// {&quot;id&quot;:1,&quot;name&quot;:&quot;Go북&quot;}</span>
+<span class="cm">// desc 빈값 → 생략됨!</span>
+<span class="cm">// Secret → 완전 제외!</span></pre>
+    </div>
+    <div class="note-box">
+      <p>⭐ omitempty = 빈 값 생략, &quot;-&quot; = 완전 제외!</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-code" id="slide-6">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.15</span>
+  </div>
+  <div class="code-body">
+    <h2 class="slide-subtitle">중첩 구조체 JSON</h2>
+    <div class="code-block">
+      <pre><span class="kw">type</span> <span class="tp">Address</span> <span class="kw">struct</span> {
+    City <span class="tp">string</span> <span class="str">`json:&quot;city&quot;`</span>
+    Zip  <span class="tp">string</span> <span class="str">`json:&quot;zip&quot;`</span>
+}
+<span class="kw">type</span> <span class="tp">Person</span> <span class="kw">struct</span> {
+    Name    <span class="tp">string</span>  <span class="str">`json:&quot;name&quot;`</span>
+    <span class="tp">Address</span> <span class="tp">Address</span> <span class="str">`json:&quot;address&quot;`</span>
+}
+p <span class="op">:=</span> <span class="tp">Person</span>{
+    Name: <span class="str">&quot;고퍼&quot;</span>,
+    <span class="tp">Address</span>: <span class="tp">Address</span>{
+        City: <span class="str">&quot;서울&quot;</span>, Zip: <span class="str">&quot;06000&quot;</span>,
+    },
+}
+data, _ <span class="op">:=</span> json.<span class="fn">MarshalIndent</span>(
+    p, <span class="str">&quot;&quot;</span>, <span class="str">&quot;  &quot;</span>,
+)
+fmt.<span class="fn">Println</span>(<span class="tp">string</span>(data))</pre>
+    </div>
+    <div class="note-box">
+      <p>💡 MarshalIndent = 예쁘게 들여쓰기된 JSON!</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-code" id="slide-7">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.15</span>
+  </div>
+  <div class="code-body">
+    <h2 class="slide-subtitle">map과 동적 JSON 처리</h2>
+    <div class="code-block">
+      <pre><span class="cm">// 구조체 없이 map으로 처리</span>
+jsonStr <span class="op">:=</span> <span class="str">`{&quot;name&quot;:&quot;Go&quot;,&quot;ver&quot;:1.21}`</span>
+
+<span class="kw">var</span> m <span class="kw">map</span>[<span class="tp">string</span>]<span class="tp">any</span>
+json.<span class="fn">Unmarshal</span>(
+    []<span class="tp">byte</span>(jsonStr), <span class="op">&amp;</span>m,
+)
+fmt.<span class="fn">Println</span>(m[<span class="str">&quot;name&quot;</span>]) <span class="cm">// Go</span>
+
+<span class="cm">// map → JSON</span>
+data <span class="op">:=</span> <span class="kw">map</span>[<span class="tp">string</span>]<span class="tp">any</span>{
+    <span class="str">&quot;status&quot;</span>: <span class="str">&quot;ok&quot;</span>,
+    <span class="str">&quot;count&quot;</span>:  <span class="num">42</span>,
+}
+result, _ <span class="op">:=</span> json.<span class="fn">Marshal</span>(data)
+fmt.<span class="fn">Println</span>(<span class="tp">string</span>(result))
+<span class="cm">// {&quot;count&quot;:42,&quot;status&quot;:&quot;ok&quot;}</span></pre>
+    </div>
+    <div class="note-box">
+      <p>💡 구조 모를 때 map[string]any 활용!</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-code" id="slide-8">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.15</span>
+  </div>
+  <div class="code-body">
+    <h2 class="slide-subtitle">실전: API 응답 파싱 패턴</h2>
+    <div class="code-block">
+      <pre><span class="cm">// API 공통 응답 구조</span>
+<span class="kw">type</span> <span class="tp">ApiResponse</span> <span class="kw">struct</span> {
+    Code <span class="tp">int</span>         <span class="str">`json:&quot;code&quot;`</span>
+    Msg  <span class="tp">string</span>      <span class="str">`json:&quot;msg&quot;`</span>
+    Data json.RawMessage <span class="str">`json:&quot;data&quot;`</span>
+}
+<span class="kw">type</span> <span class="tp">UserData</span> <span class="kw">struct</span> {
+    ID   <span class="tp">int</span>    <span class="str">`json:&quot;id&quot;`</span>
+    Name <span class="tp">string</span> <span class="str">`json:&quot;name&quot;`</span>
+}
+<span class="cm">// 2단계 파싱 패턴</span>
+<span class="kw">var</span> resp <span class="tp">ApiResponse</span>
+json.<span class="fn">Unmarshal</span>(body, <span class="op">&amp;</span>resp)
+<span class="kw">if</span> resp.Code <span class="op">==</span> <span class="num">200</span> {
+    <span class="kw">var</span> user <span class="tp">UserData</span>
+    json.<span class="fn">Unmarshal</span>(resp.Data, <span class="op">&amp;</span>user)
+}</pre>
+    </div>
+    <div class="note-box">
+      <p>⭐ json.RawMessage로 지연 파싱 = 실무 필수!</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-summary" id="slide-8">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.15</span>
+  </div>
+  <div class="summary-body">
+    <h2 class="slide-subtitle">📌 핵심 정리</h2>
+    <div class="summary-points">
+      <p class="body-text">✅ json.Marshal = 구조체 → JSON</p>
+      <p class="body-text">✅ json.Unmarshal = JSON → 구조체</p>
+      <p class="body-text">✅ 구조체 태그로 필드명 매핑</p>
+      <p class="body-text">✅ omitempty로 빈 값 자동 제외</p>
+      <p class="body-text">✅ json.RawMessage로 지연 파싱</p>
+    </div>
+    <div class="summary-tips">
+      <h3 class="slide-subtitle">💡 Go만의 꿀팁</h3>
+      <p class="body-text">💡 Unmarshal에는 반드시 포인터(&amp;)를 넘겨라</p>
+      <p class="body-text">💡 MarshalIndent로 디버깅용 출력</p>
+      <p class="body-text">💡 구조 모를 때 map[string]any 활용</p>
+      <p class="body-text">💡 API 응답은 공통 래퍼 + RawMessage</p>
+    </div>
+    <div class="summary-next">
+      <p class="body-text">다음 편: EP.16 테스트 (Testing) 👉</p>
+    </div>
+    <div class="summary-cta">
+      <p>💾 저장 | ❤️ 좋아요 | 👤 팔로우</p>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

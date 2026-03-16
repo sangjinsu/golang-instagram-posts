@@ -1,0 +1,130 @@
+{
+  "episode": 14,
+  "title": "패키지와 모듈",
+  "title_en": "Package & Module",
+  "difficulty": "★★☆",
+  "hook": "코드를 정리하는 Go만의 방법! 📦",
+  "next_ep": {
+    "number": 15,
+    "title": "JSON 처리"
+  },
+  "slides": [
+    {
+      "slide_number": 1,
+      "type": "thumbnail",
+      "content": {
+        "series_name": "Go 기초 문법",
+        "series_sub": "1분 정리 ⚡",
+        "ep_label": "EP.14",
+        "topic": "패키지와 모듈 (Package & Module)",
+        "hook": "코드를 정리하는 Go만의 방법! 📦"
+      }
+    },
+    {
+      "slide_number": 2,
+      "type": "concept",
+      "content": {
+        "question": "패키지와 모듈이란? 🤔",
+        "explanation": [
+          "패키지 = 관련 코드를 묶는 폴더 📂",
+          "모듈 = 패키지들의 묶음 + 버전 관리 📦",
+          "go.mod 파일이 모듈의 시작점! ⭐",
+          "대문자 = 공개, 소문자 = 비공개 🔒"
+        ],
+        "comparison": {
+          "label": "다른 언어와 비교",
+          "items": [
+            "Python: import 모듈 / pip install",
+            "Node.js: require/import / npm install",
+            "Java: package + Maven/Gradle",
+            "Go: package + go mod (내장!) ⚡"
+          ]
+        },
+        "features": {
+          "label": "Go 패키지 핵심 특징",
+          "items": [
+            "폴더 = 패키지, 파일명 무관 ✅",
+            "go mod init으로 모듈 생성 🔧",
+            "go get으로 외부 패키지 설치 📥",
+            "대소문자로 가시성 제어 (심플!) 🎯"
+          ]
+        }
+      }
+    },
+    {
+      "slide_number": 3,
+      "type": "code",
+      "content": {
+        "title": "패키지 선언과 import",
+        "code": "// 모든 Go 파일은 패키지 선언 필수!\npackage main\n\nimport (\n    \"fmt\"      // 표준 라이브러리\n    \"strings\"  // 문자열 처리\n    \"time\"     // 시간 관련\n)\n\nfunc main() {\n    fmt.Println(\"Hello, Go!\")\n    fmt.Println(strings.ToUpper(\"go\"))\n    fmt.Println(time.Now())\n}",
+        "note": "⭐ import 그룹핑: 표준 / 외부 / 내부 순서!"
+      }
+    },
+    {
+      "slide_number": 4,
+      "type": "code",
+      "content": {
+        "title": "go mod init & go.mod",
+        "code": "// 터미널에서 모듈 초기화\n// $ go mod init github.com/user/app\n\n// go.mod 파일 (자동 생성)\nmodule github.com/user/app\n\ngo 1.21\n\nrequire (\n    github.com/gin-gonic/gin v1.9.1\n)\n\n// 의존성 설치\n// $ go get github.com/gin-gonic/gin\n// $ go mod tidy  // 정리!",
+        "note": "💡 go mod tidy = 안 쓰는 의존성 자동 정리!"
+      }
+    },
+    {
+      "slide_number": 5,
+      "type": "code",
+      "content": {
+        "title": "가시성: 대문자 vs 소문자",
+        "code": "package user\n\n// 대문자 = 외부 공개 (exported) ✅\ntype User struct {\n    Name  string // 공개\n    Email string // 공개\n    age   int    // 비공개!\n}\n\n// 공개 함수\nfunc NewUser(name string) *User {\n    return &User{Name: name, age: 0}\n}\n\n// 비공개 함수 (패키지 내부용)\nfunc validate(email string) bool {\n    return len(email) > 0\n}",
+        "note": "⭐ Go의 가시성 = 첫 글자 대소문자가 전부!"
+      }
+    },
+    {
+      "slide_number": 6,
+      "type": "code",
+      "content": {
+        "title": "사용자 정의 패키지 만들기",
+        "code": "// 프로젝트 구조\n// myapp/\n//   go.mod\n//   main.go\n//   calc/\n//     math.go\n\n// calc/math.go\npackage calc\n\nfunc Add(a, b int) int { return a+b }\nfunc Mul(a, b int) int { return a*b }\n\n// main.go\npackage main\nimport \"myapp/calc\"\nfunc main() {\n    fmt.Println(calc.Add(3, 5)) // 8\n}",
+        "note": "💡 폴더명 = 패키지명으로 맞추는 게 관례!"
+      }
+    },
+    {
+      "slide_number": 7,
+      "type": "code",
+      "content": {
+        "title": "init() 함수와 별칭 import",
+        "code": "package config\n\nvar Settings map[string]string\n\n// init: 패키지 로드 시 자동 실행!\nfunc init() {\n    Settings = map[string]string{\n        \"env\": \"production\",\n    }\n    fmt.Println(\"설정 초기화 완료!\")\n}\n\n// 별칭 import 활용\nimport (\n    f \"fmt\"          // 별칭\n    _ \"image/png\"    // 부작용만\n    . \"strings\"      // 직접 접근\n)\nf.Println(ToUpper(\"go\"))",
+        "note": "⚠️ init()은 테스트 어렵게 만드니 최소한만!"
+      }
+    },
+    {
+      "slide_number": 8,
+      "type": "code",
+      "content": {
+        "title": "실전: 프로젝트 구조 패턴",
+        "code": "// 실무 프로젝트 구조 예시\n// myapi/\n//   cmd/\n//     server/main.go  // 진입점\n//   internal/         // 외부 사용 금지\n//     handler/\n//     service/\n//     repository/\n//   pkg/              // 외부 사용 가능\n//     util/\n//   go.mod\n//   go.sum\n\n// internal/ = Go가 강제하는 접근 제한!\n// 다른 모듈에서 import 불가능 🔒",
+        "note": "⭐ internal/ 폴더 = 컴파일러가 접근 차단!"
+      }
+    },
+    {
+      "slide_number": 9,
+      "type": "summary",
+      "content": {
+        "points": [
+          "✅ package 선언으로 코드 그룹핑",
+          "✅ go mod init으로 모듈 생성",
+          "✅ 대문자 = 공개, 소문자 = 비공개",
+          "✅ go get으로 외부 패키지 설치",
+          "✅ internal/ 폴더로 접근 제한"
+        ],
+        "tips": [
+          "💡 폴더명과 패키지명을 일치시켜라",
+          "💡 go mod tidy로 의존성 정리",
+          "💡 init()은 꼭 필요할 때만 사용",
+          "💡 cmd/internal/pkg 구조를 따라라"
+        ],
+        "next_preview": "다음 편: EP.15 JSON 처리 👉",
+        "cta": "💾 저장 | ❤️ 좋아요 | 👤 팔로우"
+      }
+    }
+  ]
+}

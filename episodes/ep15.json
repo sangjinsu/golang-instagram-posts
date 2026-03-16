@@ -1,0 +1,130 @@
+{
+  "episode": 15,
+  "title": "JSON 처리",
+  "title_en": "JSON",
+  "difficulty": "★★☆",
+  "hook": "Go에서 JSON, 구조체 하나면 끝! 🔄",
+  "next_ep": {
+    "number": 16,
+    "title": "테스트 (Testing)"
+  },
+  "slides": [
+    {
+      "slide_number": 1,
+      "type": "thumbnail",
+      "content": {
+        "series_name": "Go 기초 문법",
+        "series_sub": "1분 정리 ⚡",
+        "ep_label": "EP.15",
+        "topic": "JSON 처리 (JSON)",
+        "hook": "Go에서 JSON, 구조체 하나면 끝! 🔄"
+      }
+    },
+    {
+      "slide_number": 2,
+      "type": "concept",
+      "content": {
+        "question": "JSON 처리란? 🤔",
+        "explanation": [
+          "encoding/json 패키지로 처리! 📦",
+          "Marshal = 구조체 → JSON 변환 ➡️",
+          "Unmarshal = JSON → 구조체 변환 ⬅️",
+          "구조체 태그로 필드명 매핑! 🏷️"
+        ],
+        "comparison": {
+          "label": "다른 언어와 비교",
+          "items": [
+            "Python: json.dumps / json.loads",
+            "JS: JSON.stringify / JSON.parse",
+            "Java: Jackson, Gson 라이브러리",
+            "Go: 표준 라이브러리 내장! ⚡"
+          ]
+        },
+        "features": {
+          "label": "Go JSON 핵심 특징",
+          "items": [
+            "구조체 태그 `json:\"name\"` 매핑 ✅",
+            "Marshal/Unmarshal 한 쌍이면 끝 🔧",
+            "omitempty로 빈 값 자동 제외 🎯",
+            "중첩 구조체도 자동 처리! 📦"
+          ]
+        }
+      }
+    },
+    {
+      "slide_number": 3,
+      "type": "code",
+      "content": {
+        "title": "구조체 → JSON (Marshal)",
+        "code": "type User struct {\n    Name  string `json:\"name\"`\n    Email string `json:\"email\"`\n    Age   int    `json:\"age\"`\n}\n\nfunc main() {\n    user := User{\n        Name: \"고퍼\", Email: \"go@go.dev\",\n        Age: 10,\n    }\n    // 구조체 → JSON 바이트\n    data, err := json.Marshal(user)\n    if err != nil { log.Fatal(err) }\n    fmt.Println(string(data))\n    // {\"name\":\"고퍼\",\"email\":\"go@go.dev\",\"age\":10}",
+        "note": "⭐ json.Marshal = Go 객체를 JSON으로 변환!"
+      }
+    },
+    {
+      "slide_number": 4,
+      "type": "code",
+      "content": {
+        "title": "JSON → 구조체 (Unmarshal)",
+        "code": "jsonStr := `{\n    \"name\": \"고퍼\",\n    \"email\": \"go@go.dev\",\n    \"age\": 10\n}`\n\nvar user User\nerr := json.Unmarshal(\n    []byte(jsonStr), &user,\n)\nif err != nil {\n    log.Fatal(err)\n}\nfmt.Println(user.Name)  // 고퍼\nfmt.Println(user.Email) // go@go.dev\nfmt.Println(user.Age)   // 10",
+        "note": "💡 Unmarshal 두 번째 인자는 반드시 포인터(&)!"
+      }
+    },
+    {
+      "slide_number": 5,
+      "type": "code",
+      "content": {
+        "title": "구조체 태그 활용",
+        "code": "type Product struct {\n    ID    int    `json:\"id\"`\n    Name  string `json:\"name\"`\n    // omitempty: 빈 값이면 JSON에서 제외\n    Desc  string `json:\"desc,omitempty\"`\n    // -: JSON 변환에서 완전 제외\n    Secret string `json:\"-\"`\n}\np := Product{ID: 1, Name: \"Go북\"}\ndata, _ := json.Marshal(p)\nfmt.Println(string(data))\n// {\"id\":1,\"name\":\"Go북\"}\n// desc 빈값 → 생략됨!\n// Secret → 완전 제외!",
+        "note": "⭐ omitempty = 빈 값 생략, \"-\" = 완전 제외!"
+      }
+    },
+    {
+      "slide_number": 6,
+      "type": "code",
+      "content": {
+        "title": "중첩 구조체 JSON",
+        "code": "type Address struct {\n    City string `json:\"city\"`\n    Zip  string `json:\"zip\"`\n}\ntype Person struct {\n    Name    string  `json:\"name\"`\n    Address Address `json:\"address\"`\n}\np := Person{\n    Name: \"고퍼\",\n    Address: Address{\n        City: \"서울\", Zip: \"06000\",\n    },\n}\ndata, _ := json.MarshalIndent(\n    p, \"\", \"  \",\n)\nfmt.Println(string(data))",
+        "note": "💡 MarshalIndent = 예쁘게 들여쓰기된 JSON!"
+      }
+    },
+    {
+      "slide_number": 7,
+      "type": "code",
+      "content": {
+        "title": "map과 동적 JSON 처리",
+        "code": "// 구조체 없이 map으로 처리\njsonStr := `{\"name\":\"Go\",\"ver\":1.21}`\n\nvar m map[string]any\njson.Unmarshal(\n    []byte(jsonStr), &m,\n)\nfmt.Println(m[\"name\"]) // Go\n\n// map → JSON\ndata := map[string]any{\n    \"status\": \"ok\",\n    \"count\":  42,\n}\nresult, _ := json.Marshal(data)\nfmt.Println(string(result))\n// {\"count\":42,\"status\":\"ok\"}",
+        "note": "💡 구조 모를 때 map[string]any 활용!"
+      }
+    },
+    {
+      "slide_number": 8,
+      "type": "code",
+      "content": {
+        "title": "실전: API 응답 파싱 패턴",
+        "code": "// API 공통 응답 구조\ntype ApiResponse struct {\n    Code int         `json:\"code\"`\n    Msg  string      `json:\"msg\"`\n    Data json.RawMessage `json:\"data\"`\n}\ntype UserData struct {\n    ID   int    `json:\"id\"`\n    Name string `json:\"name\"`\n}\n// 2단계 파싱 패턴\nvar resp ApiResponse\njson.Unmarshal(body, &resp)\nif resp.Code == 200 {\n    var user UserData\n    json.Unmarshal(resp.Data, &user)\n}",
+        "note": "⭐ json.RawMessage로 지연 파싱 = 실무 필수!"
+      }
+    },
+    {
+      "slide_number": 9,
+      "type": "summary",
+      "content": {
+        "points": [
+          "✅ json.Marshal = 구조체 → JSON",
+          "✅ json.Unmarshal = JSON → 구조체",
+          "✅ 구조체 태그로 필드명 매핑",
+          "✅ omitempty로 빈 값 자동 제외",
+          "✅ json.RawMessage로 지연 파싱"
+        ],
+        "tips": [
+          "💡 Unmarshal에는 반드시 포인터(&)를 넘겨라",
+          "💡 MarshalIndent로 디버깅용 출력",
+          "💡 구조 모를 때 map[string]any 활용",
+          "💡 API 응답은 공통 래퍼 + RawMessage"
+        ],
+        "next_preview": "다음 편: EP.16 테스트 (Testing) 👉",
+        "cta": "💾 저장 | ❤️ 좋아요 | 👤 팔로우"
+      }
+    }
+  ]
+}

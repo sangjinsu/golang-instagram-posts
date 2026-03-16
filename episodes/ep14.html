@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1080">
+  <title>EP.14 패키지와 모듈 (Package & Module)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  padding: 40px;
+}
+
+/* 슬라이드 컨테이너 */
+.slide {
+  width: 1080px;
+  height: 1350px;
+  position: relative;
+  overflow: hidden;
+  font-family: 'Noto Sans KR', sans-serif;
+  color: #e0e0e0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 배경 그라데이션 */
+.slide-thumbnail { background: linear-gradient(135deg, #0f0f23 0%, #0a3d5c 40%, #00ADD8 100%); }
+.slide-concept   { background: linear-gradient(160deg, #0f0f23 0%, #1a1a3e 40%, #0d1b2a 100%); }
+.slide-code      { background: linear-gradient(160deg, #0d1117 0%, #161b22 50%, #0d1117 100%); }
+.slide-summary   { background: linear-gradient(160deg, #1a0a2e 0%, #16213e 50%, #0a1628 100%); }
+
+/* 장식 원 */
+.slide::before, .slide::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.06;
+  pointer-events: none;
+}
+.slide::before { width: 500px; height: 500px; background: #667eea; top: -150px; right: -100px; }
+.slide::after  { width: 350px; height: 350px; background: #f093fb; bottom: -100px; left: -80px; }
+
+/* 상단 바 */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 40px 60px 20px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+.series-tag { font-size: 26px; font-weight: 700; color: #00ADD8; }
+.ep-num     { font-size: 26px; font-weight: 700; color: rgba(255,255,255,0.4); }
+
+/* 타이포그래피 */
+.slide-title    { font-size: 48px; font-weight: 900; color: #fff; line-height: 1.3; margin-bottom: 24px; }
+.slide-subtitle { font-size: 32px; font-weight: 700; color: #00ADD8; margin-bottom: 20px; }
+.body-text      { font-size: 30px; font-weight: 400; color: #e0e0e0; line-height: 1.6; }
+.muted-text     { font-size: 26px; color: rgba(255,255,255,0.5); margin-bottom: 12px; }
+
+/* 코드 블록 */
+.code-block {
+  background: #0d1117;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 32px;
+  margin: 20px 0;
+  position: relative;
+  z-index: 1;
+  flex: 1;
+}
+.code-block pre {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 26px;
+  line-height: 1.7;
+  color: #e6edf3;
+  white-space: pre;
+  overflow: hidden;
+}
+
+/* 코드 구문 색상 */
+.kw  { color: #ff7b72; }
+.str { color: #a5d6ff; }
+.num { color: #79c0ff; }
+.cm  { color: #8b949e; }
+.tp  { color: #7ee787; }
+.fn  { color: #d2a8ff; }
+.op  { color: #ffa657; }
+
+/* 노트 박스 */
+.note-box {
+  background: rgba(0, 173, 216, 0.1);
+  border-left: 4px solid #00ADD8;
+  border-radius: 0 12px 12px 0;
+  padding: 20px 28px;
+  margin-top: auto;
+  position: relative;
+  z-index: 1;
+}
+.note-box p { font-size: 26px; color: #e0e0e0; line-height: 1.5; }
+
+/* === 썸네일 === */
+.thumb-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 80px 60px;
+  position: relative;
+  z-index: 1;
+}
+.thumb-series  { font-size: 36px; font-weight: 700; color: rgba(255,255,255,0.9); }
+.thumb-sub     { font-size: 48px; font-weight: 900; color: #fff; margin-top: 8px; }
+.thumb-divider { width: 80px; height: 4px; background: rgba(255,255,255,0.5); margin: 40px 0; border-radius: 2px; }
+.thumb-ep      { font-size: 64px; font-weight: 900; color: #fff; }
+.thumb-topic   { font-size: 56px; font-weight: 900; color: #fff; margin-top: 16px; }
+.thumb-hook    { font-size: 32px; color: rgba(255,255,255,0.8); margin-top: 32px; }
+.thumb-tags    { text-align: center; padding: 40px; font-size: 24px; color: rgba(255,255,255,0.4); position: relative; z-index: 1; }
+
+/* === 컨셉 === */
+.concept-body     { flex: 1; padding: 20px 60px 40px; display: flex; flex-direction: column; gap: 28px; position: relative; z-index: 1; }
+.concept-explain  { }
+.concept-compare  { background: rgba(255,255,255,0.04); border-radius: 16px; padding: 24px 28px; }
+.concept-features { background: rgba(0,173,216,0.08); border-radius: 16px; padding: 24px 28px; }
+
+/* === 코드 바디 === */
+.code-body { flex: 1; padding: 10px 60px 40px; display: flex; flex-direction: column; position: relative; z-index: 1; }
+
+/* === 요약 === */
+.summary-body   { flex: 1; padding: 20px 60px 40px; display: flex; flex-direction: column; gap: 24px; position: relative; z-index: 1; }
+.summary-points,
+.summary-tips   { background: rgba(255,255,255,0.04); border-radius: 16px; padding: 24px 28px; }
+.summary-next   { text-align: center; padding: 20px; background: rgba(0,173,216,0.08); border-radius: 16px; }
+.summary-cta    { text-align: center; padding: 24px; font-size: 28px; color: rgba(255,255,255,0.6); position: relative; z-index: 1; }
+
+  </style>
+</head>
+<body>
+
+<div class="slide slide-thumbnail" id="slide-1">
+  <div class="thumb-content">
+    <p class="thumb-series">Go 기초 문법</p>
+    <p class="thumb-sub">1분 정리 ⚡</p>
+    <div class="thumb-divider"></div>
+    <p class="thumb-ep">EP.14</p>
+    <h1 class="thumb-topic">패키지와 모듈 (Package &amp; Module)</h1>
+    <p class="thumb-hook">코드를 정리하는 Go만의 방법! 📦</p>
+  </div>
+  <div class="thumb-tags">#Golang #개발 #프로그래밍</div>
+</div>
+
+<div class="slide slide-concept" id="slide-2">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.14</span>
+  </div>
+  <div class="concept-body">
+    <h2 class="slide-title">패키지와 모듈이란? 🤔</h2>
+    <div class="concept-explain">
+      <p class="body-text">패키지 = 관련 코드를 묶는 폴더 📂</p>
+      <p class="body-text">모듈 = 패키지들의 묶음 + 버전 관리 📦</p>
+      <p class="body-text">go.mod 파일이 모듈의 시작점! ⭐</p>
+      <p class="body-text">대문자 = 공개, 소문자 = 비공개 🔒</p>
+    </div>
+    <div class="concept-compare">
+      <p class="muted-text">다른 언어와 비교</p>
+      <p class="body-text">→ Python: import 모듈 / pip install</p>
+      <p class="body-text">→ Node.js: require/import / npm install</p>
+      <p class="body-text">→ Java: package + Maven/Gradle</p>
+      <p class="body-text">→ Go: package + go mod (내장!) ⚡</p>
+    </div>
+    <div class="concept-features">
+      <p class="slide-subtitle">Go 패키지 핵심 특징</p>
+      <p class="body-text">→ 폴더 = 패키지, 파일명 무관 ✅</p>
+      <p class="body-text">→ go mod init으로 모듈 생성 🔧</p>
+      <p class="body-text">→ go get으로 외부 패키지 설치 📥</p>
+      <p class="body-text">→ 대소문자로 가시성 제어 (심플!) 🎯</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-code" id="slide-3">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.14</span>
+  </div>
+  <div class="code-body">
+    <h2 class="slide-subtitle">패키지 선언과 import</h2>
+    <div class="code-block">
+      <pre><span class="cm">// 모든 Go 파일은 패키지 선언 필수!</span>
+<span class="kw">package</span> main
+
+<span class="kw">import</span> (
+    <span class="str">&quot;fmt&quot;</span>      <span class="cm">// 표준 라이브러리</span>
+    <span class="str">&quot;strings&quot;</span>  <span class="cm">// 문자열 처리</span>
+    <span class="str">&quot;time&quot;</span>     <span class="cm">// 시간 관련</span>
+)
+
+<span class="kw">func</span> <span class="fn">main</span>() {
+    fmt.<span class="fn">Println</span>(<span class="str">&quot;Hello, Go!&quot;</span>)
+    fmt.<span class="fn">Println</span>(strings.<span class="fn">ToUpper</span>(<span class="str">&quot;go&quot;</span>))
+    fmt.<span class="fn">Println</span>(time.<span class="fn">Now</span>())
+}</pre>
+    </div>
+    <div class="note-box">
+      <p>⭐ import 그룹핑: 표준 / 외부 / 내부 순서!</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-code" id="slide-4">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.14</span>
+  </div>
+  <div class="code-body">
+    <h2 class="slide-subtitle">go mod init &amp; go.mod</h2>
+    <div class="code-block">
+      <pre><span class="cm">// 터미널에서 모듈 초기화</span>
+<span class="cm">// $ go mod init github.com/user/app</span>
+
+<span class="cm">// go.mod 파일 (자동 생성)</span>
+module github.com<span class="op">/</span>user<span class="op">/</span>app
+
+<span class="kw">go</span> <span class="num">1.21</span>
+
+require (
+    github.com<span class="op">/</span>gin<span class="op">-</span>gonic<span class="op">/</span>gin v1.<span class="num">9.1</span>
+)
+
+<span class="cm">// 의존성 설치</span>
+<span class="cm">// $ go get github.com/gin-gonic/gin</span>
+<span class="cm">// $ go mod tidy  // 정리!</span></pre>
+    </div>
+    <div class="note-box">
+      <p>💡 go mod tidy = 안 쓰는 의존성 자동 정리!</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-code" id="slide-5">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.14</span>
+  </div>
+  <div class="code-body">
+    <h2 class="slide-subtitle">가시성: 대문자 vs 소문자</h2>
+    <div class="code-block">
+      <pre><span class="kw">package</span> user
+
+<span class="cm">// 대문자 = 외부 공개 (exported) ✅</span>
+<span class="kw">type</span> <span class="tp">User</span> <span class="kw">struct</span> {
+    Name  <span class="tp">string</span> <span class="cm">// 공개</span>
+    Email <span class="tp">string</span> <span class="cm">// 공개</span>
+    age   <span class="tp">int</span>    <span class="cm">// 비공개!</span>
+}
+
+<span class="cm">// 공개 함수</span>
+<span class="kw">func</span> <span class="fn">NewUser</span>(name <span class="tp">string</span>) <span class="op">*</span><span class="tp">User</span> {
+    <span class="kw">return</span> <span class="op">&amp;</span><span class="tp">User</span>{Name: name, age: <span class="num">0</span>}
+}
+
+<span class="cm">// 비공개 함수 (패키지 내부용)</span>
+<span class="kw">func</span> <span class="fn">validate</span>(email <span class="tp">string</span>) <span class="tp">bool</span> {
+    <span class="kw">return</span> <span class="kw">len</span>(email) <span class="op">&gt;</span> <span class="num">0</span>
+}</pre>
+    </div>
+    <div class="note-box">
+      <p>⭐ Go의 가시성 = 첫 글자 대소문자가 전부!</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-code" id="slide-6">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.14</span>
+  </div>
+  <div class="code-body">
+    <h2 class="slide-subtitle">사용자 정의 패키지 만들기</h2>
+    <div class="code-block">
+      <pre><span class="cm">// 프로젝트 구조</span>
+<span class="cm">// myapp/</span>
+<span class="cm">//   go.mod</span>
+<span class="cm">//   main.go</span>
+<span class="cm">//   calc/</span>
+<span class="cm">//     math.go</span>
+
+<span class="cm">// calc/math.go</span>
+<span class="kw">package</span> calc
+
+<span class="kw">func</span> <span class="fn">Add</span>(a, b <span class="tp">int</span>) <span class="tp">int</span> { <span class="kw">return</span> a<span class="op">+</span>b }
+<span class="kw">func</span> <span class="fn">Mul</span>(a, b <span class="tp">int</span>) <span class="tp">int</span> { <span class="kw">return</span> a<span class="op">*</span>b }
+
+<span class="cm">// main.go</span>
+<span class="kw">package</span> main
+<span class="kw">import</span> <span class="str">&quot;myapp/calc&quot;</span>
+<span class="kw">func</span> <span class="fn">main</span>() {
+    fmt.<span class="fn">Println</span>(calc.<span class="fn">Add</span>(<span class="num">3</span>, <span class="num">5</span>)) <span class="cm">// 8</span>
+}</pre>
+    </div>
+    <div class="note-box">
+      <p>💡 폴더명 = 패키지명으로 맞추는 게 관례!</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-code" id="slide-7">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.14</span>
+  </div>
+  <div class="code-body">
+    <h2 class="slide-subtitle">init() 함수와 별칭 import</h2>
+    <div class="code-block">
+      <pre><span class="kw">package</span> config
+
+<span class="kw">var</span> Settings <span class="kw">map</span>[<span class="tp">string</span>]<span class="tp">string</span>
+
+<span class="cm">// init: 패키지 로드 시 자동 실행!</span>
+<span class="kw">func</span> <span class="fn">init</span>() {
+    Settings <span class="op">=</span> <span class="kw">map</span>[<span class="tp">string</span>]<span class="tp">string</span>{
+        <span class="str">&quot;env&quot;</span>: <span class="str">&quot;production&quot;</span>,
+    }
+    fmt.<span class="fn">Println</span>(<span class="str">&quot;설정 초기화 완료!&quot;</span>)
+}
+
+<span class="cm">// 별칭 import 활용</span>
+<span class="kw">import</span> (
+    f <span class="str">&quot;fmt&quot;</span>          <span class="cm">// 별칭</span>
+    _ <span class="str">&quot;image/png&quot;</span>    <span class="cm">// 부작용만</span>
+    . <span class="str">&quot;strings&quot;</span>      <span class="cm">// 직접 접근</span>
+)
+f.<span class="fn">Println</span>(<span class="fn">ToUpper</span>(<span class="str">&quot;go&quot;</span>))</pre>
+    </div>
+    <div class="note-box">
+      <p>⚠️ init()은 테스트 어렵게 만드니 최소한만!</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-code" id="slide-8">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.14</span>
+  </div>
+  <div class="code-body">
+    <h2 class="slide-subtitle">실전: 프로젝트 구조 패턴</h2>
+    <div class="code-block">
+      <pre><span class="cm">// 실무 프로젝트 구조 예시</span>
+<span class="cm">// myapi/</span>
+<span class="cm">//   cmd/</span>
+<span class="cm">//     server/main.go  // 진입점</span>
+<span class="cm">//   internal/         // 외부 사용 금지</span>
+<span class="cm">//     handler/</span>
+<span class="cm">//     service/</span>
+<span class="cm">//     repository/</span>
+<span class="cm">//   pkg/              // 외부 사용 가능</span>
+<span class="cm">//     util/</span>
+<span class="cm">//   go.mod</span>
+<span class="cm">//   go.sum</span>
+
+<span class="cm">// internal/ = Go가 강제하는 접근 제한!</span>
+<span class="cm">// 다른 모듈에서 import 불가능 🔒</span></pre>
+    </div>
+    <div class="note-box">
+      <p>⭐ internal/ 폴더 = 컴파일러가 접근 차단!</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-summary" id="slide-8">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.14</span>
+  </div>
+  <div class="summary-body">
+    <h2 class="slide-subtitle">📌 핵심 정리</h2>
+    <div class="summary-points">
+      <p class="body-text">✅ package 선언으로 코드 그룹핑</p>
+      <p class="body-text">✅ go mod init으로 모듈 생성</p>
+      <p class="body-text">✅ 대문자 = 공개, 소문자 = 비공개</p>
+      <p class="body-text">✅ go get으로 외부 패키지 설치</p>
+      <p class="body-text">✅ internal/ 폴더로 접근 제한</p>
+    </div>
+    <div class="summary-tips">
+      <h3 class="slide-subtitle">💡 Go만의 꿀팁</h3>
+      <p class="body-text">💡 폴더명과 패키지명을 일치시켜라</p>
+      <p class="body-text">💡 go mod tidy로 의존성 정리</p>
+      <p class="body-text">💡 init()은 꼭 필요할 때만 사용</p>
+      <p class="body-text">💡 cmd/internal/pkg 구조를 따라라</p>
+    </div>
+    <div class="summary-next">
+      <p class="body-text">다음 편: EP.15 JSON 처리 👉</p>
+    </div>
+    <div class="summary-cta">
+      <p>💾 저장 | ❤️ 좋아요 | 👤 팔로우</p>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
