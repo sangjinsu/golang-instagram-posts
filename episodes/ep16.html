@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1080">
+  <title>EP.16 테스트 (Testing)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  padding: 40px;
+}
+
+/* 슬라이드 컨테이너 */
+.slide {
+  width: 1080px;
+  height: 1350px;
+  position: relative;
+  overflow: hidden;
+  font-family: 'Noto Sans KR', sans-serif;
+  color: #e0e0e0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 배경 그라데이션 */
+.slide-thumbnail { background: linear-gradient(135deg, #0f0f23 0%, #0a3d5c 40%, #00ADD8 100%); }
+.slide-concept   { background: linear-gradient(160deg, #0f0f23 0%, #1a1a3e 40%, #0d1b2a 100%); }
+.slide-code      { background: linear-gradient(160deg, #0d1117 0%, #161b22 50%, #0d1117 100%); }
+.slide-summary   { background: linear-gradient(160deg, #1a0a2e 0%, #16213e 50%, #0a1628 100%); }
+
+/* 장식 원 */
+.slide::before, .slide::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.06;
+  pointer-events: none;
+}
+.slide::before { width: 500px; height: 500px; background: #667eea; top: -150px; right: -100px; }
+.slide::after  { width: 350px; height: 350px; background: #f093fb; bottom: -100px; left: -80px; }
+
+/* 상단 바 */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 40px 60px 20px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+.series-tag { font-size: 26px; font-weight: 700; color: #00ADD8; }
+.ep-num     { font-size: 26px; font-weight: 700; color: rgba(255,255,255,0.4); }
+
+/* 타이포그래피 */
+.slide-title    { font-size: 48px; font-weight: 900; color: #fff; line-height: 1.3; margin-bottom: 24px; }
+.slide-subtitle { font-size: 32px; font-weight: 700; color: #00ADD8; margin-bottom: 20px; }
+.body-text      { font-size: 30px; font-weight: 400; color: #e0e0e0; line-height: 1.6; }
+.muted-text     { font-size: 26px; color: rgba(255,255,255,0.5); margin-bottom: 12px; }
+
+/* 코드 블록 */
+.code-block {
+  background: #0d1117;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 32px;
+  margin: 20px 0;
+  position: relative;
+  z-index: 1;
+  flex: 1;
+}
+.code-block pre {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 26px;
+  line-height: 1.7;
+  color: #e6edf3;
+  white-space: pre;
+  overflow: hidden;
+}
+
+/* 코드 구문 색상 */
+.kw  { color: #ff7b72; }
+.str { color: #a5d6ff; }
+.num { color: #79c0ff; }
+.cm  { color: #8b949e; }
+.tp  { color: #7ee787; }
+.fn  { color: #d2a8ff; }
+.op  { color: #ffa657; }
+
+/* 노트 박스 */
+.note-box {
+  background: rgba(0, 173, 216, 0.1);
+  border-left: 4px solid #00ADD8;
+  border-radius: 0 12px 12px 0;
+  padding: 20px 28px;
+  margin-top: auto;
+  position: relative;
+  z-index: 1;
+}
+.note-box p { font-size: 26px; color: #e0e0e0; line-height: 1.5; }
+
+/* === 썸네일 === */
+.thumb-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 80px 60px;
+  position: relative;
+  z-index: 1;
+}
+.thumb-series  { font-size: 36px; font-weight: 700; color: rgba(255,255,255,0.9); }
+.thumb-sub     { font-size: 48px; font-weight: 900; color: #fff; margin-top: 8px; }
+.thumb-divider { width: 80px; height: 4px; background: rgba(255,255,255,0.5); margin: 40px 0; border-radius: 2px; }
+.thumb-ep      { font-size: 64px; font-weight: 900; color: #fff; }
+.thumb-topic   { font-size: 56px; font-weight: 900; color: #fff; margin-top: 16px; }
+.thumb-hook    { font-size: 32px; color: rgba(255,255,255,0.8); margin-top: 32px; }
+.thumb-tags    { text-align: center; padding: 40px; font-size: 24px; color: rgba(255,255,255,0.4); position: relative; z-index: 1; }
+
+/* === 컨셉 === */
+.concept-body     { flex: 1; padding: 20px 60px 40px; display: flex; flex-direction: column; gap: 28px; position: relative; z-index: 1; }
+.concept-explain  { }
+.concept-compare  { background: rgba(255,255,255,0.04); border-radius: 16px; padding: 24px 28px; }
+.concept-features { background: rgba(0,173,216,0.08); border-radius: 16px; padding: 24px 28px; }
+
+/* === 코드 바디 === */
+.code-body { flex: 1; padding: 10px 60px 40px; display: flex; flex-direction: column; position: relative; z-index: 1; }
+
+/* === 요약 === */
+.summary-body   { flex: 1; padding: 20px 60px 40px; display: flex; flex-direction: column; gap: 24px; position: relative; z-index: 1; }
+.summary-points,
+.summary-tips   { background: rgba(255,255,255,0.04); border-radius: 16px; padding: 24px 28px; }
+.summary-next   { text-align: center; padding: 20px; background: rgba(0,173,216,0.08); border-radius: 16px; }
+.summary-cta    { text-align: center; padding: 24px; font-size: 28px; color: rgba(255,255,255,0.6); position: relative; z-index: 1; }
+
+  </style>
+</head>
+<body>
+
+<div class="slide slide-thumbnail" id="slide-1">
+  <div class="thumb-content">
+    <p class="thumb-series">Go 기초 문법</p>
+    <p class="thumb-sub">1분 정리 ⚡</p>
+    <div class="thumb-divider"></div>
+    <p class="thumb-ep">EP.16</p>
+    <h1 class="thumb-topic">테스트 (Testing)</h1>
+    <p class="thumb-hook">Go는 테스트가 내장이다! 🧪</p>
+  </div>
+  <div class="thumb-tags">#Golang #개발 #프로그래밍</div>
+</div>
+
+<div class="slide slide-concept" id="slide-2">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.16</span>
+  </div>
+  <div class="concept-body">
+    <h2 class="slide-title">Go 테스트란? 🤔</h2>
+    <div class="concept-explain">
+      <p class="body-text">testing 패키지 = 표준 라이브러리 내장! 📦</p>
+      <p class="body-text">별도 프레임워크 설치 불필요 ⭐</p>
+      <p class="body-text">파일명 _test.go만 지키면 끝! 📝</p>
+      <p class="body-text">go test 명령 한 줄이면 실행! 🚀</p>
+    </div>
+    <div class="concept-compare">
+      <p class="muted-text">다른 언어와 비교</p>
+      <p class="body-text">→ Python: pytest 별도 설치 필요</p>
+      <p class="body-text">→ JS: Jest, Mocha 프레임워크 필요</p>
+      <p class="body-text">→ Java: JUnit 라이브러리 필요</p>
+      <p class="body-text">→ Go: go test 내장! 설치 제로! ⚡</p>
+    </div>
+    <div class="concept-features">
+      <p class="slide-subtitle">Go 테스트 핵심 특징</p>
+      <p class="body-text">→ 파일명: xxx_test.go 규칙 ✅</p>
+      <p class="body-text">→ 함수명: TestXxx(t *testing.T) 🔧</p>
+      <p class="body-text">→ go test ./... 전체 테스트 실행 🎯</p>
+      <p class="body-text">→ 벤치마크, 예제 테스트도 내장! 📊</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-code" id="slide-3">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.16</span>
+  </div>
+  <div class="code-body">
+    <h2 class="slide-subtitle">첫 번째 테스트 작성</h2>
+    <div class="code-block">
+      <pre><span class="cm">// math.go</span>
+<span class="kw">package</span> calc
+
+<span class="kw">func</span> <span class="fn">Add</span>(a, b <span class="tp">int</span>) <span class="tp">int</span> {
+    <span class="kw">return</span> a <span class="op">+</span> b
+}
+
+<span class="cm">// math_test.go</span>
+<span class="kw">package</span> calc
+
+<span class="kw">import</span> <span class="str">&quot;testing&quot;</span>
+
+<span class="kw">func</span> <span class="fn">TestAdd</span>(t <span class="op">*</span>testing.T) {
+    got <span class="op">:=</span> <span class="fn">Add</span>(<span class="num">2</span>, <span class="num">3</span>)
+    want <span class="op">:=</span> <span class="num">5</span>
+    <span class="kw">if</span> got <span class="op">!=</span> want {
+        t.<span class="fn">Errorf</span>(<span class="str">&quot;Add(2,3) = %d, want %d&quot;</span>,
+            got, want)
+    }
+}</pre>
+    </div>
+    <div class="note-box">
+      <p>⭐ go test 실행 → PASS 또는 FAIL 출력!</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-code" id="slide-4">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.16</span>
+  </div>
+  <div class="code-body">
+    <h2 class="slide-subtitle">테이블 기반 테스트 (Table-Driven)</h2>
+    <div class="code-block">
+      <pre><span class="kw">func</span> <span class="fn">TestAdd</span>(t <span class="op">*</span>testing.T) {
+    tests <span class="op">:=</span> []<span class="kw">struct</span> {
+        name <span class="tp">string</span>
+        a, b <span class="tp">int</span>
+        want <span class="tp">int</span>
+    }{
+        {<span class="str">&quot;양수&quot;</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">5</span>},
+        {<span class="str">&quot;음수&quot;</span>, <span class="op">-</span><span class="num">1</span>, <span class="op">-</span><span class="num">2</span>, <span class="op">-</span><span class="num">3</span>},
+        {<span class="str">&quot;제로&quot;</span>, <span class="num">0</span>, <span class="num">0</span>, <span class="num">0</span>},
+        {<span class="str">&quot;혼합&quot;</span>, <span class="op">-</span><span class="num">1</span>, <span class="num">5</span>, <span class="num">4</span>},
+    }
+    <span class="kw">for</span> _, tt <span class="op">:=</span> <span class="kw">range</span> tests {
+        t.<span class="fn">Run</span>(tt.name, <span class="kw">func</span>(t <span class="op">*</span>testing.T) {
+            got <span class="op">:=</span> <span class="fn">Add</span>(tt.a, tt.b)
+            <span class="kw">if</span> got <span class="op">!=</span> tt.want {
+                t.<span class="fn">Errorf</span>(<span class="str">&quot;got %d, want %d&quot;</span>,
+                    got, tt.want)
+            }
+        })
+    }
+}</pre>
+    </div>
+    <div class="note-box">
+      <p>⭐ 테이블 테스트 = Go 테스트의 황금 패턴!</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-code" id="slide-5">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.16</span>
+  </div>
+  <div class="code-body">
+    <h2 class="slide-subtitle">테스트 실행 명령어</h2>
+    <div class="code-block">
+      <pre><span class="cm">// 현재 패키지 테스트</span>
+<span class="cm">// $ go test</span>
+
+<span class="cm">// 모든 패키지 테스트</span>
+<span class="cm">// $ go test ./...</span>
+
+<span class="cm">// 상세 출력 (-v)</span>
+<span class="cm">// $ go test -v</span>
+
+<span class="cm">// 특정 테스트만 실행 (-run)</span>
+<span class="cm">// $ go test -run TestAdd</span>
+
+<span class="cm">// 커버리지 확인</span>
+<span class="cm">// $ go test -cover</span>
+<span class="cm">// coverage: 85.7% of statements</span>
+
+<span class="cm">// 커버리지 HTML 리포트</span>
+<span class="cm">// $ go test -coverprofile=c.out</span>
+<span class="cm">// $ go tool cover -html=c.out</span></pre>
+    </div>
+    <div class="note-box">
+      <p>💡 -cover로 테스트 커버리지를 항상 확인!</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-code" id="slide-6">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.16</span>
+  </div>
+  <div class="code-body">
+    <h2 class="slide-subtitle">에러 테스트와 헬퍼</h2>
+    <div class="code-block">
+      <pre><span class="kw">func</span> <span class="fn">TestDivide</span>(t <span class="op">*</span>testing.T) {
+<span class="cm">    // 정상 케이스</span>
+    got, err <span class="op">:=</span> <span class="fn">Divide</span>(<span class="num">10</span>, <span class="num">2</span>)
+    <span class="kw">if</span> err <span class="op">!=</span> <span class="kw">nil</span> {
+        t.<span class="fn">Fatalf</span>(<span class="str">&quot;에러 발생: %v&quot;</span>, err)
+    }
+    <span class="kw">if</span> got <span class="op">!=</span> <span class="num">5</span> {
+        t.<span class="fn">Errorf</span>(<span class="str">&quot;got %d, want 5&quot;</span>, got)
+    }
+<span class="cm">    // 에러 케이스</span>
+    _, err <span class="op">=</span> <span class="fn">Divide</span>(<span class="num">10</span>, <span class="num">0</span>)
+    <span class="kw">if</span> err <span class="op">==</span> <span class="kw">nil</span> {
+        t.<span class="fn">Error</span>(<span class="str">&quot;에러가 발생해야 함&quot;</span>)
+    }
+}
+<span class="cm">// t.Error  = 실패 기록, 계속 실행</span>
+<span class="cm">// t.Fatal  = 실패 기록, 즉시 중단</span>
+<span class="cm">// t.Skip   = 테스트 건너뛰기</span></pre>
+    </div>
+    <div class="note-box">
+      <p>💡 Fatal = 즉시 중단, Error = 계속 실행!</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-code" id="slide-7">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.16</span>
+  </div>
+  <div class="code-body">
+    <h2 class="slide-subtitle">벤치마크 테스트</h2>
+    <div class="code-block">
+      <pre><span class="cm">// BenchmarkXxx(b *testing.B)</span>
+<span class="kw">func</span> <span class="fn">BenchmarkAdd</span>(b <span class="op">*</span>testing.B) {
+<span class="cm">    // b.N = Go가 자동 결정!</span>
+    <span class="kw">for</span> i <span class="op">:=</span> <span class="num">0</span>; i <span class="op">&lt;</span> b.N; i<span class="op">+</span><span class="op">+</span> {
+        <span class="fn">Add</span>(<span class="num">100</span>, <span class="num">200</span>)
+    }
+}
+<span class="cm">// $ go test -bench=.</span>
+<span class="cm">// BenchmarkAdd-8  1000000000</span>
+<span class="cm">//                 0.3171 ns/op</span>
+
+<span class="cm">// 메모리 할당 확인</span>
+<span class="cm">// $ go test -bench=. -benchmem</span>
+<span class="cm">// 0 allocs/op ← 힙 할당 없음!</span>
+
+<span class="cm">// benchstat으로 벤치마크 비교 가능</span>
+<span class="cm">// $ go test -bench=. -count=5</span></pre>
+    </div>
+    <div class="note-box">
+      <p>⭐ -bench=. 으로 성능 측정, -benchmem 메모리!</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-code" id="slide-8">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.16</span>
+  </div>
+  <div class="code-body">
+    <h2 class="slide-subtitle">실전: TestMain과 셋업</h2>
+    <div class="code-block">
+      <pre><span class="cm">// TestMain = 테스트 전후 셋업/정리</span>
+<span class="kw">func</span> <span class="fn">TestMain</span>(m <span class="op">*</span>testing.M) {
+<span class="cm">    // 전체 셋업</span>
+    fmt.<span class="fn">Println</span>(<span class="str">&quot;셋업 시작&quot;</span>)
+    db <span class="op">:=</span> <span class="fn">setupTestDB</span>()
+
+<span class="cm">    // 모든 테스트 실행</span>
+    code <span class="op">:=</span> m.<span class="fn">Run</span>()
+
+<span class="cm">    // 정리 (cleanup)</span>
+    db.<span class="fn">Close</span>()
+    fmt.<span class="fn">Println</span>(<span class="str">&quot;정리 완료&quot;</span>)
+    os.<span class="fn">Exit</span>(code)
+}
+<span class="cm">// t.Cleanup = 개별 테스트 정리</span>
+<span class="kw">func</span> <span class="fn">TestUser</span>(t <span class="op">*</span>testing.T) {
+    f <span class="op">:=</span> <span class="fn">createTempFile</span>(t)
+    t.<span class="fn">Cleanup</span>(<span class="kw">func</span>() { os.<span class="fn">Remove</span>(f) })
+}</pre>
+    </div>
+    <div class="note-box">
+      <p>⭐ TestMain = 전체 셋업, t.Cleanup = 개별 정리!</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-summary" id="slide-9">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.16</span>
+  </div>
+  <div class="summary-body">
+    <h2 class="slide-subtitle">📌 핵심 정리</h2>
+    <div class="summary-points">
+      <p class="body-text">✅ _test.go 파일에 테스트 작성</p>
+      <p class="body-text">✅ TestXxx(t *testing.T) 함수 규칙</p>
+      <p class="body-text">✅ 테이블 기반 테스트 = Go 표준 패턴</p>
+      <p class="body-text">✅ go test -cover로 커버리지 확인</p>
+      <p class="body-text">✅ BenchmarkXxx로 성능 측정</p>
+    </div>
+    <div class="summary-tips">
+      <h3 class="slide-subtitle">💡 Go만의 꿀팁</h3>
+      <p class="body-text">💡 테이블 테스트로 케이스를 체계적으로 관리</p>
+      <p class="body-text">💡 -v 플래그로 상세 결과 확인</p>
+      <p class="body-text">💡 t.Parallel()로 테스트 병렬 실행</p>
+      <p class="body-text">💡 테스트도 코드! 깔끔하게 작성하라</p>
+    </div>
+    <div class="summary-next">
+      <p class="body-text">다음 편: EP.17 제네릭 (Generics) 👉</p>
+    </div>
+    <div class="summary-cta">
+      <p>💾 저장 | ❤️ 좋아요 | 👤 팔로우</p>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 한국 개발자 커뮤니티를 위한 **"Go 기초 문법 1분 정리"** 인스타그램 카드뉴스 시리즈를 자동으로 생성하는 시스템이다.
 
-**현재 상태**: EP01~EP15 완료. EP16 다음 예정.
+**현재 상태**: EP01~EP16 완료. EP17 다음 예정.
 
 **핵심 워크플로우:**
 ```
@@ -34,7 +34,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 | 13 | Error Handling | ✅ 완료 |
 | 14 | 패키지와 모듈 (Package & Module) | ✅ 완료 |
 | 15 | JSON 처리 (JSON) | ✅ 완료 |
-| 16 | 테스트 (Testing) | 🔜 다음 |
+| 16 | 테스트 (Testing) | ✅ 완료 |
+| 17 | 제네릭 (Generics) | 🔜 다음 |
 
 ## 슬라이드 구조 (8장 고정)
 
@@ -136,12 +137,13 @@ go-insta-content/
 │   ├── ep12.json          ← 채널 (Channel)
 │   ├── ep13.json          ← 에러 처리 (Error Handling)
 │   ├── ep14.json          ← 패키지와 모듈 (Package & Module)
-│   └── ep15.json          ← JSON 처리 (JSON)
+│   ├── ep15.json          ← JSON 처리 (JSON)
+│   └── ep16.json          ← 테스트 (Testing)
 ├── .env                   ← API 키 (UPLOAD_POST_API_KEY 등)
 ├── .venv/                 ← Python 가상환경 (pip3 설치용)
 ├── output/
-│   ├── ep01/ ~ ep15/     ← 에피소드별 slide_01~09.png
-│   └── ep15/
+│   ├── ep01/ ~ ep16/     ← 에피소드별 slide_01~09.png
+│   └── ep16/
 │       ├── slide_01.png
 │       ├── ...
 │       └── slide_08.png

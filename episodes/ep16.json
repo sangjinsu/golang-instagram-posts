@@ -1,0 +1,130 @@
+{
+  "episode": 16,
+  "title": "테스트",
+  "title_en": "Testing",
+  "difficulty": "★★☆",
+  "hook": "Go는 테스트가 내장이다! 🧪",
+  "next_ep": {
+    "number": 17,
+    "title": "제네릭 (Generics)"
+  },
+  "slides": [
+    {
+      "slide_number": 1,
+      "type": "thumbnail",
+      "content": {
+        "series_name": "Go 기초 문법",
+        "series_sub": "1분 정리 ⚡",
+        "ep_label": "EP.16",
+        "topic": "테스트 (Testing)",
+        "hook": "Go는 테스트가 내장이다! 🧪"
+      }
+    },
+    {
+      "slide_number": 2,
+      "type": "concept",
+      "content": {
+        "question": "Go 테스트란? 🤔",
+        "explanation": [
+          "testing 패키지 = 표준 라이브러리 내장! 📦",
+          "별도 프레임워크 설치 불필요 ⭐",
+          "파일명 _test.go만 지키면 끝! 📝",
+          "go test 명령 한 줄이면 실행! 🚀"
+        ],
+        "comparison": {
+          "label": "다른 언어와 비교",
+          "items": [
+            "Python: pytest 별도 설치 필요",
+            "JS: Jest, Mocha 프레임워크 필요",
+            "Java: JUnit 라이브러리 필요",
+            "Go: go test 내장! 설치 제로! ⚡"
+          ]
+        },
+        "features": {
+          "label": "Go 테스트 핵심 특징",
+          "items": [
+            "파일명: xxx_test.go 규칙 ✅",
+            "함수명: TestXxx(t *testing.T) 🔧",
+            "go test ./... 전체 테스트 실행 🎯",
+            "벤치마크, 예제 테스트도 내장! 📊"
+          ]
+        }
+      }
+    },
+    {
+      "slide_number": 3,
+      "type": "code",
+      "content": {
+        "title": "첫 번째 테스트 작성",
+        "code": "// math.go\npackage calc\n\nfunc Add(a, b int) int {\n    return a + b\n}\n\n// math_test.go\npackage calc\n\nimport \"testing\"\n\nfunc TestAdd(t *testing.T) {\n    got := Add(2, 3)\n    want := 5\n    if got != want {\n        t.Errorf(\"Add(2,3) = %d, want %d\",\n            got, want)\n    }\n}",
+        "note": "⭐ go test 실행 → PASS 또는 FAIL 출력!"
+      }
+    },
+    {
+      "slide_number": 4,
+      "type": "code",
+      "content": {
+        "title": "테이블 기반 테스트 (Table-Driven)",
+        "code": "func TestAdd(t *testing.T) {\n    tests := []struct {\n        name string\n        a, b int\n        want int\n    }{\n        {\"양수\", 2, 3, 5},\n        {\"음수\", -1, -2, -3},\n        {\"제로\", 0, 0, 0},\n        {\"혼합\", -1, 5, 4},\n    }\n    for _, tt := range tests {\n        t.Run(tt.name, func(t *testing.T) {\n            got := Add(tt.a, tt.b)\n            if got != tt.want {\n                t.Errorf(\"got %d, want %d\",\n                    got, tt.want)\n            }\n        })\n    }\n}",
+        "note": "⭐ 테이블 테스트 = Go 테스트의 황금 패턴!"
+      }
+    },
+    {
+      "slide_number": 5,
+      "type": "code",
+      "content": {
+        "title": "테스트 실행 명령어",
+        "code": "// 현재 패키지 테스트\n// $ go test\n\n// 모든 패키지 테스트\n// $ go test ./...\n\n// 상세 출력 (-v)\n// $ go test -v\n\n// 특정 테스트만 실행 (-run)\n// $ go test -run TestAdd\n\n// 커버리지 확인\n// $ go test -cover\n// coverage: 85.7% of statements\n\n// 커버리지 HTML 리포트\n// $ go test -coverprofile=c.out\n// $ go tool cover -html=c.out",
+        "note": "💡 -cover로 테스트 커버리지를 항상 확인!"
+      }
+    },
+    {
+      "slide_number": 6,
+      "type": "code",
+      "content": {
+        "title": "에러 테스트와 헬퍼",
+        "code": "func TestDivide(t *testing.T) {\n    // 정상 케이스\n    got, err := Divide(10, 2)\n    if err != nil {\n        t.Fatalf(\"에러 발생: %v\", err)\n    }\n    if got != 5 {\n        t.Errorf(\"got %d, want 5\", got)\n    }\n    // 에러 케이스\n    _, err = Divide(10, 0)\n    if err == nil {\n        t.Error(\"에러가 발생해야 함\")\n    }\n}\n// t.Error  = 실패 기록, 계속 실행\n// t.Fatal  = 실패 기록, 즉시 중단\n// t.Skip   = 테스트 건너뛰기",
+        "note": "💡 Fatal = 즉시 중단, Error = 계속 실행!"
+      }
+    },
+    {
+      "slide_number": 7,
+      "type": "code",
+      "content": {
+        "title": "벤치마크 테스트",
+        "code": "// BenchmarkXxx(b *testing.B)\nfunc BenchmarkAdd(b *testing.B) {\n    // b.N = Go가 자동 결정!\n    for i := 0; i < b.N; i++ {\n        Add(100, 200)\n    }\n}\n// $ go test -bench=.\n// BenchmarkAdd-8  1000000000\n//                 0.3171 ns/op\n\n// 메모리 할당 확인\n// $ go test -bench=. -benchmem\n// 0 allocs/op ← 힙 할당 없음!\n\n// benchstat으로 벤치마크 비교 가능\n// $ go test -bench=. -count=5",
+        "note": "⭐ -bench=. 으로 성능 측정, -benchmem 메모리!"
+      }
+    },
+    {
+      "slide_number": 8,
+      "type": "code",
+      "content": {
+        "title": "실전: TestMain과 셋업",
+        "code": "// TestMain = 테스트 전후 셋업/정리\nfunc TestMain(m *testing.M) {\n    // 전체 셋업\n    fmt.Println(\"셋업 시작\")\n    db := setupTestDB()\n\n    // 모든 테스트 실행\n    code := m.Run()\n\n    // 정리 (cleanup)\n    db.Close()\n    fmt.Println(\"정리 완료\")\n    os.Exit(code)\n}\n// t.Cleanup = 개별 테스트 정리\nfunc TestUser(t *testing.T) {\n    f := createTempFile(t)\n    t.Cleanup(func() { os.Remove(f) })\n}",
+        "note": "⭐ TestMain = 전체 셋업, t.Cleanup = 개별 정리!"
+      }
+    },
+    {
+      "slide_number": 9,
+      "type": "summary",
+      "content": {
+        "points": [
+          "✅ _test.go 파일에 테스트 작성",
+          "✅ TestXxx(t *testing.T) 함수 규칙",
+          "✅ 테이블 기반 테스트 = Go 표준 패턴",
+          "✅ go test -cover로 커버리지 확인",
+          "✅ BenchmarkXxx로 성능 측정"
+        ],
+        "tips": [
+          "💡 테이블 테스트로 케이스를 체계적으로 관리",
+          "💡 -v 플래그로 상세 결과 확인",
+          "💡 t.Parallel()로 테스트 병렬 실행",
+          "💡 테스트도 코드! 깔끔하게 작성하라"
+        ],
+        "next_preview": "다음 편: EP.17 제네릭 (Generics) 👉",
+        "cta": "💾 저장 | ❤️ 좋아요 | 👤 팔로우"
+      }
+    }
+  ]
+}

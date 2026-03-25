@@ -391,8 +391,8 @@ def render_code_slide(content, ep_label, slide_number, user_types):
 </div>'''
 
 
-def render_summary(content, ep_label):
-    """8장: 요약"""
+def render_summary(content, ep_label, slide_number=9):
+    """마지막 장: 요약"""
     points = '\n'.join(
         f'      <p class="body-text">{esc(p)}</p>'
         for p in content['points']
@@ -402,7 +402,7 @@ def render_summary(content, ep_label):
         for t in content['tips']
     )
 
-    return f'''<div class="slide slide-summary" id="slide-8">
+    return f'''<div class="slide slide-summary" id="slide-{slide_number}">
   <div class="top-bar">
     <span class="series-tag">Go 1분 정리</span>
     <span class="ep-num">{esc(ep_label)}</span>
@@ -449,7 +449,7 @@ def generate_html(data):
         elif stype == 'code':
             slide_htmls.append(render_code_slide(content, ep_label, snum, user_types))
         elif stype == 'summary':
-            slide_htmls.append(render_summary(content, ep_label))
+            slide_htmls.append(render_summary(content, ep_label, snum))
 
     slides_joined = '\n\n'.join(slide_htmls)
 
