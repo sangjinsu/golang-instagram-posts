@@ -1,0 +1,130 @@
+{
+  "episode": 19,
+  "title": "Context",
+  "title_en": "Context",
+  "difficulty": "★★★",
+  "hook": "고루틴의 리모컨, context! 🎮",
+  "next_ep": {
+    "number": 20,
+    "title": "HTTP 서버 (net/http)"
+  },
+  "slides": [
+    {
+      "slide_number": 1,
+      "type": "thumbnail",
+      "content": {
+        "series_name": "Go 기초 문법",
+        "series_sub": "1분 정리 ⚡",
+        "ep_label": "EP.19",
+        "topic": "Context",
+        "hook": "고루틴의 리모컨, context! 🎮"
+      }
+    },
+    {
+      "slide_number": 2,
+      "type": "concept",
+      "content": {
+        "question": "Context란? 🤔",
+        "explanation": [
+          "고루틴의 생명주기를 제어하는 도구! 🎮",
+          "취소 신호, 타임아웃, 값 전달 가능 📡",
+          "context 패키지 = Go 표준 라이브러리 내장 📦",
+          "서버 프로그래밍의 필수 요소! 🚀"
+        ],
+        "comparison": {
+          "label": "왜 Context가 필요할까?",
+          "items": [
+            "API 요청 → 클라이언트가 취소하면? 🤷",
+            "DB 쿼리 → 5초 넘으면 중단해야! ⏰",
+            "고루틴 100개 → 한번에 취소하려면? 😱",
+            "Context = 이 모든 걸 해결! ✨"
+          ]
+        },
+        "features": {
+          "label": "Context 핵심 기능",
+          "items": [
+            "WithCancel: 수동 취소 신호 ✅",
+            "WithTimeout: 시간 초과 자동 취소 ⏰",
+            "WithDeadline: 마감 시각 지정 🔧",
+            "WithValue: 요청 범위 값 전달 🎯"
+          ]
+        }
+      }
+    },
+    {
+      "slide_number": 3,
+      "type": "code",
+      "content": {
+        "title": "Context 기본: Background & TODO",
+        "code": "import \"context\"\n\n// 최상위 Context 2가지\nctx := context.Background()\n// → 루트 context, 절대 취소 안 됨\n// → main, 서버 시작점에서 사용\n\nctx2 := context.TODO()\n// → \"아직 뭘 쓸지 모르겠다\"\n// → 리팩토링 중 임시로 사용\n\n// Context는 트리 구조!\n//\n//     Background()\n//       ├── WithCancel()\n//       │     └── WithTimeout()\n//       └── WithValue()\n//\n// 부모 취소 → 자식도 모두 취소!\n// 자식 취소 → 부모에 영향 없음!",
+        "note": "⭐ Background() = 모든 context의 시작점!"
+      }
+    },
+    {
+      "slide_number": 4,
+      "type": "code",
+      "content": {
+        "title": "WithCancel: 수동 취소",
+        "code": "func main() {\n    ctx, cancel := context.WithCancel(\n        context.Background())\n\n    go func(ctx context.Context) {\n        for {\n            select {\n            case <-ctx.Done():\n                fmt.Println(\"작업 취소됨!\")\n                return\n            default:\n                fmt.Println(\"작업 중...\")\n                time.Sleep(500 * time.Millisecond)\n            }\n        }\n    }(ctx)\n\n    time.Sleep(2 * time.Second)\n    cancel() // 취소 신호 전송!\n    time.Sleep(time.Second)\n}\n// 작업 중...\n// 작업 중...\n// 작업 중...\n// 작업 취소됨!",
+        "note": "💡 cancel() 호출 → ctx.Done() 채널 닫힘!"
+      }
+    },
+    {
+      "slide_number": 5,
+      "type": "code",
+      "content": {
+        "title": "WithTimeout: 시간 초과 취소",
+        "code": "func FetchData(ctx context.Context,\n    url string) ([]byte, error) {\n    // 3초 타임아웃 설정\n    ctx, cancel := context.WithTimeout(\n        ctx, 3*time.Second)\n    defer cancel() // 항상 defer로 cancel!\n\n    req, _ := http.NewRequestWithContext(\n        ctx, \"GET\", url, nil)\n\n    resp, err := http.DefaultClient.Do(req)\n    if err != nil {\n        return nil, err // 타임아웃 시 에러!\n    }\n    defer resp.Body.Close()\n\n    return io.ReadAll(resp.Body)\n}\n\n// ctx.Err() 로 원인 확인\n// context.DeadlineExceeded → 시간 초과\n// context.Canceled → 수동 취소",
+        "note": "⭐ WithTimeout = 가장 많이 쓰는 패턴!"
+      }
+    },
+    {
+      "slide_number": 6,
+      "type": "code",
+      "content": {
+        "title": "WithValue: 값 전달",
+        "code": "// 요청 범위 값 전달 (인증 정보 등)\ntype ctxKey string\n\nconst userKey ctxKey = \"user\"\n\nfunc WithUser(ctx context.Context,\n    user string) context.Context {\n    return context.WithValue(\n        ctx, userKey, user)\n}\n\nfunc GetUser(ctx context.Context) string {\n    user, ok := ctx.Value(userKey).(string)\n    if !ok {\n        return \"anonymous\"\n    }\n    return user\n}\n\nctx := WithUser(\n    context.Background(), \"gopher\")\nfmt.Println(GetUser(ctx)) // gopher\n\n// ⚠️ 주의: 키는 비공개 타입 사용!\n// string 키 → 충돌 위험! 💥",
+        "note": "⚠️ WithValue는 요청 범위 데이터만! 남용 금지!"
+      }
+    },
+    {
+      "slide_number": 7,
+      "type": "code",
+      "content": {
+        "title": "실무: HTTP 핸들러 + Context",
+        "code": "func OrderHandler(\n    w http.ResponseWriter,\n    r *http.Request) {\n    // 요청 context = 클라이언트 끊으면 취소!\n    ctx := r.Context()\n\n    // DB 쿼리에 context 전달\n    order, err := db.QueryContext(ctx,\n        \"SELECT * FROM orders WHERE id=$1\",\n        r.URL.Query().Get(\"id\"))\n    if err != nil {\n        if ctx.Err() != nil {\n            log.Println(\"클라이언트 취소\")\n            return\n        }\n        http.Error(w, err.Error(), 500)\n        return\n    }\n    json.NewEncoder(w).Encode(order)\n}\n\n// Context 전달 규칙:\n// 1. 첫 번째 인자로 전달\n// 2. 구조체에 저장하지 말 것!\n// 3. nil context 전달 금지!",
+        "note": "⭐ HTTP 요청 → DB → 외부API 모두 context 전달!"
+      }
+    },
+    {
+      "slide_number": 8,
+      "type": "code",
+      "content": {
+        "title": "실무: 다중 고루틴 취소",
+        "code": "func ProcessAll(ctx context.Context,\n    items []Item) error {\n    ctx, cancel := context.WithCancel(ctx)\n    defer cancel()\n\n    errCh := make(chan error, len(items))\n\n    for _, item := range items {\n        go func(it Item) {\n            errCh <- Process(ctx, it)\n        }(item)\n    }\n\n    for range items {\n        if err := <-errCh; err != nil {\n            cancel() // 하나 실패 → 전체 취소!\n            return err\n        }\n    }\n    return nil\n}\n// 하나의 cancel()로\n// 수십 개 고루틴을 한번에 중단! 🎯",
+        "note": "💡 cancel 하나로 모든 자식 고루틴 정리!"
+      }
+    },
+    {
+      "slide_number": 9,
+      "type": "summary",
+      "content": {
+        "points": [
+          "✅ Background() = 루트 context",
+          "✅ WithCancel = 수동 취소 신호",
+          "✅ WithTimeout = 시간 초과 자동 취소",
+          "✅ WithValue = 요청 범위 값 전달",
+          "✅ 부모 취소 → 자식도 모두 취소!"
+        ],
+        "tips": [
+          "💡 함수 첫 번째 인자로 ctx 전달하라",
+          "💡 defer cancel() 습관화하라",
+          "💡 WithValue는 요청 범위 데이터만!",
+          "💡 서버 코드는 항상 context를 활용하라"
+        ],
+        "next_preview": "다음 편: EP.20 HTTP 서버 (net/http) 👉",
+        "cta": "💾 저장 | ❤️ 좋아요 | 👤 팔로우"
+      }
+    }
+  ]
+}

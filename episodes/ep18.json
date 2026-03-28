@@ -1,0 +1,130 @@
+{
+  "episode": 18,
+  "title": "defer, panic, recover",
+  "title_en": "Defer Panic Recover",
+  "difficulty": "★★☆",
+  "hook": "Go의 안전장치 삼총사! 🛡️",
+  "next_ep": {
+    "number": 19,
+    "title": "Context"
+  },
+  "slides": [
+    {
+      "slide_number": 1,
+      "type": "thumbnail",
+      "content": {
+        "series_name": "Go 기초 문법",
+        "series_sub": "1분 정리 ⚡",
+        "ep_label": "EP.18",
+        "topic": "defer, panic, recover",
+        "hook": "Go의 안전장치 삼총사! 🛡️"
+      }
+    },
+    {
+      "slide_number": 2,
+      "type": "concept",
+      "content": {
+        "question": "defer, panic, recover란? 🤔",
+        "explanation": [
+          "defer = 함수 끝날 때 실행 예약! ⏰",
+          "panic = 심각한 에러 → 프로그램 중단! 💥",
+          "recover = panic을 잡아서 복구! 🛡️",
+          "세 가지가 함께 Go의 안전망을 구성! 🎯"
+        ],
+        "comparison": {
+          "label": "다른 언어와 비교",
+          "items": [
+            "Java: try-finally로 리소스 정리",
+            "Python: with문 + try-except",
+            "JS: try-catch-finally 구문",
+            "Go: defer + panic + recover! 🔥"
+          ]
+        },
+        "features": {
+          "label": "핵심 특징",
+          "items": [
+            "defer: LIFO 순서로 실행 (스택!) ✅",
+            "panic: 스택을 거슬러 올라가며 전파 🔧",
+            "recover: defer 안에서만 동작 🎯",
+            "리소스 정리에 defer가 필수! 📊"
+          ]
+        }
+      }
+    },
+    {
+      "slide_number": 3,
+      "type": "code",
+      "content": {
+        "title": "defer 기본 사용법",
+        "code": "func main() {\n    fmt.Println(\"시작\")\n    defer fmt.Println(\"세 번째\")\n    defer fmt.Println(\"두 번째\")\n    defer fmt.Println(\"첫 번째\")\n    fmt.Println(\"끝\")\n}\n// 출력:\n// 시작\n// 끝\n// 첫 번째  ← LIFO (후입선출!)\n// 두 번째\n// 세 번째\n\n// defer = 함수 종료 시 실행 예약\n// 여러 개면 스택처럼 역순 실행!\n// 인자는 defer 호출 시점에 평가됨\n\nx := 10\ndefer fmt.Println(x) // 10 출력 (지금 평가!)\nx = 20",
+        "note": "⭐ defer는 LIFO! 나중에 등록한 게 먼저 실행!"
+      }
+    },
+    {
+      "slide_number": 4,
+      "type": "code",
+      "content": {
+        "title": "defer로 리소스 정리",
+        "code": "// 파일 열기 → defer로 닫기 보장!\nfunc ReadFile(path string) ([]byte, error) {\n    f, err := os.Open(path)\n    if err != nil {\n        return nil, err\n    }\n    defer f.Close() // 함수 끝나면 반드시 닫힘!\n\n    return io.ReadAll(f)\n}\n\n// 뮤텍스 잠금 → defer로 해제!\nvar mu sync.Mutex\n\nfunc SafeUpdate(data *Data) {\n    mu.Lock()\n    defer mu.Unlock() // 잠금 해제 보장!\n\n    data.Count++\n    data.UpdatedAt = time.Now()\n    // 어떤 에러가 나도 Unlock 실행!\n}",
+        "note": "💡 열었으면 defer로 닫아라! Go의 철칙!"
+      }
+    },
+    {
+      "slide_number": 5,
+      "type": "code",
+      "content": {
+        "title": "panic: 프로그램 중단",
+        "code": "// panic = 복구 불가능한 심각한 에러!\nfunc MustParseConfig(path string) Config {\n    data, err := os.ReadFile(path)\n    if err != nil {\n        panic(\"설정 파일 없음: \" + path)\n    }\n    var cfg Config\n    if err := json.Unmarshal(data, &cfg);\n        err != nil {\n        panic(\"설정 파싱 실패: \" + err.Error())\n    }\n    return cfg\n}\n\n// panic 발생 시:\n// 1. 현재 함수 즉시 중단\n// 2. defer들은 실행됨! ← 중요!\n// 3. 호출 스택을 거슬러 올라감\n// 4. recover 없으면 프로그램 종료\n\n// ⚠️ 일반 에러는 error 반환 사용!\n// panic은 정말 심각할 때만!",
+        "note": "⚠️ panic은 최후의 수단! 보통은 error 반환!"
+      }
+    },
+    {
+      "slide_number": 6,
+      "type": "code",
+      "content": {
+        "title": "recover: 패닉 복구",
+        "code": "// recover = defer 안에서만 동작!\nfunc SafeExecute(fn func()) (err error) {\n    defer func() {\n        if r := recover(); r != nil {\n            err = fmt.Errorf(\"복구됨: %v\", r)\n        }\n    }()\n\n    fn() // panic이 발생해도 복구!\n    return nil\n}\n\n// 사용 예시\nerr := SafeExecute(func() {\n    panic(\"큰일이다!\")\n})\nfmt.Println(err)\n// 복구됨: 큰일이다!\n\n// recover() 반환값:\n// - panic 인자값 (interface{})\n// - panic 없으면 nil",
+        "note": "⭐ recover는 반드시 defer 함수 안에서!"
+      }
+    },
+    {
+      "slide_number": 7,
+      "type": "code",
+      "content": {
+        "title": "실무: 안전한 고루틴",
+        "code": "// 고루틴에서 panic → 전체 프로그램 종료!\n// recover로 보호하는 패턴\nfunc SafeGo(fn func()) {\n    go func() {\n        defer func() {\n            if r := recover(); r != nil {\n                log.Printf(\"고루틴 패닉: %v\",\n                    r)\n                // 스택 트레이스 출력\n                debug.PrintStack()\n            }\n        }()\n        fn()\n    }()\n}\n\n// HTTP 서버의 미들웨어 패턴\nfunc Recovery(next http.Handler) http.Handler {\n    return http.HandlerFunc(\n        func(w http.ResponseWriter,\n            r *http.Request) {\n        defer func() {\n            if err := recover(); err != nil {\n                w.WriteHeader(500)\n            }\n        }()\n        next.ServeHTTP(w, r)\n    })\n}",
+        "note": "⭐ 고루틴 + recover = 서버 안정성의 핵심!"
+      }
+    },
+    {
+      "slide_number": 8,
+      "type": "code",
+      "content": {
+        "title": "defer 고급 패턴",
+        "code": "// 실행 시간 측정 패턴\nfunc TrackTime(name string) func() {\n    start := time.Now()\n    return func() {\n        fmt.Printf(\"%s: %v\\n\",\n            name, time.Since(start))\n    }\n}\n\nfunc Process() {\n    defer TrackTime(\"Process\")()\n    // ... 작업 수행\n    time.Sleep(2 * time.Second)\n}\n// Process: 2.001s\n\n// 에러 래핑 패턴\nfunc DoWork() (err error) {\n    defer func() {\n        if err != nil {\n            err = fmt.Errorf(\n                \"DoWork 실패: %w\", err)\n        }\n    }()\n    return riskyOperation()\n}",
+        "note": "💡 defer + 클로저 = 강력한 실무 패턴!"
+      }
+    },
+    {
+      "slide_number": 9,
+      "type": "summary",
+      "content": {
+        "points": [
+          "✅ defer = 함수 종료 시 실행 (LIFO 순서)",
+          "✅ panic = 심각한 에러 시 프로그램 중단",
+          "✅ recover = defer 안에서 panic 복구",
+          "✅ 리소스 정리는 항상 defer로!",
+          "✅ 고루틴 panic은 recover로 보호!"
+        ],
+        "tips": [
+          "💡 파일/DB/Lock → 열자마자 defer로 닫기",
+          "💡 일반 에러는 error 반환, panic은 최후 수단",
+          "💡 recover는 반드시 defer 함수 안에서만",
+          "💡 HTTP 서버는 recovery 미들웨어 필수!"
+        ],
+        "next_preview": "다음 편: EP.19 Context 👉",
+        "cta": "💾 저장 | ❤️ 좋아요 | 👤 팔로우"
+      }
+    }
+  ]
+}

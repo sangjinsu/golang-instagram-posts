@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1080">
+  <title>EP.17 제네릭 (Generics)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  padding: 40px;
+}
+
+/* 슬라이드 컨테이너 */
+.slide {
+  width: 1080px;
+  height: 1350px;
+  position: relative;
+  overflow: hidden;
+  font-family: 'Noto Sans KR', sans-serif;
+  color: #e0e0e0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 배경 그라데이션 */
+.slide-thumbnail { background: linear-gradient(135deg, #0f0f23 0%, #0a3d5c 40%, #00ADD8 100%); }
+.slide-concept   { background: linear-gradient(160deg, #0f0f23 0%, #1a1a3e 40%, #0d1b2a 100%); }
+.slide-code      { background: linear-gradient(160deg, #0d1117 0%, #161b22 50%, #0d1117 100%); }
+.slide-summary   { background: linear-gradient(160deg, #1a0a2e 0%, #16213e 50%, #0a1628 100%); }
+
+/* 장식 원 */
+.slide::before, .slide::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.06;
+  pointer-events: none;
+}
+.slide::before { width: 500px; height: 500px; background: #667eea; top: -150px; right: -100px; }
+.slide::after  { width: 350px; height: 350px; background: #f093fb; bottom: -100px; left: -80px; }
+
+/* 상단 바 */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 40px 60px 20px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+.series-tag { font-size: 26px; font-weight: 700; color: #00ADD8; }
+.ep-num     { font-size: 26px; font-weight: 700; color: rgba(255,255,255,0.4); }
+
+/* 타이포그래피 */
+.slide-title    { font-size: 48px; font-weight: 900; color: #fff; line-height: 1.3; margin-bottom: 24px; }
+.slide-subtitle { font-size: 32px; font-weight: 700; color: #00ADD8; margin-bottom: 20px; }
+.body-text      { font-size: 30px; font-weight: 400; color: #e0e0e0; line-height: 1.6; }
+.muted-text     { font-size: 26px; color: rgba(255,255,255,0.5); margin-bottom: 12px; }
+
+/* 코드 블록 */
+.code-block {
+  background: #0d1117;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 32px;
+  margin: 20px 0;
+  position: relative;
+  z-index: 1;
+  flex: 1;
+}
+.code-block pre {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 26px;
+  line-height: 1.7;
+  color: #e6edf3;
+  white-space: pre;
+  overflow: hidden;
+}
+
+/* 코드 구문 색상 */
+.kw  { color: #ff7b72; }
+.str { color: #a5d6ff; }
+.num { color: #79c0ff; }
+.cm  { color: #8b949e; }
+.tp  { color: #7ee787; }
+.fn  { color: #d2a8ff; }
+.op  { color: #ffa657; }
+
+/* 노트 박스 */
+.note-box {
+  background: rgba(0, 173, 216, 0.1);
+  border-left: 4px solid #00ADD8;
+  border-radius: 0 12px 12px 0;
+  padding: 20px 28px;
+  margin-top: auto;
+  position: relative;
+  z-index: 1;
+}
+.note-box p { font-size: 26px; color: #e0e0e0; line-height: 1.5; }
+
+/* === 썸네일 === */
+.thumb-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 80px 60px;
+  position: relative;
+  z-index: 1;
+}
+.thumb-series  { font-size: 36px; font-weight: 700; color: rgba(255,255,255,0.9); }
+.thumb-sub     { font-size: 48px; font-weight: 900; color: #fff; margin-top: 8px; }
+.thumb-divider { width: 80px; height: 4px; background: rgba(255,255,255,0.5); margin: 40px 0; border-radius: 2px; }
+.thumb-ep      { font-size: 64px; font-weight: 900; color: #fff; }
+.thumb-topic   { font-size: 56px; font-weight: 900; color: #fff; margin-top: 16px; }
+.thumb-hook    { font-size: 32px; color: rgba(255,255,255,0.8); margin-top: 32px; }
+.thumb-tags    { text-align: center; padding: 40px; font-size: 24px; color: rgba(255,255,255,0.4); position: relative; z-index: 1; }
+
+/* === 컨셉 === */
+.concept-body     { flex: 1; padding: 20px 60px 40px; display: flex; flex-direction: column; gap: 28px; position: relative; z-index: 1; }
+.concept-explain  { }
+.concept-compare  { background: rgba(255,255,255,0.04); border-radius: 16px; padding: 24px 28px; }
+.concept-features { background: rgba(0,173,216,0.08); border-radius: 16px; padding: 24px 28px; }
+
+/* === 코드 바디 === */
+.code-body { flex: 1; padding: 10px 60px 40px; display: flex; flex-direction: column; position: relative; z-index: 1; }
+
+/* === 요약 === */
+.summary-body   { flex: 1; padding: 20px 60px 40px; display: flex; flex-direction: column; gap: 24px; position: relative; z-index: 1; }
+.summary-points,
+.summary-tips   { background: rgba(255,255,255,0.04); border-radius: 16px; padding: 24px 28px; }
+.summary-next   { text-align: center; padding: 20px; background: rgba(0,173,216,0.08); border-radius: 16px; }
+.summary-cta    { text-align: center; padding: 24px; font-size: 28px; color: rgba(255,255,255,0.6); position: relative; z-index: 1; }
+
+  </style>
+</head>
+<body>
+
+<div class="slide slide-thumbnail" id="slide-1">
+  <div class="thumb-content">
+    <p class="thumb-series">Go 기초 문법</p>
+    <p class="thumb-sub">1분 정리 ⚡</p>
+    <div class="thumb-divider"></div>
+    <p class="thumb-ep">EP.17</p>
+    <h1 class="thumb-topic">제네릭 (Generics)</h1>
+    <p class="thumb-hook">타입 파라미터로 코드 중복을 없애자! 🎯</p>
+  </div>
+  <div class="thumb-tags">#Golang #개발 #프로그래밍</div>
+</div>
+
+<div class="slide slide-concept" id="slide-2">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.17</span>
+  </div>
+  <div class="concept-body">
+    <h2 class="slide-title">제네릭이란? 🤔</h2>
+    <div class="concept-explain">
+      <p class="body-text">하나의 함수로 여러 타입을 처리! 🎯</p>
+      <p class="body-text">Go 1.18부터 드디어 추가! (2022) 🎉</p>
+      <p class="body-text">타입 파라미터 [T any]로 선언 📝</p>
+      <p class="body-text">코드 중복 없이 타입 안전성까지! 🛡️</p>
+    </div>
+    <div class="concept-compare">
+      <p class="muted-text">제네릭 없던 시절</p>
+      <p class="body-text">→ int용 함수, string용 함수 따로 작성 😱</p>
+      <p class="body-text">→ interface{}로 타입 안전성 포기 😢</p>
+      <p class="body-text">→ 타입 단언(assertion) 남발 🤮</p>
+      <p class="body-text">→ Go 1.18: 제네릭으로 깔끔하게! ✨</p>
+    </div>
+    <div class="concept-features">
+      <p class="slide-subtitle">Go 제네릭 핵심 특징</p>
+      <p class="body-text">→ 타입 파라미터 [T constraint] 문법 ✅</p>
+      <p class="body-text">→ 타입 제약(constraints)으로 안전성 확보 🔧</p>
+      <p class="body-text">→ 함수, 구조체, 인터페이스에 사용 가능 🎯</p>
+      <p class="body-text">→ 컴파일 타임 타입 체크! 런타임 오버헤드 없음 ⚡</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-code" id="slide-3">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.17</span>
+  </div>
+  <div class="code-body">
+    <h2 class="slide-subtitle">제네릭 함수 기본</h2>
+    <div class="code-block">
+      <pre><span class="cm">// 제네릭 없이 → 타입마다 함수 필요!</span>
+<span class="kw">func</span> <span class="fn">MinInt</span>(a, b <span class="tp">int</span>) <span class="tp">int</span> {
+    <span class="kw">if</span> a <span class="op">&lt;</span> b { <span class="kw">return</span> a }
+    <span class="kw">return</span> b
+}
+<span class="kw">func</span> <span class="fn">MinFloat</span>(a, b <span class="tp">float64</span>) <span class="tp">float64</span> {
+    <span class="kw">if</span> a <span class="op">&lt;</span> b { <span class="kw">return</span> a }
+    <span class="kw">return</span> b
+}
+
+<span class="cm">// 제네릭으로 → 하나면 끝! ✨</span>
+<span class="kw">func</span> Min[T <span class="tp">int</span> <span class="op">|</span> <span class="tp">float64</span> <span class="op">|</span> <span class="tp">string</span>](
+    a, b T) T {
+    <span class="kw">if</span> a <span class="op">&lt;</span> b { <span class="kw">return</span> a }
+    <span class="kw">return</span> b
+}
+
+fmt.<span class="fn">Println</span>(<span class="fn">Min</span>(<span class="num">3</span>, <span class="num">7</span>))       <span class="cm">// 3</span>
+fmt.<span class="fn">Println</span>(<span class="fn">Min</span>(<span class="num">1.5</span>, <span class="num">2.3</span>))   <span class="cm">// 1.5</span>
+fmt.<span class="fn">Println</span>(<span class="fn">Min</span>(<span class="str">&quot;a&quot;</span>, <span class="str">&quot;z&quot;</span>))   <span class="cm">// a</span></pre>
+    </div>
+    <div class="note-box">
+      <p>⭐ [T 타입들] = 타입 파라미터 선언!</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-code" id="slide-4">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.17</span>
+  </div>
+  <div class="code-body">
+    <h2 class="slide-subtitle">타입 제약 (Constraints)</h2>
+    <div class="code-block">
+      <pre><span class="kw">import</span> <span class="str">&quot;golang.org/x/exp/constraints&quot;</span>
+
+<span class="cm">// 직접 제약 정의</span>
+<span class="kw">type</span> Number <span class="tp">interface</span> {
+    <span class="tp">int</span> <span class="op">|</span> <span class="tp">int32</span> <span class="op">|</span> <span class="tp">int64</span> <span class="op">|</span>
+    <span class="tp">float32</span> <span class="op">|</span> <span class="tp">float64</span>
+}
+
+<span class="kw">func</span> Sum[T Number](nums []T) T {
+    <span class="kw">var</span> total T
+    <span class="kw">for</span> _, n <span class="op">:=</span> <span class="kw">range</span> nums {
+        total <span class="op">+=</span> n
+    }
+    <span class="kw">return</span> total
+}
+
+<span class="cm">// 표준 제약 사용</span>
+<span class="cm">// any        = 모든 타입 (interface{})</span>
+<span class="cm">// comparable = ==, != 비교 가능한 타입</span>
+
+fmt.<span class="fn">Println</span>(<span class="fn">Sum</span>([]<span class="tp">int</span>{<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>}))  <span class="cm">// 6</span>
+fmt.<span class="fn">Println</span>(<span class="fn">Sum</span>([]<span class="tp">float64</span>{<span class="num">1.1</span>, <span class="num">2.2</span>})) <span class="cm">// 3.3</span></pre>
+    </div>
+    <div class="note-box">
+      <p>💡 interface로 타입 제약을 직접 정의!</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-code" id="slide-5">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.17</span>
+  </div>
+  <div class="code-body">
+    <h2 class="slide-subtitle">제네릭 구조체</h2>
+    <div class="code-block">
+      <pre><span class="cm">// 제네릭 스택</span>
+<span class="kw">type</span> Stack[T <span class="tp">any</span>] <span class="kw">struct</span> {
+    items []T
+}
+
+<span class="kw">func</span> (s <span class="op">*</span>Stack[T]) <span class="fn">Push</span>(item T) {
+    s.items <span class="op">=</span> <span class="kw">append</span>(s.items, item)
+}
+
+<span class="kw">func</span> (s <span class="op">*</span>Stack[T]) <span class="fn">Pop</span>() (T, <span class="tp">bool</span>) {
+    <span class="kw">if</span> <span class="kw">len</span>(s.items) <span class="op">==</span> <span class="num">0</span> {
+        <span class="kw">var</span> zero T
+        <span class="kw">return</span> zero, <span class="kw">false</span>
+    }
+    last <span class="op">:=</span> <span class="kw">len</span>(s.items) <span class="op">-</span> <span class="num">1</span>
+    item <span class="op">:=</span> s.items[last]
+    s.items <span class="op">=</span> s.items[:last]
+    <span class="kw">return</span> item, <span class="kw">true</span>
+}
+
+s <span class="op">:=</span> Stack[<span class="tp">int</span>]{}
+s.<span class="fn">Push</span>(<span class="num">10</span>)
+s.<span class="fn">Push</span>(<span class="num">20</span>)
+val, _ <span class="op">:=</span> s.<span class="fn">Pop</span>() <span class="cm">// 20</span></pre>
+    </div>
+    <div class="note-box">
+      <p>⭐ Stack[int], Stack[string] 어떤 타입이든!</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-code" id="slide-6">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.17</span>
+  </div>
+  <div class="code-body">
+    <h2 class="slide-subtitle">comparable과 맵 키</h2>
+    <div class="code-block">
+      <pre><span class="cm">// comparable = ==, != 가능한 타입</span>
+<span class="kw">func</span> Contains[T comparable](
+    slice []T, target T) <span class="tp">bool</span> {
+    <span class="kw">for</span> _, v <span class="op">:=</span> <span class="kw">range</span> slice {
+        <span class="kw">if</span> v <span class="op">==</span> target {
+            <span class="kw">return</span> <span class="kw">true</span>
+        }
+    }
+    <span class="kw">return</span> <span class="kw">false</span>
+}
+
+nums <span class="op">:=</span> []<span class="tp">int</span>{<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>, <span class="num">5</span>}
+fmt.<span class="fn">Println</span>(<span class="fn">Contains</span>(nums, <span class="num">3</span>))  <span class="cm">// true</span>
+fmt.<span class="fn">Println</span>(<span class="fn">Contains</span>(nums, <span class="num">9</span>))  <span class="cm">// false</span>
+
+names <span class="op">:=</span> []<span class="tp">string</span>{<span class="str">&quot;Go&quot;</span>, <span class="str">&quot;Rust&quot;</span>}
+fmt.<span class="fn">Println</span>(<span class="fn">Contains</span>(names, <span class="str">&quot;Go&quot;</span>)) <span class="cm">// true</span>
+
+<span class="cm">// ~ 틸드 = 기본 타입 포함</span>
+<span class="kw">type</span> MyInt <span class="tp">int</span>  <span class="cm">// 기본 타입이 int</span>
+<span class="cm">// ~int → int와 MyInt 모두 허용!</span></pre>
+    </div>
+    <div class="note-box">
+      <p>💡 comparable = 맵 키로 쓸 수 있는 타입!</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-code" id="slide-7">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.17</span>
+  </div>
+  <div class="code-body">
+    <h2 class="slide-subtitle">실무: 제네릭 유틸리티</h2>
+    <div class="code-block">
+      <pre><span class="cm">// 맵의 키 목록 추출</span>
+<span class="kw">func</span> Keys[K comparable, V <span class="tp">any</span>](
+    m <span class="kw">map</span>[K]V) []K {
+    keys <span class="op">:=</span> <span class="kw">make</span>([]K, <span class="num">0</span>, <span class="kw">len</span>(m))
+    <span class="kw">for</span> k <span class="op">:=</span> <span class="kw">range</span> m {
+        keys <span class="op">=</span> <span class="kw">append</span>(keys, k)
+    }
+    <span class="kw">return</span> keys
+}
+
+<span class="cm">// 슬라이스 필터</span>
+<span class="kw">func</span> Filter[T <span class="tp">any</span>](
+    s []T, fn <span class="kw">func</span>(T) <span class="tp">bool</span>) []T {
+    <span class="kw">var</span> result []T
+    <span class="kw">for</span> _, v <span class="op">:=</span> <span class="kw">range</span> s {
+        <span class="kw">if</span> <span class="fn">fn</span>(v) {
+            result <span class="op">=</span> <span class="kw">append</span>(result, v)
+        }
+    }
+    <span class="kw">return</span> result
+}
+
+evens <span class="op">:=</span> <span class="fn">Filter</span>([]<span class="tp">int</span>{<span class="num">1</span>,<span class="num">2</span>,<span class="num">3</span>,<span class="num">4</span>,<span class="num">5</span>},
+    <span class="kw">func</span>(n <span class="tp">int</span>) <span class="tp">bool</span> { <span class="kw">return</span> n<span class="op">%</span><span class="num">2</span> <span class="op">==</span> <span class="num">0</span> })
+<span class="cm">// [2, 4]</span></pre>
+    </div>
+    <div class="note-box">
+      <p>⭐ 제네릭 유틸 = 모든 프로젝트에서 재사용!</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-code" id="slide-8">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.17</span>
+  </div>
+  <div class="code-body">
+    <h2 class="slide-subtitle">제네릭 인터페이스 패턴</h2>
+    <div class="code-block">
+      <pre><span class="cm">// 제네릭 리포지토리 패턴</span>
+<span class="kw">type</span> Entity <span class="tp">interface</span> {
+    <span class="fn">GetID</span>() <span class="tp">string</span>
+}
+
+<span class="kw">type</span> Repository[T Entity] <span class="tp">interface</span> {
+    <span class="fn">FindByID</span>(id <span class="tp">string</span>) (T, <span class="tp">error</span>)
+    <span class="fn">Save</span>(entity T) <span class="tp">error</span>
+    <span class="fn">Delete</span>(id <span class="tp">string</span>) <span class="tp">error</span>
+}
+
+<span class="kw">type</span> <span class="tp">User</span> <span class="kw">struct</span> {
+    ID   <span class="tp">string</span>
+    Name <span class="tp">string</span>
+}
+<span class="kw">func</span> (u <span class="tp">User</span>) <span class="fn">GetID</span>() <span class="tp">string</span> {
+    <span class="kw">return</span> u.ID
+}
+
+<span class="cm">// UserRepo는 Repository[User] 구현</span>
+<span class="cm">// 타입 안전한 CRUD! 캐스팅 불필요!</span></pre>
+    </div>
+    <div class="note-box">
+      <p>⭐ 제네릭 인터페이스 = 타입 안전한 설계!</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-summary" id="slide-9">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.17</span>
+  </div>
+  <div class="summary-body">
+    <h2 class="slide-subtitle">📌 핵심 정리</h2>
+    <div class="summary-points">
+      <p class="body-text">✅ [T constraint] = 타입 파라미터 선언</p>
+      <p class="body-text">✅ any = 모든 타입, comparable = 비교 가능</p>
+      <p class="body-text">✅ interface로 커스텀 제약 정의 가능</p>
+      <p class="body-text">✅ 함수, 구조체, 인터페이스에 모두 사용</p>
+      <p class="body-text">✅ 컴파일 타임 체크 → 런타임 오버헤드 없음</p>
+    </div>
+    <div class="summary-tips">
+      <h3 class="slide-subtitle">💡 Go만의 꿀팁</h3>
+      <p class="body-text">💡 제네릭은 꼭 필요할 때만 사용하라</p>
+      <p class="body-text">💡 interface{}보다 제네릭이 타입 안전</p>
+      <p class="body-text">💡 ~T (틸드)로 기본 타입까지 포함</p>
+      <p class="body-text">💡 Go 철학: 복잡함보다 명확함이 우선!</p>
+    </div>
+    <div class="summary-next">
+      <p class="body-text">다음 편: EP.18 defer, panic, recover 👉</p>
+    </div>
+    <div class="summary-cta">
+      <p>💾 저장 | ❤️ 좋아요 | 👤 팔로우</p>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

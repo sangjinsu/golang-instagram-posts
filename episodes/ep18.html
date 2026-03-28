@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1080">
+  <title>EP.18 defer, panic, recover (Defer Panic Recover)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  padding: 40px;
+}
+
+/* 슬라이드 컨테이너 */
+.slide {
+  width: 1080px;
+  height: 1350px;
+  position: relative;
+  overflow: hidden;
+  font-family: 'Noto Sans KR', sans-serif;
+  color: #e0e0e0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 배경 그라데이션 */
+.slide-thumbnail { background: linear-gradient(135deg, #0f0f23 0%, #0a3d5c 40%, #00ADD8 100%); }
+.slide-concept   { background: linear-gradient(160deg, #0f0f23 0%, #1a1a3e 40%, #0d1b2a 100%); }
+.slide-code      { background: linear-gradient(160deg, #0d1117 0%, #161b22 50%, #0d1117 100%); }
+.slide-summary   { background: linear-gradient(160deg, #1a0a2e 0%, #16213e 50%, #0a1628 100%); }
+
+/* 장식 원 */
+.slide::before, .slide::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.06;
+  pointer-events: none;
+}
+.slide::before { width: 500px; height: 500px; background: #667eea; top: -150px; right: -100px; }
+.slide::after  { width: 350px; height: 350px; background: #f093fb; bottom: -100px; left: -80px; }
+
+/* 상단 바 */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 40px 60px 20px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+.series-tag { font-size: 26px; font-weight: 700; color: #00ADD8; }
+.ep-num     { font-size: 26px; font-weight: 700; color: rgba(255,255,255,0.4); }
+
+/* 타이포그래피 */
+.slide-title    { font-size: 48px; font-weight: 900; color: #fff; line-height: 1.3; margin-bottom: 24px; }
+.slide-subtitle { font-size: 32px; font-weight: 700; color: #00ADD8; margin-bottom: 20px; }
+.body-text      { font-size: 30px; font-weight: 400; color: #e0e0e0; line-height: 1.6; }
+.muted-text     { font-size: 26px; color: rgba(255,255,255,0.5); margin-bottom: 12px; }
+
+/* 코드 블록 */
+.code-block {
+  background: #0d1117;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 32px;
+  margin: 20px 0;
+  position: relative;
+  z-index: 1;
+  flex: 1;
+}
+.code-block pre {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 26px;
+  line-height: 1.7;
+  color: #e6edf3;
+  white-space: pre;
+  overflow: hidden;
+}
+
+/* 코드 구문 색상 */
+.kw  { color: #ff7b72; }
+.str { color: #a5d6ff; }
+.num { color: #79c0ff; }
+.cm  { color: #8b949e; }
+.tp  { color: #7ee787; }
+.fn  { color: #d2a8ff; }
+.op  { color: #ffa657; }
+
+/* 노트 박스 */
+.note-box {
+  background: rgba(0, 173, 216, 0.1);
+  border-left: 4px solid #00ADD8;
+  border-radius: 0 12px 12px 0;
+  padding: 20px 28px;
+  margin-top: auto;
+  position: relative;
+  z-index: 1;
+}
+.note-box p { font-size: 26px; color: #e0e0e0; line-height: 1.5; }
+
+/* === 썸네일 === */
+.thumb-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 80px 60px;
+  position: relative;
+  z-index: 1;
+}
+.thumb-series  { font-size: 36px; font-weight: 700; color: rgba(255,255,255,0.9); }
+.thumb-sub     { font-size: 48px; font-weight: 900; color: #fff; margin-top: 8px; }
+.thumb-divider { width: 80px; height: 4px; background: rgba(255,255,255,0.5); margin: 40px 0; border-radius: 2px; }
+.thumb-ep      { font-size: 64px; font-weight: 900; color: #fff; }
+.thumb-topic   { font-size: 56px; font-weight: 900; color: #fff; margin-top: 16px; }
+.thumb-hook    { font-size: 32px; color: rgba(255,255,255,0.8); margin-top: 32px; }
+.thumb-tags    { text-align: center; padding: 40px; font-size: 24px; color: rgba(255,255,255,0.4); position: relative; z-index: 1; }
+
+/* === 컨셉 === */
+.concept-body     { flex: 1; padding: 20px 60px 40px; display: flex; flex-direction: column; gap: 28px; position: relative; z-index: 1; }
+.concept-explain  { }
+.concept-compare  { background: rgba(255,255,255,0.04); border-radius: 16px; padding: 24px 28px; }
+.concept-features { background: rgba(0,173,216,0.08); border-radius: 16px; padding: 24px 28px; }
+
+/* === 코드 바디 === */
+.code-body { flex: 1; padding: 10px 60px 40px; display: flex; flex-direction: column; position: relative; z-index: 1; }
+
+/* === 요약 === */
+.summary-body   { flex: 1; padding: 20px 60px 40px; display: flex; flex-direction: column; gap: 24px; position: relative; z-index: 1; }
+.summary-points,
+.summary-tips   { background: rgba(255,255,255,0.04); border-radius: 16px; padding: 24px 28px; }
+.summary-next   { text-align: center; padding: 20px; background: rgba(0,173,216,0.08); border-radius: 16px; }
+.summary-cta    { text-align: center; padding: 24px; font-size: 28px; color: rgba(255,255,255,0.6); position: relative; z-index: 1; }
+
+  </style>
+</head>
+<body>
+
+<div class="slide slide-thumbnail" id="slide-1">
+  <div class="thumb-content">
+    <p class="thumb-series">Go 기초 문법</p>
+    <p class="thumb-sub">1분 정리 ⚡</p>
+    <div class="thumb-divider"></div>
+    <p class="thumb-ep">EP.18</p>
+    <h1 class="thumb-topic">defer, panic, recover</h1>
+    <p class="thumb-hook">Go의 안전장치 삼총사! 🛡️</p>
+  </div>
+  <div class="thumb-tags">#Golang #개발 #프로그래밍</div>
+</div>
+
+<div class="slide slide-concept" id="slide-2">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.18</span>
+  </div>
+  <div class="concept-body">
+    <h2 class="slide-title">defer, panic, recover란? 🤔</h2>
+    <div class="concept-explain">
+      <p class="body-text">defer = 함수 끝날 때 실행 예약! ⏰</p>
+      <p class="body-text">panic = 심각한 에러 → 프로그램 중단! 💥</p>
+      <p class="body-text">recover = panic을 잡아서 복구! 🛡️</p>
+      <p class="body-text">세 가지가 함께 Go의 안전망을 구성! 🎯</p>
+    </div>
+    <div class="concept-compare">
+      <p class="muted-text">다른 언어와 비교</p>
+      <p class="body-text">→ Java: try-finally로 리소스 정리</p>
+      <p class="body-text">→ Python: with문 + try-except</p>
+      <p class="body-text">→ JS: try-catch-finally 구문</p>
+      <p class="body-text">→ Go: defer + panic + recover! 🔥</p>
+    </div>
+    <div class="concept-features">
+      <p class="slide-subtitle">핵심 특징</p>
+      <p class="body-text">→ defer: LIFO 순서로 실행 (스택!) ✅</p>
+      <p class="body-text">→ panic: 스택을 거슬러 올라가며 전파 🔧</p>
+      <p class="body-text">→ recover: defer 안에서만 동작 🎯</p>
+      <p class="body-text">→ 리소스 정리에 defer가 필수! 📊</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-code" id="slide-3">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.18</span>
+  </div>
+  <div class="code-body">
+    <h2 class="slide-subtitle">defer 기본 사용법</h2>
+    <div class="code-block">
+      <pre><span class="kw">func</span> <span class="fn">main</span>() {
+    fmt.<span class="fn">Println</span>(<span class="str">&quot;시작&quot;</span>)
+    <span class="kw">defer</span> fmt.<span class="fn">Println</span>(<span class="str">&quot;세 번째&quot;</span>)
+    <span class="kw">defer</span> fmt.<span class="fn">Println</span>(<span class="str">&quot;두 번째&quot;</span>)
+    <span class="kw">defer</span> fmt.<span class="fn">Println</span>(<span class="str">&quot;첫 번째&quot;</span>)
+    fmt.<span class="fn">Println</span>(<span class="str">&quot;끝&quot;</span>)
+}
+<span class="cm">// 출력:</span>
+<span class="cm">// 시작</span>
+<span class="cm">// 끝</span>
+<span class="cm">// 첫 번째  ← LIFO (후입선출!)</span>
+<span class="cm">// 두 번째</span>
+<span class="cm">// 세 번째</span>
+
+<span class="cm">// defer = 함수 종료 시 실행 예약</span>
+<span class="cm">// 여러 개면 스택처럼 역순 실행!</span>
+<span class="cm">// 인자는 defer 호출 시점에 평가됨</span>
+
+x <span class="op">:=</span> <span class="num">10</span>
+<span class="kw">defer</span> fmt.<span class="fn">Println</span>(x) <span class="cm">// 10 출력 (지금 평가!)</span>
+x <span class="op">=</span> <span class="num">20</span></pre>
+    </div>
+    <div class="note-box">
+      <p>⭐ defer는 LIFO! 나중에 등록한 게 먼저 실행!</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-code" id="slide-4">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.18</span>
+  </div>
+  <div class="code-body">
+    <h2 class="slide-subtitle">defer로 리소스 정리</h2>
+    <div class="code-block">
+      <pre><span class="cm">// 파일 열기 → defer로 닫기 보장!</span>
+<span class="kw">func</span> <span class="fn">ReadFile</span>(path <span class="tp">string</span>) ([]<span class="tp">byte</span>, <span class="tp">error</span>) {
+    f, err <span class="op">:=</span> os.<span class="fn">Open</span>(path)
+    <span class="kw">if</span> err <span class="op">!=</span> <span class="kw">nil</span> {
+        <span class="kw">return</span> <span class="kw">nil</span>, err
+    }
+    <span class="kw">defer</span> f.<span class="fn">Close</span>() <span class="cm">// 함수 끝나면 반드시 닫힘!</span>
+
+    <span class="kw">return</span> io.<span class="fn">ReadAll</span>(f)
+}
+
+<span class="cm">// 뮤텍스 잠금 → defer로 해제!</span>
+<span class="kw">var</span> mu sync.Mutex
+
+<span class="kw">func</span> <span class="fn">SafeUpdate</span>(data <span class="op">*</span>Data) {
+    mu.<span class="fn">Lock</span>()
+    <span class="kw">defer</span> mu.<span class="fn">Unlock</span>() <span class="cm">// 잠금 해제 보장!</span>
+
+    data.Count<span class="op">+</span><span class="op">+</span>
+    data.UpdatedAt <span class="op">=</span> time.<span class="fn">Now</span>()
+<span class="cm">    // 어떤 에러가 나도 Unlock 실행!</span>
+}</pre>
+    </div>
+    <div class="note-box">
+      <p>💡 열었으면 defer로 닫아라! Go의 철칙!</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-code" id="slide-5">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.18</span>
+  </div>
+  <div class="code-body">
+    <h2 class="slide-subtitle">panic: 프로그램 중단</h2>
+    <div class="code-block">
+      <pre><span class="cm">// panic = 복구 불가능한 심각한 에러!</span>
+<span class="kw">func</span> <span class="fn">MustParseConfig</span>(path <span class="tp">string</span>) Config {
+    data, err <span class="op">:=</span> os.<span class="fn">ReadFile</span>(path)
+    <span class="kw">if</span> err <span class="op">!=</span> <span class="kw">nil</span> {
+        <span class="fn">panic</span>(<span class="str">&quot;설정 파일 없음: &quot;</span> <span class="op">+</span> path)
+    }
+    <span class="kw">var</span> cfg Config
+    <span class="kw">if</span> err <span class="op">:=</span> json.<span class="fn">Unmarshal</span>(data, <span class="op">&amp;</span>cfg);
+        err <span class="op">!=</span> <span class="kw">nil</span> {
+        <span class="fn">panic</span>(<span class="str">&quot;설정 파싱 실패: &quot;</span> <span class="op">+</span> err.<span class="fn">Error</span>())
+    }
+    <span class="kw">return</span> cfg
+}
+
+<span class="cm">// panic 발생 시:</span>
+<span class="cm">// 1. 현재 함수 즉시 중단</span>
+<span class="cm">// 2. defer들은 실행됨! ← 중요!</span>
+<span class="cm">// 3. 호출 스택을 거슬러 올라감</span>
+<span class="cm">// 4. recover 없으면 프로그램 종료</span>
+
+<span class="cm">// ⚠️ 일반 에러는 error 반환 사용!</span>
+<span class="cm">// panic은 정말 심각할 때만!</span></pre>
+    </div>
+    <div class="note-box">
+      <p>⚠️ panic은 최후의 수단! 보통은 error 반환!</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-code" id="slide-6">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.18</span>
+  </div>
+  <div class="code-body">
+    <h2 class="slide-subtitle">recover: 패닉 복구</h2>
+    <div class="code-block">
+      <pre><span class="cm">// recover = defer 안에서만 동작!</span>
+<span class="kw">func</span> <span class="fn">SafeExecute</span>(fn <span class="kw">func</span>()) (err <span class="tp">error</span>) {
+    <span class="kw">defer</span> <span class="kw">func</span>() {
+        <span class="kw">if</span> r <span class="op">:=</span> <span class="fn">recover</span>(); r <span class="op">!=</span> <span class="kw">nil</span> {
+            err <span class="op">=</span> fmt.<span class="fn">Errorf</span>(<span class="str">&quot;복구됨: %v&quot;</span>, r)
+        }
+    }()
+
+    <span class="fn">fn</span>() <span class="cm">// panic이 발생해도 복구!</span>
+    <span class="kw">return</span> <span class="kw">nil</span>
+}
+
+<span class="cm">// 사용 예시</span>
+err <span class="op">:=</span> <span class="fn">SafeExecute</span>(<span class="kw">func</span>() {
+    <span class="fn">panic</span>(<span class="str">&quot;큰일이다!&quot;</span>)
+})
+fmt.<span class="fn">Println</span>(err)
+<span class="cm">// 복구됨: 큰일이다!</span>
+
+<span class="cm">// recover() 반환값:</span>
+<span class="cm">// - panic 인자값 (interface{})</span>
+<span class="cm">// - panic 없으면 nil</span></pre>
+    </div>
+    <div class="note-box">
+      <p>⭐ recover는 반드시 defer 함수 안에서!</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-code" id="slide-7">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.18</span>
+  </div>
+  <div class="code-body">
+    <h2 class="slide-subtitle">실무: 안전한 고루틴</h2>
+    <div class="code-block">
+      <pre><span class="cm">// 고루틴에서 panic → 전체 프로그램 종료!</span>
+<span class="cm">// recover로 보호하는 패턴</span>
+<span class="kw">func</span> <span class="fn">SafeGo</span>(fn <span class="kw">func</span>()) {
+    <span class="kw">go</span> <span class="kw">func</span>() {
+        <span class="kw">defer</span> <span class="kw">func</span>() {
+            <span class="kw">if</span> r <span class="op">:=</span> <span class="fn">recover</span>(); r <span class="op">!=</span> <span class="kw">nil</span> {
+                log.<span class="fn">Printf</span>(<span class="str">&quot;고루틴 패닉: %v&quot;</span>,
+                    r)
+<span class="cm">                // 스택 트레이스 출력</span>
+                debug.<span class="fn">PrintStack</span>()
+            }
+        }()
+        <span class="fn">fn</span>()
+    }()
+}
+
+<span class="cm">// HTTP 서버의 미들웨어 패턴</span>
+<span class="kw">func</span> <span class="fn">Recovery</span>(next http.Handler) http.Handler {
+    <span class="kw">return</span> http.<span class="fn">HandlerFunc</span>(
+        <span class="kw">func</span>(w http.ResponseWriter,
+            r <span class="op">*</span>http.Request) {
+        <span class="kw">defer</span> <span class="kw">func</span>() {
+            <span class="kw">if</span> err <span class="op">:=</span> <span class="fn">recover</span>(); err <span class="op">!=</span> <span class="kw">nil</span> {
+                w.<span class="fn">WriteHeader</span>(<span class="num">500</span>)
+            }
+        }()
+        next.<span class="fn">ServeHTTP</span>(w, r)
+    })
+}</pre>
+    </div>
+    <div class="note-box">
+      <p>⭐ 고루틴 + recover = 서버 안정성의 핵심!</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-code" id="slide-8">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.18</span>
+  </div>
+  <div class="code-body">
+    <h2 class="slide-subtitle">defer 고급 패턴</h2>
+    <div class="code-block">
+      <pre><span class="cm">// 실행 시간 측정 패턴</span>
+<span class="kw">func</span> <span class="fn">TrackTime</span>(name <span class="tp">string</span>) <span class="kw">func</span>() {
+    start <span class="op">:=</span> time.<span class="fn">Now</span>()
+    <span class="kw">return</span> <span class="kw">func</span>() {
+        fmt.<span class="fn">Printf</span>(<span class="str">&quot;%s: %v\n&quot;</span>,
+            name, time.<span class="fn">Since</span>(start))
+    }
+}
+
+<span class="kw">func</span> <span class="fn">Process</span>() {
+    <span class="kw">defer</span> <span class="fn">TrackTime</span>(<span class="str">&quot;Process&quot;</span>)()
+<span class="cm">    // ... 작업 수행</span>
+    time.<span class="fn">Sleep</span>(<span class="num">2</span> <span class="op">*</span> time.Second)
+}
+<span class="cm">// Process: 2.001s</span>
+
+<span class="cm">// 에러 래핑 패턴</span>
+<span class="kw">func</span> <span class="fn">DoWork</span>() (err <span class="tp">error</span>) {
+    <span class="kw">defer</span> <span class="kw">func</span>() {
+        <span class="kw">if</span> err <span class="op">!=</span> <span class="kw">nil</span> {
+            err <span class="op">=</span> fmt.<span class="fn">Errorf</span>(
+                <span class="str">&quot;DoWork 실패: %w&quot;</span>, err)
+        }
+    }()
+    <span class="kw">return</span> <span class="fn">riskyOperation</span>()
+}</pre>
+    </div>
+    <div class="note-box">
+      <p>💡 defer + 클로저 = 강력한 실무 패턴!</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-summary" id="slide-9">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.18</span>
+  </div>
+  <div class="summary-body">
+    <h2 class="slide-subtitle">📌 핵심 정리</h2>
+    <div class="summary-points">
+      <p class="body-text">✅ defer = 함수 종료 시 실행 (LIFO 순서)</p>
+      <p class="body-text">✅ panic = 심각한 에러 시 프로그램 중단</p>
+      <p class="body-text">✅ recover = defer 안에서 panic 복구</p>
+      <p class="body-text">✅ 리소스 정리는 항상 defer로!</p>
+      <p class="body-text">✅ 고루틴 panic은 recover로 보호!</p>
+    </div>
+    <div class="summary-tips">
+      <h3 class="slide-subtitle">💡 Go만의 꿀팁</h3>
+      <p class="body-text">💡 파일/DB/Lock → 열자마자 defer로 닫기</p>
+      <p class="body-text">💡 일반 에러는 error 반환, panic은 최후 수단</p>
+      <p class="body-text">💡 recover는 반드시 defer 함수 안에서만</p>
+      <p class="body-text">💡 HTTP 서버는 recovery 미들웨어 필수!</p>
+    </div>
+    <div class="summary-next">
+      <p class="body-text">다음 편: EP.19 Context 👉</p>
+    </div>
+    <div class="summary-cta">
+      <p>💾 저장 | ❤️ 좋아요 | 👤 팔로우</p>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

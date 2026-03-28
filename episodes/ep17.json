@@ -1,0 +1,130 @@
+{
+  "episode": 17,
+  "title": "제네릭",
+  "title_en": "Generics",
+  "difficulty": "★★★",
+  "hook": "타입 파라미터로 코드 중복을 없애자! 🎯",
+  "next_ep": {
+    "number": 18,
+    "title": "defer, panic, recover"
+  },
+  "slides": [
+    {
+      "slide_number": 1,
+      "type": "thumbnail",
+      "content": {
+        "series_name": "Go 기초 문법",
+        "series_sub": "1분 정리 ⚡",
+        "ep_label": "EP.17",
+        "topic": "제네릭 (Generics)",
+        "hook": "타입 파라미터로 코드 중복을 없애자! 🎯"
+      }
+    },
+    {
+      "slide_number": 2,
+      "type": "concept",
+      "content": {
+        "question": "제네릭이란? 🤔",
+        "explanation": [
+          "하나의 함수로 여러 타입을 처리! 🎯",
+          "Go 1.18부터 드디어 추가! (2022) 🎉",
+          "타입 파라미터 [T any]로 선언 📝",
+          "코드 중복 없이 타입 안전성까지! 🛡️"
+        ],
+        "comparison": {
+          "label": "제네릭 없던 시절",
+          "items": [
+            "int용 함수, string용 함수 따로 작성 😱",
+            "interface{}로 타입 안전성 포기 😢",
+            "타입 단언(assertion) 남발 🤮",
+            "Go 1.18: 제네릭으로 깔끔하게! ✨"
+          ]
+        },
+        "features": {
+          "label": "Go 제네릭 핵심 특징",
+          "items": [
+            "타입 파라미터 [T constraint] 문법 ✅",
+            "타입 제약(constraints)으로 안전성 확보 🔧",
+            "함수, 구조체, 인터페이스에 사용 가능 🎯",
+            "컴파일 타임 타입 체크! 런타임 오버헤드 없음 ⚡"
+          ]
+        }
+      }
+    },
+    {
+      "slide_number": 3,
+      "type": "code",
+      "content": {
+        "title": "제네릭 함수 기본",
+        "code": "// 제네릭 없이 → 타입마다 함수 필요!\nfunc MinInt(a, b int) int {\n    if a < b { return a }\n    return b\n}\nfunc MinFloat(a, b float64) float64 {\n    if a < b { return a }\n    return b\n}\n\n// 제네릭으로 → 하나면 끝! ✨\nfunc Min[T int | float64 | string](\n    a, b T) T {\n    if a < b { return a }\n    return b\n}\n\nfmt.Println(Min(3, 7))       // 3\nfmt.Println(Min(1.5, 2.3))   // 1.5\nfmt.Println(Min(\"a\", \"z\"))   // a",
+        "note": "⭐ [T 타입들] = 타입 파라미터 선언!"
+      }
+    },
+    {
+      "slide_number": 4,
+      "type": "code",
+      "content": {
+        "title": "타입 제약 (Constraints)",
+        "code": "import \"golang.org/x/exp/constraints\"\n\n// 직접 제약 정의\ntype Number interface {\n    int | int32 | int64 |\n    float32 | float64\n}\n\nfunc Sum[T Number](nums []T) T {\n    var total T\n    for _, n := range nums {\n        total += n\n    }\n    return total\n}\n\n// 표준 제약 사용\n// any        = 모든 타입 (interface{})\n// comparable = ==, != 비교 가능한 타입\n\nfmt.Println(Sum([]int{1, 2, 3}))  // 6\nfmt.Println(Sum([]float64{1.1, 2.2})) // 3.3",
+        "note": "💡 interface로 타입 제약을 직접 정의!"
+      }
+    },
+    {
+      "slide_number": 5,
+      "type": "code",
+      "content": {
+        "title": "제네릭 구조체",
+        "code": "// 제네릭 스택\ntype Stack[T any] struct {\n    items []T\n}\n\nfunc (s *Stack[T]) Push(item T) {\n    s.items = append(s.items, item)\n}\n\nfunc (s *Stack[T]) Pop() (T, bool) {\n    if len(s.items) == 0 {\n        var zero T\n        return zero, false\n    }\n    last := len(s.items) - 1\n    item := s.items[last]\n    s.items = s.items[:last]\n    return item, true\n}\n\ns := Stack[int]{}\ns.Push(10)\ns.Push(20)\nval, _ := s.Pop() // 20",
+        "note": "⭐ Stack[int], Stack[string] 어떤 타입이든!"
+      }
+    },
+    {
+      "slide_number": 6,
+      "type": "code",
+      "content": {
+        "title": "comparable과 맵 키",
+        "code": "// comparable = ==, != 가능한 타입\nfunc Contains[T comparable](\n    slice []T, target T) bool {\n    for _, v := range slice {\n        if v == target {\n            return true\n        }\n    }\n    return false\n}\n\nnums := []int{1, 2, 3, 4, 5}\nfmt.Println(Contains(nums, 3))  // true\nfmt.Println(Contains(nums, 9))  // false\n\nnames := []string{\"Go\", \"Rust\"}\nfmt.Println(Contains(names, \"Go\")) // true\n\n// ~ 틸드 = 기본 타입 포함\ntype MyInt int  // 기본 타입이 int\n// ~int → int와 MyInt 모두 허용!",
+        "note": "💡 comparable = 맵 키로 쓸 수 있는 타입!"
+      }
+    },
+    {
+      "slide_number": 7,
+      "type": "code",
+      "content": {
+        "title": "실무: 제네릭 유틸리티",
+        "code": "// 맵의 키 목록 추출\nfunc Keys[K comparable, V any](\n    m map[K]V) []K {\n    keys := make([]K, 0, len(m))\n    for k := range m {\n        keys = append(keys, k)\n    }\n    return keys\n}\n\n// 슬라이스 필터\nfunc Filter[T any](\n    s []T, fn func(T) bool) []T {\n    var result []T\n    for _, v := range s {\n        if fn(v) {\n            result = append(result, v)\n        }\n    }\n    return result\n}\n\nevens := Filter([]int{1,2,3,4,5},\n    func(n int) bool { return n%2 == 0 })\n// [2, 4]",
+        "note": "⭐ 제네릭 유틸 = 모든 프로젝트에서 재사용!"
+      }
+    },
+    {
+      "slide_number": 8,
+      "type": "code",
+      "content": {
+        "title": "제네릭 인터페이스 패턴",
+        "code": "// 제네릭 리포지토리 패턴\ntype Entity interface {\n    GetID() string\n}\n\ntype Repository[T Entity] interface {\n    FindByID(id string) (T, error)\n    Save(entity T) error\n    Delete(id string) error\n}\n\ntype User struct {\n    ID   string\n    Name string\n}\nfunc (u User) GetID() string {\n    return u.ID\n}\n\n// UserRepo는 Repository[User] 구현\n// 타입 안전한 CRUD! 캐스팅 불필요!",
+        "note": "⭐ 제네릭 인터페이스 = 타입 안전한 설계!"
+      }
+    },
+    {
+      "slide_number": 9,
+      "type": "summary",
+      "content": {
+        "points": [
+          "✅ [T constraint] = 타입 파라미터 선언",
+          "✅ any = 모든 타입, comparable = 비교 가능",
+          "✅ interface로 커스텀 제약 정의 가능",
+          "✅ 함수, 구조체, 인터페이스에 모두 사용",
+          "✅ 컴파일 타임 체크 → 런타임 오버헤드 없음"
+        ],
+        "tips": [
+          "💡 제네릭은 꼭 필요할 때만 사용하라",
+          "💡 interface{}보다 제네릭이 타입 안전",
+          "💡 ~T (틸드)로 기본 타입까지 포함",
+          "💡 Go 철학: 복잡함보다 명확함이 우선!"
+        ],
+        "next_preview": "다음 편: EP.18 defer, panic, recover 👉",
+        "cta": "💾 저장 | ❤️ 좋아요 | 👤 팔로우"
+      }
+    }
+  ]
+}
