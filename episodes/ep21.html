@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1080">
+  <title>EP.21 동시성 패턴 (Concurrency Patterns)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  padding: 40px;
+}
+
+/* 슬라이드 컨테이너 */
+.slide {
+  width: 1080px;
+  height: 1350px;
+  position: relative;
+  overflow: hidden;
+  font-family: 'Noto Sans KR', sans-serif;
+  color: #e0e0e0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 배경 그라데이션 */
+.slide-thumbnail { background: linear-gradient(135deg, #0f0f23 0%, #0a3d5c 40%, #00ADD8 100%); }
+.slide-concept   { background: linear-gradient(160deg, #0f0f23 0%, #1a1a3e 40%, #0d1b2a 100%); }
+.slide-code      { background: linear-gradient(160deg, #0d1117 0%, #161b22 50%, #0d1117 100%); }
+.slide-summary   { background: linear-gradient(160deg, #1a0a2e 0%, #16213e 50%, #0a1628 100%); }
+
+/* 장식 원 */
+.slide::before, .slide::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.06;
+  pointer-events: none;
+}
+.slide::before { width: 500px; height: 500px; background: #667eea; top: -150px; right: -100px; }
+.slide::after  { width: 350px; height: 350px; background: #f093fb; bottom: -100px; left: -80px; }
+
+/* 상단 바 */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 40px 60px 20px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+.series-tag { font-size: 26px; font-weight: 700; color: #00ADD8; }
+.ep-num     { font-size: 26px; font-weight: 700; color: rgba(255,255,255,0.4); }
+
+/* 타이포그래피 */
+.slide-title    { font-size: 48px; font-weight: 900; color: #fff; line-height: 1.3; margin-bottom: 24px; }
+.slide-subtitle { font-size: 32px; font-weight: 700; color: #00ADD8; margin-bottom: 20px; }
+.body-text      { font-size: 30px; font-weight: 400; color: #e0e0e0; line-height: 1.6; }
+.muted-text     { font-size: 26px; color: rgba(255,255,255,0.5); margin-bottom: 12px; }
+
+/* 코드 블록 */
+.code-block {
+  background: #0d1117;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 32px;
+  margin: 20px 0;
+  position: relative;
+  z-index: 1;
+  flex: 1;
+}
+.code-block pre {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 26px;
+  line-height: 1.7;
+  color: #e6edf3;
+  white-space: pre;
+  overflow: hidden;
+}
+
+/* 코드 구문 색상 */
+.kw  { color: #ff7b72; }
+.str { color: #a5d6ff; }
+.num { color: #79c0ff; }
+.cm  { color: #8b949e; }
+.tp  { color: #7ee787; }
+.fn  { color: #d2a8ff; }
+.op  { color: #ffa657; }
+
+/* 노트 박스 */
+.note-box {
+  background: rgba(0, 173, 216, 0.1);
+  border-left: 4px solid #00ADD8;
+  border-radius: 0 12px 12px 0;
+  padding: 20px 28px;
+  margin-top: auto;
+  position: relative;
+  z-index: 1;
+}
+.note-box p { font-size: 26px; color: #e0e0e0; line-height: 1.5; }
+
+/* === 썸네일 === */
+.thumb-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 80px 60px;
+  position: relative;
+  z-index: 1;
+}
+.thumb-series  { font-size: 36px; font-weight: 700; color: rgba(255,255,255,0.9); }
+.thumb-sub     { font-size: 48px; font-weight: 900; color: #fff; margin-top: 8px; }
+.thumb-divider { width: 80px; height: 4px; background: rgba(255,255,255,0.5); margin: 40px 0; border-radius: 2px; }
+.thumb-ep      { font-size: 64px; font-weight: 900; color: #fff; }
+.thumb-topic   { font-size: 56px; font-weight: 900; color: #fff; margin-top: 16px; }
+.thumb-hook    { font-size: 32px; color: rgba(255,255,255,0.8); margin-top: 32px; }
+.thumb-tags    { text-align: center; padding: 40px; font-size: 24px; color: rgba(255,255,255,0.4); position: relative; z-index: 1; }
+
+/* === 컨셉 === */
+.concept-body     { flex: 1; padding: 20px 60px 40px; display: flex; flex-direction: column; gap: 28px; position: relative; z-index: 1; }
+.concept-explain  { }
+.concept-compare  { background: rgba(255,255,255,0.04); border-radius: 16px; padding: 24px 28px; }
+.concept-features { background: rgba(0,173,216,0.08); border-radius: 16px; padding: 24px 28px; }
+
+/* === 코드 바디 === */
+.code-body { flex: 1; padding: 10px 60px 40px; display: flex; flex-direction: column; position: relative; z-index: 1; }
+
+/* === 요약 === */
+.summary-body   { flex: 1; padding: 20px 60px 40px; display: flex; flex-direction: column; gap: 24px; position: relative; z-index: 1; }
+.summary-points,
+.summary-tips   { background: rgba(255,255,255,0.04); border-radius: 16px; padding: 24px 28px; }
+.summary-next   { text-align: center; padding: 20px; background: rgba(0,173,216,0.08); border-radius: 16px; }
+.summary-cta    { text-align: center; padding: 24px; font-size: 28px; color: rgba(255,255,255,0.6); position: relative; z-index: 1; }
+
+  </style>
+</head>
+<body>
+
+<div class="slide slide-thumbnail" id="slide-1">
+  <div class="thumb-content">
+    <p class="thumb-series">Go 기초 문법</p>
+    <p class="thumb-sub">1분 정리 ⚡</p>
+    <div class="thumb-divider"></div>
+    <p class="thumb-ep">EP.21</p>
+    <h1 class="thumb-topic">동시성 패턴 (Concurrency)</h1>
+    <p class="thumb-hook">고루틴을 제대로 다루는 법! 🔀</p>
+  </div>
+  <div class="thumb-tags">#Golang #개발 #프로그래밍</div>
+</div>
+
+<div class="slide slide-concept" id="slide-2">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.21</span>
+  </div>
+  <div class="concept-body">
+    <h2 class="slide-title">동시성 패턴이란? 🤔</h2>
+    <div class="concept-explain">
+      <p class="body-text">고루틴 + 채널을 조합하는 설계 패턴! 🧩</p>
+      <p class="body-text">select = 여러 채널을 동시에 대기 📡</p>
+      <p class="body-text">sync 패키지 = 공유 자원 안전하게 관리 🔒</p>
+      <p class="body-text">실무에서 반드시 알아야 할 패턴들! 🎯</p>
+    </div>
+    <div class="concept-compare">
+      <p class="muted-text">동시성 vs 병렬성</p>
+      <p class="body-text">→ 동시성: 여러 작업을 번갈아 처리 🔄</p>
+      <p class="body-text">→ 병렬성: 여러 작업을 동시에 처리 ⚡</p>
+      <p class="body-text">→ Go: 동시성을 쉽게 → 병렬성은 자동!</p>
+      <p class="body-text">→ 고루틴 = 동시성의 핵심 도구! 🚀</p>
+    </div>
+    <div class="concept-features">
+      <p class="slide-subtitle">핵심 도구 3가지</p>
+      <p class="body-text">→ select: 다중 채널 멀티플렉싱 ✅</p>
+      <p class="body-text">→ sync.WaitGroup: 고루틴 완료 대기 🔧</p>
+      <p class="body-text">→ sync.Mutex: 공유 자원 보호 🔒</p>
+      <p class="body-text">→ sync.Once: 딱 한번만 실행 보장 🎯</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-code" id="slide-3">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.21</span>
+  </div>
+  <div class="code-body">
+    <h2 class="slide-subtitle">select: 다중 채널 대기</h2>
+    <div class="code-block">
+      <pre><span class="kw">func</span> <span class="fn">main</span>() {
+    ch1 <span class="op">:=</span> <span class="kw">make</span>(<span class="kw">chan</span> <span class="tp">string</span>)
+    ch2 <span class="op">:=</span> <span class="kw">make</span>(<span class="kw">chan</span> <span class="tp">string</span>)
+
+    <span class="kw">go</span> <span class="kw">func</span>() {
+        time.<span class="fn">Sleep</span>(<span class="num">1</span> <span class="op">*</span> time.Second)
+        ch1 <span class="op">&lt;-</span> <span class="str">&quot;채널 1 완료&quot;</span>
+    }()
+    <span class="kw">go</span> <span class="kw">func</span>() {
+        time.<span class="fn">Sleep</span>(<span class="num">2</span> <span class="op">*</span> time.Second)
+        ch2 <span class="op">&lt;-</span> <span class="str">&quot;채널 2 완료&quot;</span>
+    }()
+
+<span class="cm">    // 먼저 도착하는 채널 처리!</span>
+    <span class="kw">select</span> {
+    <span class="kw">case</span> msg <span class="op">:=</span> <span class="op">&lt;-</span>ch1:
+        fmt.<span class="fn">Println</span>(msg)
+    <span class="kw">case</span> msg <span class="op">:=</span> <span class="op">&lt;-</span>ch2:
+        fmt.<span class="fn">Println</span>(msg)
+    <span class="kw">case</span> <span class="op">&lt;-</span>time.<span class="fn">After</span>(<span class="num">3</span> <span class="op">*</span> time.Second):
+        fmt.<span class="fn">Println</span>(<span class="str">&quot;타임아웃!&quot;</span>)
+    }
+<span class="cm">    // 채널 1 완료 (1초 후 먼저 도착!)</span></pre>
+    </div>
+    <div class="note-box">
+      <p>⭐ select = switch의 채널 버전! 먼저 온 놈이 승!</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-code" id="slide-4">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.21</span>
+  </div>
+  <div class="code-body">
+    <h2 class="slide-subtitle">WaitGroup: 고루틴 완료 대기</h2>
+    <div class="code-block">
+      <pre><span class="kw">func</span> <span class="fn">main</span>() {
+    <span class="kw">var</span> wg sync.WaitGroup
+
+    urls <span class="op">:=</span> []<span class="tp">string</span>{
+        <span class="str">&quot;https://api.example.com/users&quot;</span>,
+        <span class="str">&quot;https://api.example.com/posts&quot;</span>,
+        <span class="str">&quot;https://api.example.com/comments&quot;</span>,
+    }
+
+    <span class="kw">for</span> _, url <span class="op">:=</span> <span class="kw">range</span> urls {
+        wg.<span class="fn">Add</span>(<span class="num">1</span>) <span class="cm">// 카운터 +1</span>
+        <span class="kw">go</span> <span class="kw">func</span>(u <span class="tp">string</span>) {
+            <span class="kw">defer</span> wg.<span class="fn">Done</span>() <span class="cm">// 카운터 -1</span>
+            resp, _ <span class="op">:=</span> http.<span class="fn">Get</span>(u)
+            <span class="kw">defer</span> resp.Body.<span class="fn">Close</span>()
+            fmt.<span class="fn">Printf</span>(<span class="str">&quot;%s → %d\n&quot;</span>,
+                u, resp.StatusCode)
+        }(url)
+    }
+
+    wg.<span class="fn">Wait</span>() <span class="cm">// 카운터가 0이 될 때까지 대기!</span>
+    fmt.<span class="fn">Println</span>(<span class="str">&quot;모든 요청 완료!&quot;</span>)
+}</pre>
+    </div>
+    <div class="note-box">
+      <p>💡 Add(1) → Done() → Wait() = 3단계 패턴!</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-code" id="slide-5">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.21</span>
+  </div>
+  <div class="code-body">
+    <h2 class="slide-subtitle">Mutex: 공유 자원 보호</h2>
+    <div class="code-block">
+      <pre><span class="kw">type</span> <span class="tp">SafeCounter</span> <span class="kw">struct</span> {
+    mu sync.Mutex
+    count <span class="kw">map</span>[<span class="tp">string</span>]<span class="tp">int</span>
+}
+
+<span class="kw">func</span> (c <span class="op">*</span><span class="tp">SafeCounter</span>) <span class="fn">Inc</span>(key <span class="tp">string</span>) {
+    c.mu.<span class="fn">Lock</span>()         <span class="cm">// 잠금!</span>
+    <span class="kw">defer</span> c.mu.<span class="fn">Unlock</span>() <span class="cm">// 해제!</span>
+    c.count[key]<span class="op">+</span><span class="op">+</span>
+}
+
+<span class="kw">func</span> (c <span class="op">*</span><span class="tp">SafeCounter</span>) <span class="fn">Get</span>(key <span class="tp">string</span>) <span class="tp">int</span> {
+    c.mu.<span class="fn">Lock</span>()
+    <span class="kw">defer</span> c.mu.<span class="fn">Unlock</span>()
+    <span class="kw">return</span> c.count[key]
+}
+
+<span class="kw">func</span> <span class="fn">main</span>() {
+    c <span class="op">:=</span> <span class="tp">SafeCounter</span>{
+        count: <span class="kw">make</span>(<span class="kw">map</span>[<span class="tp">string</span>]<span class="tp">int</span>)}
+    <span class="kw">for</span> i <span class="op">:=</span> <span class="num">0</span>; i <span class="op">&lt;</span> <span class="num">1000</span>; i<span class="op">+</span><span class="op">+</span> {
+        <span class="kw">go</span> c.<span class="fn">Inc</span>(<span class="str">&quot;key&quot;</span>)
+    }
+    time.<span class="fn">Sleep</span>(time.Second)
+    fmt.<span class="fn">Println</span>(c.<span class="fn">Get</span>(<span class="str">&quot;key&quot;</span>)) <span class="cm">// 1000 ✅</span>
+}</pre>
+    </div>
+    <div class="note-box">
+      <p>⭐ Mutex 없이 map 동시 접근 = panic! 💥</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-code" id="slide-6">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.21</span>
+  </div>
+  <div class="code-body">
+    <h2 class="slide-subtitle">Fan-Out / Fan-In 패턴</h2>
+    <div class="code-block">
+      <pre><span class="cm">// Fan-Out: 하나의 입력 → 여러 워커</span>
+<span class="cm">// Fan-In: 여러 워커 → 하나의 출력</span>
+<span class="kw">func</span> <span class="fn">worker</span>(id <span class="tp">int</span>,
+    jobs <span class="op">&lt;-</span><span class="kw">chan</span> <span class="tp">int</span>,
+    results <span class="kw">chan</span><span class="op">&lt;-</span> <span class="tp">int</span>) {
+    <span class="kw">for</span> j <span class="op">:=</span> <span class="kw">range</span> jobs {
+        fmt.<span class="fn">Printf</span>(<span class="str">&quot;워커%d: 작업%d 처리\n&quot;</span>,
+            id, j)
+        time.<span class="fn">Sleep</span>(time.Second)
+        results <span class="op">&lt;-</span> j <span class="op">*</span> <span class="num">2</span>
+    }
+}
+
+<span class="kw">func</span> <span class="fn">main</span>() {
+    jobs <span class="op">:=</span> <span class="kw">make</span>(<span class="kw">chan</span> <span class="tp">int</span>, <span class="num">100</span>)
+    results <span class="op">:=</span> <span class="kw">make</span>(<span class="kw">chan</span> <span class="tp">int</span>, <span class="num">100</span>)
+
+<span class="cm">    // Fan-Out: 3개 워커 실행</span>
+    <span class="kw">for</span> w <span class="op">:=</span> <span class="num">1</span>; w <span class="op">&lt;=</span> <span class="num">3</span>; w<span class="op">+</span><span class="op">+</span> {
+        <span class="kw">go</span> <span class="fn">worker</span>(w, jobs, results)
+    }
+
+<span class="cm">    // 작업 전송</span>
+    <span class="kw">for</span> j <span class="op">:=</span> <span class="num">1</span>; j <span class="op">&lt;=</span> <span class="num">9</span>; j<span class="op">+</span><span class="op">+</span> {
+        jobs <span class="op">&lt;-</span> j
+    }
+    <span class="fn">close</span>(jobs)
+
+<span class="cm">    // Fan-In: 결과 수집</span>
+    <span class="kw">for</span> i <span class="op">:=</span> <span class="num">0</span>; i <span class="op">&lt;</span> <span class="num">9</span>; i<span class="op">+</span><span class="op">+</span> {
+        fmt.<span class="fn">Println</span>(<span class="op">&lt;-</span>results)
+    }
+}</pre>
+    </div>
+    <div class="note-box">
+      <p>⭐ 워커 풀 패턴 = Go 동시성의 꽃!</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-code" id="slide-7">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.21</span>
+  </div>
+  <div class="code-body">
+    <h2 class="slide-subtitle">실무: errgroup 패턴</h2>
+    <div class="code-block">
+      <pre><span class="kw">import</span> <span class="str">&quot;golang.org/x/sync/errgroup&quot;</span>
+
+<span class="kw">func</span> <span class="fn">FetchAll</span>(ctx context.Context,
+    urls []<span class="tp">string</span>) ([]Response, <span class="tp">error</span>) {
+    g, ctx <span class="op">:=</span> errgroup.<span class="fn">WithContext</span>(ctx)
+    results <span class="op">:=</span> <span class="kw">make</span>([]Response, <span class="kw">len</span>(urls))
+
+    <span class="kw">for</span> i, url <span class="op">:=</span> <span class="kw">range</span> urls {
+        g.<span class="fn">Go</span>(<span class="kw">func</span>() <span class="tp">error</span> {
+            resp, err <span class="op">:=</span> <span class="fn">FetchURL</span>(ctx, url)
+            <span class="kw">if</span> err <span class="op">!=</span> <span class="kw">nil</span> {
+                <span class="kw">return</span> err <span class="cm">// 에러 → 전체 취소!</span>
+            }
+            results[i] <span class="op">=</span> resp
+            <span class="kw">return</span> <span class="kw">nil</span>
+        })
+    }
+
+<span class="cm">    // 모든 고루틴 완료 대기</span>
+    <span class="kw">if</span> err <span class="op">:=</span> g.<span class="fn">Wait</span>(); err <span class="op">!=</span> <span class="kw">nil</span> {
+        <span class="kw">return</span> <span class="kw">nil</span>, err
+    }
+    <span class="kw">return</span> results, <span class="kw">nil</span>
+}
+<span class="cm">// errgroup = WaitGroup + error + context</span>
+<span class="cm">// 하나 실패 → 나머지 자동 취소! 🎯</span></pre>
+    </div>
+    <div class="note-box">
+      <p>⭐ errgroup = 실무 동시성의 표준 도구!</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-code" id="slide-8">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.21</span>
+  </div>
+  <div class="code-body">
+    <h2 class="slide-subtitle">sync.Once와 RWMutex</h2>
+    <div class="code-block">
+      <pre><span class="cm">// sync.Once = 딱 한 번만 실행!</span>
+<span class="kw">var</span> (
+    instance <span class="op">*</span>Database
+    once     sync.Once
+)
+
+<span class="kw">func</span> <span class="fn">GetDB</span>() <span class="op">*</span>Database {
+    once.<span class="fn">Do</span>(<span class="kw">func</span>() {
+        instance <span class="op">=</span> <span class="fn">ConnectDB</span>()
+        fmt.<span class="fn">Println</span>(<span class="str">&quot;DB 연결 완료&quot;</span>)
+    })
+    <span class="kw">return</span> instance <span class="cm">// 이후 호출은 캐시된 값</span>
+}
+
+<span class="cm">// sync.RWMutex = 읽기는 동시에, 쓰기만 잠금!</span>
+<span class="kw">type</span> <span class="tp">Cache</span> <span class="kw">struct</span> {
+    mu   sync.RWMutex
+    data <span class="kw">map</span>[<span class="tp">string</span>]<span class="tp">string</span>
+}
+
+<span class="kw">func</span> (c <span class="op">*</span><span class="tp">Cache</span>) <span class="fn">Get</span>(key <span class="tp">string</span>) <span class="tp">string</span> {
+    c.mu.<span class="fn">RLock</span>()         <span class="cm">// 읽기 잠금 (동시 OK)</span>
+    <span class="kw">defer</span> c.mu.<span class="fn">RUnlock</span>()
+    <span class="kw">return</span> c.data[key]
+}
+
+<span class="kw">func</span> (c <span class="op">*</span><span class="tp">Cache</span>) <span class="fn">Set</span>(key, val <span class="tp">string</span>) {
+    c.mu.<span class="fn">Lock</span>()          <span class="cm">// 쓰기 잠금 (배타적)</span>
+    <span class="kw">defer</span> c.mu.<span class="fn">Unlock</span>()
+    c.data[key] <span class="op">=</span> val
+}</pre>
+    </div>
+    <div class="note-box">
+      <p>💡 Once = 싱글톤, RWMutex = 읽기 많을 때!</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-summary" id="slide-9">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.21</span>
+  </div>
+  <div class="summary-body">
+    <h2 class="slide-subtitle">📌 핵심 정리</h2>
+    <div class="summary-points">
+      <p class="body-text">✅ select = 다중 채널 동시 대기</p>
+      <p class="body-text">✅ WaitGroup = 고루틴 완료 대기</p>
+      <p class="body-text">✅ Mutex = 공유 자원 보호 (Lock/Unlock)</p>
+      <p class="body-text">✅ Fan-Out/Fan-In = 워커 풀 패턴</p>
+      <p class="body-text">✅ errgroup = 에러 처리 + 동시성 합체!</p>
+    </div>
+    <div class="summary-tips">
+      <h3 class="slide-subtitle">💡 Go만의 꿀팁</h3>
+      <p class="body-text">💡 채널로 해결 가능하면 Mutex보다 채널!</p>
+      <p class="body-text">💡 RWMutex = 읽기 많은 캐시에 최적</p>
+      <p class="body-text">💡 sync.Once = 초기화에 사용 (싱글톤)</p>
+      <p class="body-text">💡 race detector: go run -race main.go</p>
+    </div>
+    <div class="summary-next">
+      <p class="body-text">다음 편: EP.22 파일 입출력 (File I/O) 👉</p>
+    </div>
+    <div class="summary-cta">
+      <p>💾 저장 | ❤️ 좋아요 | 👤 팔로우</p>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

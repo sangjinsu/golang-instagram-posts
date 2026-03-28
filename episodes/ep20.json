@@ -1,0 +1,130 @@
+{
+  "episode": 20,
+  "title": "HTTP 서버",
+  "title_en": "HTTP Server",
+  "difficulty": "★★☆",
+  "hook": "Go로 웹서버? 단 몇 줄이면 끝! 🌐",
+  "next_ep": {
+    "number": 21,
+    "title": "동시성 패턴 (Concurrency Patterns)"
+  },
+  "slides": [
+    {
+      "slide_number": 1,
+      "type": "thumbnail",
+      "content": {
+        "series_name": "Go 기초 문법",
+        "series_sub": "1분 정리 ⚡",
+        "ep_label": "EP.20",
+        "topic": "HTTP 서버 (net/http)",
+        "hook": "Go로 웹서버? 단 몇 줄이면 끝! 🌐"
+      }
+    },
+    {
+      "slide_number": 2,
+      "type": "concept",
+      "content": {
+        "question": "Go HTTP 서버란? 🤔",
+        "explanation": [
+          "net/http = 강력한 웹서버 내장! 📦",
+          "프레임워크 없이 프로덕션 서버 가능 ⭐",
+          "표준 라이브러리만으로 REST API 구축! 🚀",
+          "높은 동시성 처리 = Go의 최대 강점! ⚡"
+        ],
+        "comparison": {
+          "label": "다른 언어와 비교",
+          "items": [
+            "Python: Flask/Django 프레임워크 필요",
+            "JS: Express.js 설치 필요",
+            "Java: Spring Boot 프레임워크 필요",
+            "Go: net/http 내장! 설치 제로! 🔥"
+          ]
+        },
+        "features": {
+          "label": "net/http 핵심 특징",
+          "items": [
+            "ListenAndServe로 서버 시작 ✅",
+            "HandleFunc로 라우트 등록 🔧",
+            "요청마다 자동 고루틴 생성! 🎯",
+            "미들웨어 패턴 지원 📊"
+          ]
+        }
+      }
+    },
+    {
+      "slide_number": 3,
+      "type": "code",
+      "content": {
+        "title": "첫 HTTP 서버",
+        "code": "package main\n\nimport (\n    \"fmt\"\n    \"net/http\"\n)\n\nfunc hello(w http.ResponseWriter,\n    r *http.Request) {\n    fmt.Fprintf(w, \"안녕, Go 서버! 🚀\")\n}\n\nfunc main() {\n    http.HandleFunc(\"/\", hello)\n\n    fmt.Println(\"서버 시작: :8080\")\n    http.ListenAndServe(\":8080\", nil)\n}\n\n// $ go run main.go\n// 서버 시작: :8080\n// $ curl localhost:8080\n// 안녕, Go 서버! 🚀",
+        "note": "⭐ 단 10줄로 웹서버 완성! 프레임워크 불필요!"
+      }
+    },
+    {
+      "slide_number": 4,
+      "type": "code",
+      "content": {
+        "title": "라우팅과 메서드 처리",
+        "code": "func userHandler(w http.ResponseWriter,\n    r *http.Request) {\n    switch r.Method {\n    case http.MethodGet:\n        // 사용자 조회\n        fmt.Fprintf(w, \"사용자 목록\")\n\n    case http.MethodPost:\n        // 사용자 생성\n        fmt.Fprintf(w, \"사용자 생성\")\n\n    default:\n        w.WriteHeader(\n            http.StatusMethodNotAllowed)\n    }\n}\n\nfunc main() {\n    http.HandleFunc(\"/users\", userHandler)\n    http.HandleFunc(\"/health\", func(\n        w http.ResponseWriter,\n        r *http.Request) {\n        w.Write([]byte(\"OK\"))\n    })\n    http.ListenAndServe(\":8080\", nil)\n}",
+        "note": "💡 r.Method로 GET/POST/PUT/DELETE 분기!"
+      }
+    },
+    {
+      "slide_number": 5,
+      "type": "code",
+      "content": {
+        "title": "JSON 응답 보내기",
+        "code": "type User struct {\n    ID   int    `json:\"id\"`\n    Name string `json:\"name\"`\n    Age  int    `json:\"age\"`\n}\n\nfunc getUsers(w http.ResponseWriter,\n    r *http.Request) {\n    users := []User{\n        {1, \"고퍼\", 10},\n        {2, \"도커\", 8},\n    }\n\n    w.Header().Set(\"Content-Type\",\n        \"application/json\")\n    w.WriteHeader(http.StatusOK)\n\n    json.NewEncoder(w).Encode(users)\n}\n// 응답:\n// [{\"id\":1,\"name\":\"고퍼\",\"age\":10},\n//  {\"id\":2,\"name\":\"도커\",\"age\":8}]",
+        "note": "⭐ json.NewEncoder(w).Encode() = JSON 응답 패턴!"
+      }
+    },
+    {
+      "slide_number": 6,
+      "type": "code",
+      "content": {
+        "title": "요청 바디 파싱",
+        "code": "func createUser(w http.ResponseWriter,\n    r *http.Request) {\n    if r.Method != http.MethodPost {\n        http.Error(w, \"POST만 허용\",\n            http.StatusMethodNotAllowed)\n        return\n    }\n\n    var user User\n    err := json.NewDecoder(\n        r.Body).Decode(&user)\n    if err != nil {\n        http.Error(w, \"잘못된 요청\",\n            http.StatusBadRequest)\n        return\n    }\n    defer r.Body.Close()\n\n    fmt.Fprintf(w, \"생성됨: %s\", user.Name)\n}\n// $ curl -X POST localhost:8080/users \\\n//   -d '{\"name\":\"고퍼\",\"age\":10}'\n// 생성됨: 고퍼",
+        "note": "💡 json.NewDecoder(r.Body).Decode() = 파싱 패턴!"
+      }
+    },
+    {
+      "slide_number": 7,
+      "type": "code",
+      "content": {
+        "title": "미들웨어 패턴",
+        "code": "// 미들웨어 = 핸들러를 감싸는 함수\nfunc Logger(next http.HandlerFunc) \n    http.HandlerFunc {\n    return func(w http.ResponseWriter,\n        r *http.Request) {\n        start := time.Now()\n        next(w, r)\n        log.Printf(\"%s %s %v\",\n            r.Method, r.URL.Path,\n            time.Since(start))\n    }\n}\n\nfunc Auth(next http.HandlerFunc)\n    http.HandlerFunc {\n    return func(w http.ResponseWriter,\n        r *http.Request) {\n        token := r.Header.Get(\"Authorization\")\n        if token == \"\" {\n            http.Error(w, \"인증 필요\", 401)\n            return\n        }\n        next(w, r)\n    }\n}\n// 체이닝: Auth(Logger(handler))",
+        "note": "⭐ 미들웨어 체이닝 = 관심사 분리의 핵심!"
+      }
+    },
+    {
+      "slide_number": 8,
+      "type": "code",
+      "content": {
+        "title": "실전: http.Server 설정",
+        "code": "func main() {\n    mux := http.NewServeMux()\n    mux.HandleFunc(\"/api/users\", getUsers)\n    mux.HandleFunc(\"/health\", healthCheck)\n\n    srv := &http.Server{\n        Addr:         \":8080\",\n        Handler:      mux,\n        ReadTimeout:  5 * time.Second,\n        WriteTimeout: 10 * time.Second,\n        IdleTimeout:  120 * time.Second,\n    }\n\n    // Graceful Shutdown\n    go func() {\n        sig := make(chan os.Signal, 1)\n        signal.Notify(sig, os.Interrupt)\n        <-sig\n        ctx, cancel := context.WithTimeout(\n            context.Background(),\n            30*time.Second)\n        defer cancel()\n        srv.Shutdown(ctx)\n    }()\n\n    log.Println(\"서버 시작: :8080\")\n    srv.ListenAndServe()\n}",
+        "note": "⭐ 타임아웃 + Graceful Shutdown = 프로덕션 필수!"
+      }
+    },
+    {
+      "slide_number": 9,
+      "type": "summary",
+      "content": {
+        "points": [
+          "✅ net/http로 프레임워크 없이 서버 구축",
+          "✅ HandleFunc으로 라우트 등록",
+          "✅ json.Encoder/Decoder로 JSON 처리",
+          "✅ 미들웨어 패턴으로 관심사 분리",
+          "✅ http.Server로 타임아웃, Graceful Shutdown"
+        ],
+        "tips": [
+          "💡 요청마다 고루틴 자동 생성 → 고성능!",
+          "💡 프로덕션은 반드시 타임아웃 설정",
+          "💡 Graceful Shutdown으로 안전한 종료",
+          "💡 Go 1.22+ ServeMux는 메서드 라우팅 지원!"
+        ],
+        "next_preview": "다음 편: EP.21 동시성 패턴 (Concurrency Patterns) 👉",
+        "cta": "💾 저장 | ❤️ 좋아요 | 👤 팔로우"
+      }
+    }
+  ]
+}

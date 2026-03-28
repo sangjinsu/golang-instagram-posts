@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1080">
+  <title>EP.20 HTTP 서버 (HTTP Server)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  padding: 40px;
+}
+
+/* 슬라이드 컨테이너 */
+.slide {
+  width: 1080px;
+  height: 1350px;
+  position: relative;
+  overflow: hidden;
+  font-family: 'Noto Sans KR', sans-serif;
+  color: #e0e0e0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 배경 그라데이션 */
+.slide-thumbnail { background: linear-gradient(135deg, #0f0f23 0%, #0a3d5c 40%, #00ADD8 100%); }
+.slide-concept   { background: linear-gradient(160deg, #0f0f23 0%, #1a1a3e 40%, #0d1b2a 100%); }
+.slide-code      { background: linear-gradient(160deg, #0d1117 0%, #161b22 50%, #0d1117 100%); }
+.slide-summary   { background: linear-gradient(160deg, #1a0a2e 0%, #16213e 50%, #0a1628 100%); }
+
+/* 장식 원 */
+.slide::before, .slide::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.06;
+  pointer-events: none;
+}
+.slide::before { width: 500px; height: 500px; background: #667eea; top: -150px; right: -100px; }
+.slide::after  { width: 350px; height: 350px; background: #f093fb; bottom: -100px; left: -80px; }
+
+/* 상단 바 */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 40px 60px 20px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+.series-tag { font-size: 26px; font-weight: 700; color: #00ADD8; }
+.ep-num     { font-size: 26px; font-weight: 700; color: rgba(255,255,255,0.4); }
+
+/* 타이포그래피 */
+.slide-title    { font-size: 48px; font-weight: 900; color: #fff; line-height: 1.3; margin-bottom: 24px; }
+.slide-subtitle { font-size: 32px; font-weight: 700; color: #00ADD8; margin-bottom: 20px; }
+.body-text      { font-size: 30px; font-weight: 400; color: #e0e0e0; line-height: 1.6; }
+.muted-text     { font-size: 26px; color: rgba(255,255,255,0.5); margin-bottom: 12px; }
+
+/* 코드 블록 */
+.code-block {
+  background: #0d1117;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 32px;
+  margin: 20px 0;
+  position: relative;
+  z-index: 1;
+  flex: 1;
+}
+.code-block pre {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 26px;
+  line-height: 1.7;
+  color: #e6edf3;
+  white-space: pre;
+  overflow: hidden;
+}
+
+/* 코드 구문 색상 */
+.kw  { color: #ff7b72; }
+.str { color: #a5d6ff; }
+.num { color: #79c0ff; }
+.cm  { color: #8b949e; }
+.tp  { color: #7ee787; }
+.fn  { color: #d2a8ff; }
+.op  { color: #ffa657; }
+
+/* 노트 박스 */
+.note-box {
+  background: rgba(0, 173, 216, 0.1);
+  border-left: 4px solid #00ADD8;
+  border-radius: 0 12px 12px 0;
+  padding: 20px 28px;
+  margin-top: auto;
+  position: relative;
+  z-index: 1;
+}
+.note-box p { font-size: 26px; color: #e0e0e0; line-height: 1.5; }
+
+/* === 썸네일 === */
+.thumb-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 80px 60px;
+  position: relative;
+  z-index: 1;
+}
+.thumb-series  { font-size: 36px; font-weight: 700; color: rgba(255,255,255,0.9); }
+.thumb-sub     { font-size: 48px; font-weight: 900; color: #fff; margin-top: 8px; }
+.thumb-divider { width: 80px; height: 4px; background: rgba(255,255,255,0.5); margin: 40px 0; border-radius: 2px; }
+.thumb-ep      { font-size: 64px; font-weight: 900; color: #fff; }
+.thumb-topic   { font-size: 56px; font-weight: 900; color: #fff; margin-top: 16px; }
+.thumb-hook    { font-size: 32px; color: rgba(255,255,255,0.8); margin-top: 32px; }
+.thumb-tags    { text-align: center; padding: 40px; font-size: 24px; color: rgba(255,255,255,0.4); position: relative; z-index: 1; }
+
+/* === 컨셉 === */
+.concept-body     { flex: 1; padding: 20px 60px 40px; display: flex; flex-direction: column; gap: 28px; position: relative; z-index: 1; }
+.concept-explain  { }
+.concept-compare  { background: rgba(255,255,255,0.04); border-radius: 16px; padding: 24px 28px; }
+.concept-features { background: rgba(0,173,216,0.08); border-radius: 16px; padding: 24px 28px; }
+
+/* === 코드 바디 === */
+.code-body { flex: 1; padding: 10px 60px 40px; display: flex; flex-direction: column; position: relative; z-index: 1; }
+
+/* === 요약 === */
+.summary-body   { flex: 1; padding: 20px 60px 40px; display: flex; flex-direction: column; gap: 24px; position: relative; z-index: 1; }
+.summary-points,
+.summary-tips   { background: rgba(255,255,255,0.04); border-radius: 16px; padding: 24px 28px; }
+.summary-next   { text-align: center; padding: 20px; background: rgba(0,173,216,0.08); border-radius: 16px; }
+.summary-cta    { text-align: center; padding: 24px; font-size: 28px; color: rgba(255,255,255,0.6); position: relative; z-index: 1; }
+
+  </style>
+</head>
+<body>
+
+<div class="slide slide-thumbnail" id="slide-1">
+  <div class="thumb-content">
+    <p class="thumb-series">Go 기초 문법</p>
+    <p class="thumb-sub">1분 정리 ⚡</p>
+    <div class="thumb-divider"></div>
+    <p class="thumb-ep">EP.20</p>
+    <h1 class="thumb-topic">HTTP 서버 (net/http)</h1>
+    <p class="thumb-hook">Go로 웹서버? 단 몇 줄이면 끝! 🌐</p>
+  </div>
+  <div class="thumb-tags">#Golang #개발 #프로그래밍</div>
+</div>
+
+<div class="slide slide-concept" id="slide-2">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.20</span>
+  </div>
+  <div class="concept-body">
+    <h2 class="slide-title">Go HTTP 서버란? 🤔</h2>
+    <div class="concept-explain">
+      <p class="body-text">net/http = 강력한 웹서버 내장! 📦</p>
+      <p class="body-text">프레임워크 없이 프로덕션 서버 가능 ⭐</p>
+      <p class="body-text">표준 라이브러리만으로 REST API 구축! 🚀</p>
+      <p class="body-text">높은 동시성 처리 = Go의 최대 강점! ⚡</p>
+    </div>
+    <div class="concept-compare">
+      <p class="muted-text">다른 언어와 비교</p>
+      <p class="body-text">→ Python: Flask/Django 프레임워크 필요</p>
+      <p class="body-text">→ JS: Express.js 설치 필요</p>
+      <p class="body-text">→ Java: Spring Boot 프레임워크 필요</p>
+      <p class="body-text">→ Go: net/http 내장! 설치 제로! 🔥</p>
+    </div>
+    <div class="concept-features">
+      <p class="slide-subtitle">net/http 핵심 특징</p>
+      <p class="body-text">→ ListenAndServe로 서버 시작 ✅</p>
+      <p class="body-text">→ HandleFunc로 라우트 등록 🔧</p>
+      <p class="body-text">→ 요청마다 자동 고루틴 생성! 🎯</p>
+      <p class="body-text">→ 미들웨어 패턴 지원 📊</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-code" id="slide-3">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.20</span>
+  </div>
+  <div class="code-body">
+    <h2 class="slide-subtitle">첫 HTTP 서버</h2>
+    <div class="code-block">
+      <pre><span class="kw">package</span> main
+
+<span class="kw">import</span> (
+    <span class="str">&quot;fmt&quot;</span>
+    <span class="str">&quot;net/http&quot;</span>
+)
+
+<span class="kw">func</span> <span class="fn">hello</span>(w http.ResponseWriter,
+    r <span class="op">*</span>http.Request) {
+    fmt.<span class="fn">Fprintf</span>(w, <span class="str">&quot;안녕, Go 서버! 🚀&quot;</span>)
+}
+
+<span class="kw">func</span> <span class="fn">main</span>() {
+    http.<span class="fn">HandleFunc</span>(<span class="str">&quot;/&quot;</span>, hello)
+
+    fmt.<span class="fn">Println</span>(<span class="str">&quot;서버 시작: :8080&quot;</span>)
+    http.<span class="fn">ListenAndServe</span>(<span class="str">&quot;:8080&quot;</span>, <span class="kw">nil</span>)
+}
+
+<span class="cm">// $ go run main.go</span>
+<span class="cm">// 서버 시작: :8080</span>
+<span class="cm">// $ curl localhost:8080</span>
+<span class="cm">// 안녕, Go 서버! 🚀</span></pre>
+    </div>
+    <div class="note-box">
+      <p>⭐ 단 10줄로 웹서버 완성! 프레임워크 불필요!</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-code" id="slide-4">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.20</span>
+  </div>
+  <div class="code-body">
+    <h2 class="slide-subtitle">라우팅과 메서드 처리</h2>
+    <div class="code-block">
+      <pre><span class="kw">func</span> <span class="fn">userHandler</span>(w http.ResponseWriter,
+    r <span class="op">*</span>http.Request) {
+    <span class="kw">switch</span> r.Method {
+    <span class="kw">case</span> http.MethodGet:
+<span class="cm">        // 사용자 조회</span>
+        fmt.<span class="fn">Fprintf</span>(w, <span class="str">&quot;사용자 목록&quot;</span>)
+
+    <span class="kw">case</span> http.MethodPost:
+<span class="cm">        // 사용자 생성</span>
+        fmt.<span class="fn">Fprintf</span>(w, <span class="str">&quot;사용자 생성&quot;</span>)
+
+    <span class="kw">default</span>:
+        w.<span class="fn">WriteHeader</span>(
+            http.StatusMethodNotAllowed)
+    }
+}
+
+<span class="kw">func</span> <span class="fn">main</span>() {
+    http.<span class="fn">HandleFunc</span>(<span class="str">&quot;/users&quot;</span>, userHandler)
+    http.<span class="fn">HandleFunc</span>(<span class="str">&quot;/health&quot;</span>, <span class="kw">func</span>(
+        w http.ResponseWriter,
+        r <span class="op">*</span>http.Request) {
+        w.<span class="fn">Write</span>([]<span class="tp">byte</span>(<span class="str">&quot;OK&quot;</span>))
+    })
+    http.<span class="fn">ListenAndServe</span>(<span class="str">&quot;:8080&quot;</span>, <span class="kw">nil</span>)
+}</pre>
+    </div>
+    <div class="note-box">
+      <p>💡 r.Method로 GET/POST/PUT/DELETE 분기!</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-code" id="slide-5">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.20</span>
+  </div>
+  <div class="code-body">
+    <h2 class="slide-subtitle">JSON 응답 보내기</h2>
+    <div class="code-block">
+      <pre><span class="kw">type</span> <span class="tp">User</span> <span class="kw">struct</span> {
+    ID   <span class="tp">int</span>    <span class="str">`json:&quot;id&quot;`</span>
+    Name <span class="tp">string</span> <span class="str">`json:&quot;name&quot;`</span>
+    Age  <span class="tp">int</span>    <span class="str">`json:&quot;age&quot;`</span>
+}
+
+<span class="kw">func</span> <span class="fn">getUsers</span>(w http.ResponseWriter,
+    r <span class="op">*</span>http.Request) {
+    users <span class="op">:=</span> []<span class="tp">User</span>{
+        {<span class="num">1</span>, <span class="str">&quot;고퍼&quot;</span>, <span class="num">10</span>},
+        {<span class="num">2</span>, <span class="str">&quot;도커&quot;</span>, <span class="num">8</span>},
+    }
+
+    w.<span class="fn">Header</span>().<span class="fn">Set</span>(<span class="str">&quot;Content-Type&quot;</span>,
+        <span class="str">&quot;application/json&quot;</span>)
+    w.<span class="fn">WriteHeader</span>(http.StatusOK)
+
+    json.<span class="fn">NewEncoder</span>(w).<span class="fn">Encode</span>(users)
+}
+<span class="cm">// 응답:</span>
+<span class="cm">// [{&quot;id&quot;:1,&quot;name&quot;:&quot;고퍼&quot;,&quot;age&quot;:10},</span>
+<span class="cm">//  {&quot;id&quot;:2,&quot;name&quot;:&quot;도커&quot;,&quot;age&quot;:8}]</span></pre>
+    </div>
+    <div class="note-box">
+      <p>⭐ json.NewEncoder(w).Encode() = JSON 응답 패턴!</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-code" id="slide-6">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.20</span>
+  </div>
+  <div class="code-body">
+    <h2 class="slide-subtitle">요청 바디 파싱</h2>
+    <div class="code-block">
+      <pre><span class="kw">func</span> <span class="fn">createUser</span>(w http.ResponseWriter,
+    r <span class="op">*</span>http.Request) {
+    <span class="kw">if</span> r.Method <span class="op">!=</span> http.MethodPost {
+        http.<span class="fn">Error</span>(w, <span class="str">&quot;POST만 허용&quot;</span>,
+            http.StatusMethodNotAllowed)
+        <span class="kw">return</span>
+    }
+
+    <span class="kw">var</span> user <span class="tp">User</span>
+    err <span class="op">:=</span> json.<span class="fn">NewDecoder</span>(
+        r.Body).<span class="fn">Decode</span>(<span class="op">&amp;</span>user)
+    <span class="kw">if</span> err <span class="op">!=</span> <span class="kw">nil</span> {
+        http.<span class="fn">Error</span>(w, <span class="str">&quot;잘못된 요청&quot;</span>,
+            http.StatusBadRequest)
+        <span class="kw">return</span>
+    }
+    <span class="kw">defer</span> r.Body.<span class="fn">Close</span>()
+
+    fmt.<span class="fn">Fprintf</span>(w, <span class="str">&quot;생성됨: %s&quot;</span>, user.Name)
+}
+<span class="cm">// $ curl -X POST localhost:8080/users \</span>
+<span class="cm">//   -d '{&quot;name&quot;:&quot;고퍼&quot;,&quot;age&quot;:10}'</span>
+<span class="cm">// 생성됨: 고퍼</span></pre>
+    </div>
+    <div class="note-box">
+      <p>💡 json.NewDecoder(r.Body).Decode() = 파싱 패턴!</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-code" id="slide-7">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.20</span>
+  </div>
+  <div class="code-body">
+    <h2 class="slide-subtitle">미들웨어 패턴</h2>
+    <div class="code-block">
+      <pre><span class="cm">// 미들웨어 = 핸들러를 감싸는 함수</span>
+<span class="kw">func</span> <span class="fn">Logger</span>(next http.HandlerFunc) 
+    http.HandlerFunc {
+    <span class="kw">return</span> <span class="kw">func</span>(w http.ResponseWriter,
+        r <span class="op">*</span>http.Request) {
+        start <span class="op">:=</span> time.<span class="fn">Now</span>()
+        <span class="fn">next</span>(w, r)
+        log.<span class="fn">Printf</span>(<span class="str">&quot;%s %s %v&quot;</span>,
+            r.Method, r.URL.Path,
+            time.<span class="fn">Since</span>(start))
+    }
+}
+
+<span class="kw">func</span> <span class="fn">Auth</span>(next http.HandlerFunc)
+    http.HandlerFunc {
+    <span class="kw">return</span> <span class="kw">func</span>(w http.ResponseWriter,
+        r <span class="op">*</span>http.Request) {
+        token <span class="op">:=</span> r.Header.<span class="fn">Get</span>(<span class="str">&quot;Authorization&quot;</span>)
+        <span class="kw">if</span> token <span class="op">==</span> <span class="str">&quot;&quot;</span> {
+            http.<span class="fn">Error</span>(w, <span class="str">&quot;인증 필요&quot;</span>, <span class="num">401</span>)
+            <span class="kw">return</span>
+        }
+        <span class="fn">next</span>(w, r)
+    }
+}
+<span class="cm">// 체이닝: Auth(Logger(handler))</span></pre>
+    </div>
+    <div class="note-box">
+      <p>⭐ 미들웨어 체이닝 = 관심사 분리의 핵심!</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-code" id="slide-8">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.20</span>
+  </div>
+  <div class="code-body">
+    <h2 class="slide-subtitle">실전: http.Server 설정</h2>
+    <div class="code-block">
+      <pre><span class="kw">func</span> <span class="fn">main</span>() {
+    mux <span class="op">:=</span> http.<span class="fn">NewServeMux</span>()
+    mux.<span class="fn">HandleFunc</span>(<span class="str">&quot;/api/users&quot;</span>, getUsers)
+    mux.<span class="fn">HandleFunc</span>(<span class="str">&quot;/health&quot;</span>, healthCheck)
+
+    srv <span class="op">:=</span> <span class="op">&amp;</span>http.Server{
+        Addr:         <span class="str">&quot;:8080&quot;</span>,
+        Handler:      mux,
+        ReadTimeout:  <span class="num">5</span> <span class="op">*</span> time.Second,
+        WriteTimeout: <span class="num">10</span> <span class="op">*</span> time.Second,
+        IdleTimeout:  <span class="num">120</span> <span class="op">*</span> time.Second,
+    }
+
+<span class="cm">    // Graceful Shutdown</span>
+    <span class="kw">go</span> <span class="kw">func</span>() {
+        sig <span class="op">:=</span> <span class="kw">make</span>(<span class="kw">chan</span> os.Signal, <span class="num">1</span>)
+        signal.<span class="fn">Notify</span>(sig, os.Interrupt)
+        <span class="op">&lt;-</span>sig
+        ctx, cancel <span class="op">:=</span> context.<span class="fn">WithTimeout</span>(
+            context.<span class="fn">Background</span>(),
+            <span class="num">30</span><span class="op">*</span>time.Second)
+        <span class="kw">defer</span> <span class="fn">cancel</span>()
+        srv.<span class="fn">Shutdown</span>(ctx)
+    }()
+
+    log.<span class="fn">Println</span>(<span class="str">&quot;서버 시작: :8080&quot;</span>)
+    srv.<span class="fn">ListenAndServe</span>()
+}</pre>
+    </div>
+    <div class="note-box">
+      <p>⭐ 타임아웃 + Graceful Shutdown = 프로덕션 필수!</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-summary" id="slide-9">
+  <div class="top-bar">
+    <span class="series-tag">Go 1분 정리</span>
+    <span class="ep-num">EP.20</span>
+  </div>
+  <div class="summary-body">
+    <h2 class="slide-subtitle">📌 핵심 정리</h2>
+    <div class="summary-points">
+      <p class="body-text">✅ net/http로 프레임워크 없이 서버 구축</p>
+      <p class="body-text">✅ HandleFunc으로 라우트 등록</p>
+      <p class="body-text">✅ json.Encoder/Decoder로 JSON 처리</p>
+      <p class="body-text">✅ 미들웨어 패턴으로 관심사 분리</p>
+      <p class="body-text">✅ http.Server로 타임아웃, Graceful Shutdown</p>
+    </div>
+    <div class="summary-tips">
+      <h3 class="slide-subtitle">💡 Go만의 꿀팁</h3>
+      <p class="body-text">💡 요청마다 고루틴 자동 생성 → 고성능!</p>
+      <p class="body-text">💡 프로덕션은 반드시 타임아웃 설정</p>
+      <p class="body-text">💡 Graceful Shutdown으로 안전한 종료</p>
+      <p class="body-text">💡 Go 1.22+ ServeMux는 메서드 라우팅 지원!</p>
+    </div>
+    <div class="summary-next">
+      <p class="body-text">다음 편: EP.21 동시성 패턴 (Concurrency Patterns) 👉</p>
+    </div>
+    <div class="summary-cta">
+      <p>💾 저장 | ❤️ 좋아요 | 👤 팔로우</p>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

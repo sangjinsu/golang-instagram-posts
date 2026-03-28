@@ -1,0 +1,130 @@
+{
+  "episode": 21,
+  "title": "동시성 패턴",
+  "title_en": "Concurrency Patterns",
+  "difficulty": "★★★",
+  "hook": "고루틴을 제대로 다루는 법! 🔀",
+  "next_ep": {
+    "number": 22,
+    "title": "파일 입출력 (File I/O)"
+  },
+  "slides": [
+    {
+      "slide_number": 1,
+      "type": "thumbnail",
+      "content": {
+        "series_name": "Go 기초 문법",
+        "series_sub": "1분 정리 ⚡",
+        "ep_label": "EP.21",
+        "topic": "동시성 패턴 (Concurrency)",
+        "hook": "고루틴을 제대로 다루는 법! 🔀"
+      }
+    },
+    {
+      "slide_number": 2,
+      "type": "concept",
+      "content": {
+        "question": "동시성 패턴이란? 🤔",
+        "explanation": [
+          "고루틴 + 채널을 조합하는 설계 패턴! 🧩",
+          "select = 여러 채널을 동시에 대기 📡",
+          "sync 패키지 = 공유 자원 안전하게 관리 🔒",
+          "실무에서 반드시 알아야 할 패턴들! 🎯"
+        ],
+        "comparison": {
+          "label": "동시성 vs 병렬성",
+          "items": [
+            "동시성: 여러 작업을 번갈아 처리 🔄",
+            "병렬성: 여러 작업을 동시에 처리 ⚡",
+            "Go: 동시성을 쉽게 → 병렬성은 자동!",
+            "고루틴 = 동시성의 핵심 도구! 🚀"
+          ]
+        },
+        "features": {
+          "label": "핵심 도구 3가지",
+          "items": [
+            "select: 다중 채널 멀티플렉싱 ✅",
+            "sync.WaitGroup: 고루틴 완료 대기 🔧",
+            "sync.Mutex: 공유 자원 보호 🔒",
+            "sync.Once: 딱 한번만 실행 보장 🎯"
+          ]
+        }
+      }
+    },
+    {
+      "slide_number": 3,
+      "type": "code",
+      "content": {
+        "title": "select: 다중 채널 대기",
+        "code": "func main() {\n    ch1 := make(chan string)\n    ch2 := make(chan string)\n\n    go func() {\n        time.Sleep(1 * time.Second)\n        ch1 <- \"채널 1 완료\"\n    }()\n    go func() {\n        time.Sleep(2 * time.Second)\n        ch2 <- \"채널 2 완료\"\n    }()\n\n    // 먼저 도착하는 채널 처리!\n    select {\n    case msg := <-ch1:\n        fmt.Println(msg)\n    case msg := <-ch2:\n        fmt.Println(msg)\n    case <-time.After(3 * time.Second):\n        fmt.Println(\"타임아웃!\")\n    }\n    // 채널 1 완료 (1초 후 먼저 도착!)",
+        "note": "⭐ select = switch의 채널 버전! 먼저 온 놈이 승!"
+      }
+    },
+    {
+      "slide_number": 4,
+      "type": "code",
+      "content": {
+        "title": "WaitGroup: 고루틴 완료 대기",
+        "code": "func main() {\n    var wg sync.WaitGroup\n\n    urls := []string{\n        \"https://api.example.com/users\",\n        \"https://api.example.com/posts\",\n        \"https://api.example.com/comments\",\n    }\n\n    for _, url := range urls {\n        wg.Add(1) // 카운터 +1\n        go func(u string) {\n            defer wg.Done() // 카운터 -1\n            resp, _ := http.Get(u)\n            defer resp.Body.Close()\n            fmt.Printf(\"%s → %d\\n\",\n                u, resp.StatusCode)\n        }(url)\n    }\n\n    wg.Wait() // 카운터가 0이 될 때까지 대기!\n    fmt.Println(\"모든 요청 완료!\")\n}",
+        "note": "💡 Add(1) → Done() → Wait() = 3단계 패턴!"
+      }
+    },
+    {
+      "slide_number": 5,
+      "type": "code",
+      "content": {
+        "title": "Mutex: 공유 자원 보호",
+        "code": "type SafeCounter struct {\n    mu sync.Mutex\n    count map[string]int\n}\n\nfunc (c *SafeCounter) Inc(key string) {\n    c.mu.Lock()         // 잠금!\n    defer c.mu.Unlock() // 해제!\n    c.count[key]++\n}\n\nfunc (c *SafeCounter) Get(key string) int {\n    c.mu.Lock()\n    defer c.mu.Unlock()\n    return c.count[key]\n}\n\nfunc main() {\n    c := SafeCounter{\n        count: make(map[string]int)}\n    for i := 0; i < 1000; i++ {\n        go c.Inc(\"key\")\n    }\n    time.Sleep(time.Second)\n    fmt.Println(c.Get(\"key\")) // 1000 ✅\n}",
+        "note": "⭐ Mutex 없이 map 동시 접근 = panic! 💥"
+      }
+    },
+    {
+      "slide_number": 6,
+      "type": "code",
+      "content": {
+        "title": "Fan-Out / Fan-In 패턴",
+        "code": "// Fan-Out: 하나의 입력 → 여러 워커\n// Fan-In: 여러 워커 → 하나의 출력\nfunc worker(id int,\n    jobs <-chan int,\n    results chan<- int) {\n    for j := range jobs {\n        fmt.Printf(\"워커%d: 작업%d 처리\\n\",\n            id, j)\n        time.Sleep(time.Second)\n        results <- j * 2\n    }\n}\n\nfunc main() {\n    jobs := make(chan int, 100)\n    results := make(chan int, 100)\n\n    // Fan-Out: 3개 워커 실행\n    for w := 1; w <= 3; w++ {\n        go worker(w, jobs, results)\n    }\n\n    // 작업 전송\n    for j := 1; j <= 9; j++ {\n        jobs <- j\n    }\n    close(jobs)\n\n    // Fan-In: 결과 수집\n    for i := 0; i < 9; i++ {\n        fmt.Println(<-results)\n    }\n}",
+        "note": "⭐ 워커 풀 패턴 = Go 동시성의 꽃!"
+      }
+    },
+    {
+      "slide_number": 7,
+      "type": "code",
+      "content": {
+        "title": "실무: errgroup 패턴",
+        "code": "import \"golang.org/x/sync/errgroup\"\n\nfunc FetchAll(ctx context.Context,\n    urls []string) ([]Response, error) {\n    g, ctx := errgroup.WithContext(ctx)\n    results := make([]Response, len(urls))\n\n    for i, url := range urls {\n        g.Go(func() error {\n            resp, err := FetchURL(ctx, url)\n            if err != nil {\n                return err // 에러 → 전체 취소!\n            }\n            results[i] = resp\n            return nil\n        })\n    }\n\n    // 모든 고루틴 완료 대기\n    if err := g.Wait(); err != nil {\n        return nil, err\n    }\n    return results, nil\n}\n// errgroup = WaitGroup + error + context\n// 하나 실패 → 나머지 자동 취소! 🎯",
+        "note": "⭐ errgroup = 실무 동시성의 표준 도구!"
+      }
+    },
+    {
+      "slide_number": 8,
+      "type": "code",
+      "content": {
+        "title": "sync.Once와 RWMutex",
+        "code": "// sync.Once = 딱 한 번만 실행!\nvar (\n    instance *Database\n    once     sync.Once\n)\n\nfunc GetDB() *Database {\n    once.Do(func() {\n        instance = ConnectDB()\n        fmt.Println(\"DB 연결 완료\")\n    })\n    return instance // 이후 호출은 캐시된 값\n}\n\n// sync.RWMutex = 읽기는 동시에, 쓰기만 잠금!\ntype Cache struct {\n    mu   sync.RWMutex\n    data map[string]string\n}\n\nfunc (c *Cache) Get(key string) string {\n    c.mu.RLock()         // 읽기 잠금 (동시 OK)\n    defer c.mu.RUnlock()\n    return c.data[key]\n}\n\nfunc (c *Cache) Set(key, val string) {\n    c.mu.Lock()          // 쓰기 잠금 (배타적)\n    defer c.mu.Unlock()\n    c.data[key] = val\n}",
+        "note": "💡 Once = 싱글톤, RWMutex = 읽기 많을 때!"
+      }
+    },
+    {
+      "slide_number": 9,
+      "type": "summary",
+      "content": {
+        "points": [
+          "✅ select = 다중 채널 동시 대기",
+          "✅ WaitGroup = 고루틴 완료 대기",
+          "✅ Mutex = 공유 자원 보호 (Lock/Unlock)",
+          "✅ Fan-Out/Fan-In = 워커 풀 패턴",
+          "✅ errgroup = 에러 처리 + 동시성 합체!"
+        ],
+        "tips": [
+          "💡 채널로 해결 가능하면 Mutex보다 채널!",
+          "💡 RWMutex = 읽기 많은 캐시에 최적",
+          "💡 sync.Once = 초기화에 사용 (싱글톤)",
+          "💡 race detector: go run -race main.go"
+        ],
+        "next_preview": "다음 편: EP.22 파일 입출력 (File I/O) 👉",
+        "cta": "💾 저장 | ❤️ 좋아요 | 👤 팔로우"
+      }
+    }
+  ]
+}
