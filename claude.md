@@ -212,6 +212,36 @@ python3 scripts/upload_instagram.py --ep 12 --auto-caption
 python3 scripts/upload_instagram.py --status <request_id>
 ```
 
+## GeekNews 카드뉴스 생성 프로세스
+
+GeekNews 기사 카드뉴스 JSON을 생성할 때 반드시 아래 프로세스를 따른다.
+
+### 1단계: 기사 선정
+- `python3 scripts/geeknews_pipeline.py --week latest --scrape-only`로 기사 목록 수집
+- 기존 `episodes/gn_*.json`과 중복되지 않는 기사 선정
+- 선호 주제: 개발자 생산성, AI/ML 실전 활용, 프로그래밍 언어/프레임워크, 소프트웨어 엔지니어링
+
+### 2단계: 웹 리서치 (필수)
+선정된 기사에 대해 반드시 웹 조사를 수행한다:
+1. **GeekNews 원문**: WebFetch로 GeekNews URL에서 전체 요약 + 커뮤니티 댓글 수집
+2. **원본 소스**: WebFetch로 원문 기사 전문 확인
+3. **관련 자료 검색**: WebSearch로 관련 통계, 연구 결과, 전문가 의견, 실제 사례 조사
+4. **리서치 정리**: 최소 5개 구체적 데이터 포인트 확보
+
+### 3단계: JSON 생성
+리서치 결과를 반영하여 콘텐츠 품질 기준을 충족하는 JSON 생성:
+- **news-summary**: 리서치에서 발견한 구체적 사실 포함 (제네릭 설명 금지)
+- **news-why**: `points` 배열에 최소 1개 통계/연구 결과 필수
+- **news-detail**: 실전 사례 + 실무 맥락 포함
+- **news-thumbnail**: 주제에 맞는 이모지 `icon` 필드 포함
+
+### 4단계: HTML → PNG → 업로드
+```bash
+python3 scripts/generate_html.py --id {content_id}
+python3 scripts/export_images.py --id {content_id}
+python3 scripts/upload_instagram.py --id {content_id} --auto-caption --dry-run
+```
+
 ## 콘텐츠 작성 원칙
 
 1. **한국어 중심**: 모든 설명은 한국어, 코드 주석도 한국어
