@@ -78,14 +78,36 @@ def build_slide_paths_by_id(content_id):
 
 
 def generate_news_caption(content_id):
-    """GeekNews 기사 캡션을 자동 생성한다."""
+    """GeekNews 기사 캡션을 자동 생성한다. JSON 콘텐츠에서 핵심 포인트를 추출하여 풍성한 캡션을 만든다."""
     data = load_content_json(content_id)
     title = data.get("title", "")
     week = data.get("week", "")
     article_index = data.get("article_index", 1)
+    source_url = data.get("source_url", "")
 
-    caption = f"GeekNews 주간 픽 🔥 {week} #{article_index} {title}"
-    return caption
+    # 슬라이드에서 핵심 포인트 추출
+    key_points = []
+    one_liner = ""
+    for slide in data.get("slides", []):
+        content = slide.get("content", {})
+        if slide.get("type") == "news-summary":
+            key_points = content.get("key_points", [])[:3]
+        elif slide.get("type") == "news-why":
+            one_liner = content.get("one_liner", "")
+
+    # 캡션 구성
+    lines = [f"GeekNews 주간 픽 🔥 {title}"]
+    lines.append("")
+    for kp in key_points:
+        lines.append(f"👉 {kp}")
+    if one_liner:
+        lines.append("")
+        lines.append(f"💡 {one_liner}")
+    if source_url:
+        lines.append("")
+        lines.append(f"🔗 원문: {source_url}")
+
+    return "\n".join(lines)
 
 
 def check_slides_exist(paths):
