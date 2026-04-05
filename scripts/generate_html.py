@@ -7,6 +7,8 @@
 사용법:
     python scripts/generate_html.py --ep 08
     python scripts/generate_html.py --ep 08 --preview
+    python scripts/generate_html.py --id gn_2026_w14_01
+    python scripts/generate_html.py --id gn_2026_w14_01 --preview
 """
 
 import json
@@ -45,7 +47,7 @@ ONE_CHAR_OPS = set('=<>+-*/%!&|^')
 
 def esc(text):
     """HTML 특수문자 이스케이프"""
-    return (text
+    return (str(text)
             .replace('&', '&amp;')
             .replace('<', '&lt;')
             .replace('>', '&gt;')
@@ -299,6 +301,92 @@ body {
 .summary-tips   { background: rgba(255,255,255,0.04); border-radius: 16px; padding: 24px 28px; }
 .summary-next   { text-align: center; padding: 20px; background: rgba(0,173,216,0.08); border-radius: 16px; }
 .summary-cta    { text-align: center; padding: 24px; font-size: 28px; color: rgba(255,255,255,0.6); position: relative; z-index: 1; }
+
+"""
+
+NEWS_CSS = """\
+/* === GeekNews 뉴스 카드 === */
+.slide-news-thumbnail { background: linear-gradient(135deg, #0f0f23 0%, #3d1e00 40%, #FF6B35 100%); }
+.slide-news           { background: linear-gradient(160deg, #0f0f23 0%, #2a1a0a 40%, #1a0d00 100%); }
+.slide-news-closing   { background: linear-gradient(160deg, #1a0a0e 0%, #2a1a0a 50%, #0a1628 100%); }
+
+.news-accent   { color: #FF6B35; }
+.news-tag      { font-size: 26px; font-weight: 700; color: #FF6B35; }
+.news-ep-num   { font-size: 26px; font-weight: 700; color: rgba(255,255,255,0.4); }
+
+/* 뉴스 썸네일 */
+.news-thumb-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 80px 60px;
+  position: relative;
+  z-index: 1;
+}
+.news-thumb-series  { font-size: 36px; font-weight: 700; color: rgba(255,255,255,0.9); }
+.news-thumb-sub     { font-size: 44px; font-weight: 900; color: #fff; margin-top: 8px; }
+.news-thumb-divider { width: 80px; height: 4px; background: #FF6B35; margin: 36px 0; border-radius: 2px; }
+.news-thumb-week    { font-size: 28px; font-weight: 700; color: #FF6B35; }
+.news-thumb-num     { font-size: 28px; font-weight: 700; color: rgba(255,255,255,0.5); margin-top: 8px; }
+.news-thumb-topic   { font-size: 48px; font-weight: 900; color: #fff; margin-top: 20px; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.news-thumb-hook    { font-size: 30px; color: rgba(255,255,255,0.8); margin-top: 28px; }
+.news-thumb-tags    { text-align: center; padding: 40px; font-size: 24px; color: rgba(255,255,255,0.4); position: relative; z-index: 1; }
+
+/* 뉴스 본문 공통 */
+.news-body { flex: 1; padding: 20px 60px 40px; display: flex; flex-direction: column; gap: 24px; position: relative; z-index: 1; }
+
+/* 핵심 포인트 리스트 */
+.news-point-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.news-point-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 28px;
+  font-weight: 700;
+  color: #FF6B35;
+  min-width: 40px;
+}
+.news-point-text { font-size: 28px; color: #e0e0e0; line-height: 1.5; }
+
+/* 출처 표시 */
+.news-source {
+  font-size: 22px;
+  color: rgba(255,255,255,0.4);
+  margin-top: auto;
+  padding-top: 16px;
+}
+
+/* 한줄 결론 강조 박스 */
+.news-highlight-box {
+  background: rgba(255, 107, 53, 0.12);
+  border-left: 4px solid #FF6B35;
+  border-radius: 0 12px 12px 0;
+  padding: 24px 28px;
+  margin-top: 16px;
+}
+.news-highlight-box p { font-size: 30px; font-weight: 700; color: #fff; line-height: 1.5; }
+
+/* 상세 포인트 카드 */
+.news-detail-card {
+  background: rgba(255,255,255,0.04);
+  border-radius: 16px;
+  padding: 24px 28px;
+  margin-bottom: 12px;
+}
+.news-detail-label { font-size: 26px; font-weight: 700; color: #FF6B35; margin-bottom: 8px; }
+.news-detail-desc  { font-size: 26px; color: #e0e0e0; line-height: 1.5; }
+
+/* 뉴스 요약/CTA */
+.news-summary-box  { background: rgba(255,255,255,0.04); border-radius: 16px; padding: 24px 28px; }
+.news-cta          { text-align: center; padding: 24px; font-size: 28px; color: rgba(255,255,255,0.6); position: relative; z-index: 1; }
+.news-source-link  { text-align: center; padding: 12px; font-size: 22px; color: rgba(255,107,53,0.85); word-break: break-all; }
 """
 
 
@@ -427,14 +515,138 @@ def render_summary(content, ep_label, slide_number=9):
 
 
 # ============================================================
+# GeekNews 뉴스 슬라이드 렌더링
+# ============================================================
+
+def render_news_thumbnail(content):
+    """뉴스 썸네일"""
+    return f'''<div class="slide slide-news-thumbnail" id="slide-1">
+  <div class="news-thumb-content">
+    <p class="news-thumb-series">{esc(content["series_name"])}</p>
+    <p class="news-thumb-sub">{esc(content["series_sub"])}</p>
+    <div class="news-thumb-divider"></div>
+    <p class="news-thumb-week">{esc(content["week_label"])}</p>
+    <h1 class="news-thumb-topic">{esc(content["topic"])}</h1>
+    <p class="news-thumb-hook">{esc(content["hook"])}</p>
+  </div>
+  <div class="news-thumb-tags">#GeekNews #개발 #테크뉴스</div>
+</div>'''
+
+
+def render_news_summary(content, header_label):
+    """뉴스 핵심 포인트"""
+    points_html = ''
+    for i, point in enumerate(content['key_points'], 1):
+        points_html += f'''
+      <div class="news-point-item">
+        <span class="news-point-num">{i:02d}</span>
+        <p class="news-point-text">{esc(point)}</p>
+      </div>'''
+
+    source_html = ''
+    if 'source' in content:
+        source_html = f'\n    <p class="news-source">출처: {esc(content["source"])}</p>'
+
+    return f'''<div class="slide slide-news" id="slide-2">
+  <div class="top-bar">
+    <span class="news-tag">GeekNews 주간 픽</span>
+    <span class="news-ep-num">{esc(header_label)}</span>
+  </div>
+  <div class="news-body">
+    <h2 class="slide-title">{esc(content["question"])}</h2>
+    <div>{points_html}
+    </div>{source_html}
+  </div>
+</div>'''
+
+
+def render_news_why(content, header_label):
+    """뉴스 왜 중요한가"""
+    return f'''<div class="slide slide-news" id="slide-3">
+  <div class="top-bar">
+    <span class="news-tag">GeekNews 주간 픽</span>
+    <span class="news-ep-num">{esc(header_label)}</span>
+  </div>
+  <div class="news-body">
+    <h2 class="slide-title">{esc(content["title"])}</h2>
+    <p class="body-text" style="flex:1;">{esc(content["explanation"])}</p>
+    <div class="news-highlight-box">
+      <p>{esc(content["one_liner"])}</p>
+    </div>
+  </div>
+</div>'''
+
+
+def render_news_detail(content, header_label, slide_number):
+    """뉴스 상세 포인트"""
+    cards_html = ''
+    for point in content['points']:
+        cards_html += f'''
+    <div class="news-detail-card">
+      <p class="news-detail-label">{esc(point["label"])}</p>
+      <p class="news-detail-desc">{esc(point["desc"])}</p>
+    </div>'''
+
+    return f'''<div class="slide slide-news" id="slide-{slide_number}">
+  <div class="top-bar">
+    <span class="news-tag">GeekNews 주간 픽</span>
+    <span class="news-ep-num">{esc(header_label)}</span>
+  </div>
+  <div class="news-body">
+    <h2 class="slide-title">{esc(content["title"])}</h2>{cards_html}
+  </div>
+</div>'''
+
+
+def render_news_closing(content, header_label, slide_number):
+    """뉴스 마무리"""
+    summary_items = '\n'.join(
+        f'      <p class="body-text">✅ {esc(s)}</p>'
+        for s in content['summary']
+    )
+
+    next_html = ''
+    if content.get('next_article'):
+        next_html = f'''
+    <div class="summary-next">
+      <p class="body-text">다음 기사: {esc(content["next_article"])}</p>
+    </div>'''
+
+    return f'''<div class="slide slide-news-closing" id="slide-{slide_number}">
+  <div class="top-bar">
+    <span class="news-tag">GeekNews 주간 픽</span>
+    <span class="news-ep-num">{esc(header_label)}</span>
+  </div>
+  <div class="news-body">
+    <h2 class="slide-subtitle">📌 핵심 정리</h2>
+    <div class="news-summary-box">
+{summary_items}
+    </div>{next_html}
+    <p class="news-source-link">원문: {esc(content.get("source_link", ""))}</p>
+    <div class="news-cta">
+      <p>{esc(content["cta"])}</p>
+    </div>
+  </div>
+</div>'''
+
+
+# ============================================================
 # HTML 문서 생성
 # ============================================================
 
 def generate_html(data):
     """에피소드 JSON 데이터로 완전한 HTML 문서 생성"""
-    ep_label = f'EP.{data["episode"]:02d}'
+    is_geeknews = data.get("type") == "geeknews"
+    if is_geeknews:
+        header_label = f'GN W{data["week"].split("_w")[1]} #{data["article_index"]}'
+        title_text = f'GN {data["week"]} #{data["article_index"]} {data["title"]}'
+        user_types = set()
+    else:
+        header_label = f'EP.{data["episode"]:02d}'
+        title_text = f'EP.{data["episode"]:02d} {data["title"]} ({data["title_en"]})'
+        user_types = extract_user_types(data['slides'])
+
     slides = data['slides']
-    user_types = extract_user_types(slides)
 
     slide_htmls = []
     for slide in slides:
@@ -445,11 +657,21 @@ def generate_html(data):
         if stype == 'thumbnail':
             slide_htmls.append(render_thumbnail(content))
         elif stype == 'concept':
-            slide_htmls.append(render_concept(content, ep_label))
+            slide_htmls.append(render_concept(content, header_label))
         elif stype == 'code':
-            slide_htmls.append(render_code_slide(content, ep_label, snum, user_types))
+            slide_htmls.append(render_code_slide(content, header_label, snum, user_types))
         elif stype == 'summary':
-            slide_htmls.append(render_summary(content, ep_label, snum))
+            slide_htmls.append(render_summary(content, header_label, snum))
+        elif stype == 'news-thumbnail':
+            slide_htmls.append(render_news_thumbnail(content))
+        elif stype == 'news-summary':
+            slide_htmls.append(render_news_summary(content, header_label))
+        elif stype == 'news-why':
+            slide_htmls.append(render_news_why(content, header_label))
+        elif stype == 'news-detail':
+            slide_htmls.append(render_news_detail(content, header_label, snum))
+        elif stype == 'news-closing':
+            slide_htmls.append(render_news_closing(content, header_label, snum))
 
     slides_joined = '\n\n'.join(slide_htmls)
 
@@ -458,13 +680,13 @@ def generate_html(data):
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=1080">
-  <title>EP.{data["episode"]:02d} {data["title"]} ({data["title_en"]})</title>
+  <title>{esc(title_text)}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
   <style>
 {CSS}
-  </style>
+{NEWS_CSS if is_geeknews else ""}  </style>
 </head>
 <body>
 
@@ -481,13 +703,21 @@ def generate_html(data):
 
 def main():
     parser = argparse.ArgumentParser(description='에피소드 JSON → HTML 슬라이드 변환')
-    parser.add_argument('--ep', required=True, help='에피소드 번호 (예: 08)')
+    parser.add_argument('--ep', default=None, help='에피소드 번호 (예: 08)')
+    parser.add_argument('--id', default=None, help='콘텐츠 ID (예: gn_2026_w14_01)')
     parser.add_argument('--preview', action='store_true', help='생성 후 브라우저에서 미리보기')
     args = parser.parse_args()
 
-    ep_num = int(args.ep)
-    json_path = os.path.join('episodes', f'ep{ep_num:02d}.json')
-    html_path = os.path.join('episodes', f'ep{ep_num:02d}.html')
+    if args.id is not None:
+        content_id = args.id
+    elif args.ep is not None:
+        ep_num = int(args.ep)
+        content_id = f'ep{ep_num:02d}'
+    else:
+        parser.error('--ep 또는 --id 중 하나를 반드시 지정해야 합니다.')
+
+    json_path = os.path.join('episodes', f'{content_id}.json')
+    html_path = os.path.join('episodes', f'{content_id}.html')
 
     if not os.path.exists(json_path):
         print(f'  \u274c {json_path} 파일을 찾을 수 없습니다.')
@@ -502,7 +732,7 @@ def main():
         f.write(html)
 
     slide_count = len(data['slides'])
-    print(f'  \u2705 EP.{ep_num:02d} HTML 생성 완료 ({slide_count}장)')
+    print(f'  \u2705 {content_id} HTML 생성 완료 ({slide_count}장)')
     print(f'  \U0001f4c1 {html_path}')
 
     if args.preview:

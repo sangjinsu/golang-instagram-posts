@@ -1,0 +1,72 @@
+{
+  "type": "geeknews",
+  "week": "2026_w14",
+  "article_index": 1,
+  "title": "gstack - Claude Code로 만드는 가상 엔지니어링 팀",
+  "source_url": "https://news.hada.io/topic?id=27756",
+  "geeknews_url": "https://news.hada.io/topic?id=27756",
+  "slides": [
+    {
+      "slide_number": 1,
+      "type": "news-thumbnail",
+      "content": {
+        "series_name": "GeekNews 주간 픽",
+        "series_sub": "이번 주 핫토픽 🔥",
+        "week_label": "2026년 14주차",
+        "article_num": "1/7",
+        "topic": "Claude Code로 만드는 가상 엔지니어링 팀",
+        "hook": "혼자서 20명 팀처럼 일한다고? 🤯"
+      }
+    },
+    {
+      "slide_number": 2,
+      "type": "news-summary",
+      "content": {
+        "question": "gstack이 뭔데? 🤔",
+        "key_points": [
+          "YC CEO Garry Tan이 직접 만든 AI 개발 프레임워크 🏗️",
+          "/plan부터 /ship까지 스프린트 전 과정을 자동화 ⚡",
+          "역할별 에이전트가 팀처럼 협업하는 구조 🤝",
+          "한 명이 20명 팀의 생산성을 낼 수 있다는 컨셉 🚀"
+        ],
+        "source": "GeekNews"
+      }
+    },
+    {
+      "slide_number": 3,
+      "type": "news-why",
+      "content": {
+        "title": "왜 중요한가? 💡",
+        "explanation": "AI 에이전트 도구가 단순 코드 생성을 넘어 '팀 시뮬레이션' 단계로 진화하고 있다. 기획, 설계, 구현, 리뷰, 배포까지 전체 워크플로우를 에이전트가 처리하는 시대가 오고 있다.",
+        "one_liner": "코딩 AI → 엔지니어링 팀 AI로의 진화! 🎯"
+      }
+    },
+    {
+      "slide_number": 4,
+      "type": "news-detail",
+      "content": {
+        "title": "핵심 기능 살펴보기 🔍",
+        "points": [
+          {"label": "🎯 /plan", "desc": "요구사항 분석부터 아키텍처 설계까지 자동화"},
+          {"label": "🔨 /ship", "desc": "코드 리뷰, 테스트, PR 생성을 한번에"},
+          {"label": "🔍 /review", "desc": "7개 전문 리뷰어가 병렬로 코드 검토"},
+          {"label": "📊 /retro", "desc": "주간 회고와 코드 품질 메트릭 추적"}
+        ]
+      }
+    },
+    {
+      "slide_number": 5,
+      "type": "news-closing",
+      "content": {
+        "summary": [
+          "AI 에이전트가 팀 단위로 협업하는 시대",
+          "1인 개발자의 생산성이 극대화되는 도구",
+          "YC의 황금기 철학이 담긴 오픈소스"
+        ],
+        "source_link": "https://news.hada.io/topic?id=27756",
+        "next_article": "다음 기사가 있습니다",
+        "cta": "저장하고 나중에 읽기 📌"
+      }
+    }
+  ]
+}
