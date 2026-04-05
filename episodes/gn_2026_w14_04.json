@@ -1,0 +1,87 @@
+{
+  "type": "geeknews",
+  "week": "2026_w14",
+  "article_index": 4,
+  "title": "코드의 죽음은 과장되었다",
+  "source_url": "https://news.hada.io/topic?id=27772",
+  "geeknews_url": "https://news.hada.io/topic?id=27772",
+  "slides": [
+    {
+      "slide_number": 1,
+      "type": "news-thumbnail",
+      "content": {
+        "series_name": "GeekNews 주간 픽",
+        "series_sub": "이번 주 핫토픽 🔥",
+        "icon": "{ }",
+        "week_label": "2026년 14주차",
+        "article_num": "4/7",
+        "topic": "코드의 죽음은 과장되었다",
+        "hook": "'바이브 라이팅'은 왜 없을까? 🤔"
+      }
+    },
+    {
+      "slide_number": 2,
+      "type": "news-summary",
+      "content": {
+        "question": "무슨 주장인데? 🤔",
+        "key_points": [
+          "Val Town의 Steve Krouse가 '코드는 죽었다'에 정면 반박 ⚔️",
+          "바이브 코딩은 직관적이지만 규모가 커지면 추상화가 샘 🚰",
+          "코드의 진짜 가치는 실행이 아니라 복잡성을 정복하는 추상화 🏆",
+          "AGI가 오면 가장 어려운 추상화 문제부터 풀게 될 것 🤖",
+          "아무도 '바이브 라이팅'은 얘기 안 함 — 글쓰기는 여전히 사고의 도구 ✍️"
+        ],
+        "source": "GeekNews"
+      }
+    },
+    {
+      "slide_number": 3,
+      "type": "news-why",
+      "content": {
+        "title": "왜 이게 중요할까? 💡",
+        "points": [
+          "🚀 바이브 코딩으로 프로토타입 10분이면 완성",
+          "💥 사용자 1,000명 되면? 에러 처리·동시성·보안 → 복잡성 폭발",
+          "✍️ '바이브 라이팅'은 왜 없을까? → 추상화가 핵심이니까",
+          "🤖 AGI가 와도 가장 먼저 풀 문제는 실행이 아니라 추상화"
+        ],
+        "one_liner": "코드의 가치 = 실행이 아니라 복잡성을 정복하는 추상화 🏗️"
+      }
+    },
+    {
+      "slide_number": 4,
+      "type": "news-detail",
+      "content": {
+        "title": "핵심 논점 3가지 🔍",
+        "points": [
+          {
+            "label": "🚰 바이브 코딩의 한계",
+            "desc": "작은 프로젝트엔 통하지만 규모가 커지면 추상화가 새면서 복잡성 폭발"
+          },
+          {
+            "label": "🏆 추상화의 진짜 가치",
+            "desc": "코드는 실행보다 복잡성을 인간 언어로 정복하는 행위가 본질"
+          },
+          {
+            "label": "🤖 AGI 시대 코드의 미래",
+            "desc": "AGI가 오면 가장 어려운 추상화 문제를 먼저 풀게 됨 — 코드는 더 중요해진다"
+          }
+        ]
+      }
+    },
+    {
+      "slide_number": 5,
+      "type": "news-closing",
+      "content": {
+        "summary": [
+          "바이브 코딩은 소규모엔 유효, 대규모엔 한계 명확",
+          "코드의 본질은 실행이 아니라 추상화 능력",
+          "AGI 시대에도 추상화 설계자의 자리는 남는다"
+        ],
+        "source_link": "https://news.hada.io/topic?id=27772",
+        "next_article": "",
+        "cta": "저장하고 동료에게 공유하기 📌"
+      }
+    }
+  ]
+}

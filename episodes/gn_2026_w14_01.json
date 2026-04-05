@@ -12,6 +12,7 @@
       "content": {
         "series_name": "GeekNews 주간 픽",
         "series_sub": "이번 주 핫토픽 🔥",
+        "icon": "🤖",
         "week_label": "2026년 14주차",
         "article_num": "1/7",
         "topic": "Claude Code로 만드는 가상 엔지니어링 팀",

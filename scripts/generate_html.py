@@ -306,8 +306,8 @@ body {
 
 NEWS_CSS = """\
 /* === GeekNews 뉴스 카드 === */
-.slide-news-thumbnail { background: linear-gradient(135deg, #0f0f23 0%, #3d1e00 40%, #FF6B35 100%); }
-.slide-news           { background: linear-gradient(160deg, #0f0f23 0%, #2a1a0a 40%, #1a0d00 100%); }
+.slide-news-thumbnail { background: linear-gradient(135deg, #0f0f23 0%, #1a1530 50%, #2d1a00 100%); }
+.slide-news           { background: linear-gradient(160deg, #0f0f23 0%, #161b22 40%, #1a1000 100%); }
 .slide-news-closing   { background: linear-gradient(160deg, #1a0a0e 0%, #2a1a0a 50%, #0a1628 100%); }
 
 .news-accent   { color: #FF6B35; }
@@ -329,6 +329,7 @@ NEWS_CSS = """\
 .news-thumb-series  { font-size: 36px; font-weight: 700; color: rgba(255,255,255,0.9); }
 .news-thumb-sub     { font-size: 44px; font-weight: 900; color: #fff; margin-top: 8px; }
 .news-thumb-divider { width: 80px; height: 4px; background: #FF6B35; margin: 36px 0; border-radius: 2px; }
+.news-thumb-icon    { font-size: 80px; margin: 20px 0 8px; filter: drop-shadow(0 0 20px rgba(255,107,53,0.3)); }
 .news-thumb-week    { font-size: 28px; font-weight: 700; color: #FF6B35; }
 .news-thumb-num     { font-size: 28px; font-weight: 700; color: rgba(255,255,255,0.5); margin-top: 8px; }
 .news-thumb-topic   { font-size: 48px; font-weight: 900; color: #fff; margin-top: 20px; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
@@ -520,11 +521,15 @@ def render_summary(content, ep_label, slide_number=9):
 
 def render_news_thumbnail(content):
     """뉴스 썸네일"""
+    icon_html = ''
+    if content.get('icon'):
+        icon_html = f'\n    <div class="news-thumb-icon">{esc(content["icon"])}</div>'
+
     return f'''<div class="slide slide-news-thumbnail" id="slide-1">
   <div class="news-thumb-content">
     <p class="news-thumb-series">{esc(content["series_name"])}</p>
     <p class="news-thumb-sub">{esc(content["series_sub"])}</p>
-    <div class="news-thumb-divider"></div>
+    <div class="news-thumb-divider"></div>{icon_html}
     <p class="news-thumb-week">{esc(content["week_label"])}</p>
     <h1 class="news-thumb-topic">{esc(content["topic"])}</h1>
     <p class="news-thumb-hook">{esc(content["hook"])}</p>
@@ -562,6 +567,18 @@ def render_news_summary(content, header_label):
 
 def render_news_why(content, header_label):
     """뉴스 왜 중요한가"""
+    # points 배열이 있으면 불릿 리스트로, 없으면 기존 explanation 사용
+    if content.get('points'):
+        points_html = ''
+        for i, point in enumerate(content['points'], 1):
+            points_html += f'''
+      <div class="news-point-item">
+        <p class="news-point-text">{esc(point)}</p>
+      </div>'''
+        body_html = f'<div style="flex:1;">{points_html}\n    </div>'
+    else:
+        body_html = f'<p class="body-text" style="flex:1;">{esc(content["explanation"])}</p>'
+
     return f'''<div class="slide slide-news" id="slide-3">
   <div class="top-bar">
     <span class="news-tag">GeekNews 주간 픽</span>
@@ -569,7 +586,7 @@ def render_news_why(content, header_label):
   </div>
   <div class="news-body">
     <h2 class="slide-title">{esc(content["title"])}</h2>
-    <p class="body-text" style="flex:1;">{esc(content["explanation"])}</p>
+    {body_html}
     <div class="news-highlight-box">
       <p>{esc(content["one_liner"])}</p>
     </div>
@@ -609,7 +626,7 @@ def render_news_closing(content, header_label, slide_number):
     if content.get('next_article'):
         next_html = f'''
     <div class="summary-next">
-      <p class="body-text">다음 기사: {esc(content["next_article"])}</p>
+      <p class="body-text">👉 {esc(content["next_article"])}</p>
     </div>'''
 
     return f'''<div class="slide slide-news-closing" id="slide-{slide_number}">

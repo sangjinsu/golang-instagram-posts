@@ -1,0 +1,87 @@
+{
+  "type": "geeknews",
+  "week": "2026_w14",
+  "article_index": 3,
+  "title": "하루에 코딩은 4시간이 한계인 이유",
+  "source_url": "https://news.hada.io/topic?id=27906",
+  "geeknews_url": "https://news.hada.io/topic?id=27906",
+  "slides": [
+    {
+      "slide_number": 1,
+      "type": "news-thumbnail",
+      "content": {
+        "series_name": "GeekNews 주간 픽",
+        "series_sub": "이번 주 핫토픽 🔥",
+        "icon": "🧠⏰",
+        "week_label": "2026년 14주차",
+        "article_num": "3/7",
+        "topic": "하루 코딩 4시간이 한계인 이유",
+        "hook": "당신 잘못이 아닙니다 🧠"
+      }
+    },
+    {
+      "slide_number": 2,
+      "type": "news-summary",
+      "content": {
+        "question": "왜 4시간밖에 못 할까? 🤔",
+        "key_points": [
+          "25만 명 분석 결과, 딥 워크 한계는 하루 3~4시간 📊",
+          "실제 코딩 시간 중앙값은 단 52분 ⏰",
+          "Slack 메시지 한 번에 집중력 회복에 23분 소요 😱",
+          "능력 문제가 아니라 인터럽션이 만드는 구조 문제 🏗️",
+          "AI는 인지 한계를 늘리지 못하고 얕은 작업 위임에 도움 🤖"
+        ],
+        "source": "GeekNews"
+      }
+    },
+    {
+      "slide_number": 3,
+      "type": "news-why",
+      "content": {
+        "title": "왜 알아야 할까? 💡",
+        "points": [
+          "📊 Microsoft 25만 명 분석: 실제 코딩 시간 중앙값 하루 52분",
+          "💬 Slack 알림 한 번 → 플로 상태 복구까지 23분 소요",
+          "⏰ 하루 8시간 중 딥워크 가능 시간은 겨우 3~4시간",
+          "🎯 해법: 프로세스 추가가 아니라 방해 요소 제거"
+        ],
+        "one_liner": "프로세스 추가가 아니라 방해 제거가 진짜 생산성 해법 🎯"
+      }
+    },
+    {
+      "slide_number": 4,
+      "type": "news-detail",
+      "content": {
+        "title": "핵심 발견 3가지 🔍",
+        "points": [
+          {
+            "label": "📊 딥워크 연구 결과",
+            "desc": "25만 명 데이터 분석 — 실제 집중 코딩 중앙값은 하루 52분에 불과"
+          },
+          {
+            "label": "😱 인터럽션의 비용",
+            "desc": "알림 하나에 23분 낭비 — 하루 10번이면 4시간이 증발"
+          },
+          {
+            "label": "🤖 AI 도구의 올바른 활용",
+            "desc": "AI는 인지 한계를 늘리지 못함 — 이메일·문서 등 얕은 작업을 위임하는 데 써야"
+          }
+        ]
+      }
+    },
+    {
+      "slide_number": 5,
+      "type": "news-closing",
+      "content": {
+        "summary": [
+          "딥 워크 한계는 하루 3~4시간 — 이건 사실",
+          "구조 문제를 개인 문제로 착각하지 말 것",
+          "AI는 인지 확장이 아닌 얕은 작업 위임 도구"
+        ],
+        "source_link": "https://news.hada.io/topic?id=27906",
+        "next_article": "다음: 코드의 죽음은 과장되었다 💻",
+        "cta": "저장하고 딥워크 시간 확보하기 📌"
+      }
+    }
+  ]
+}
