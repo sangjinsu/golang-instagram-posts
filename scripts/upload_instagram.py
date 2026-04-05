@@ -77,12 +77,74 @@ def build_slide_paths_by_id(content_id):
     ]
 
 
+HASHTAG_MAP = {
+    "ai": "#AI #인공지능",
+    "llm": "#LLM #대규모언어모델",
+    "gpt": "#GPT #ChatGPT",
+    "claude": "#Claude #Anthropic",
+    "codex": "#Codex #OpenAI",
+    "agent": "#AIAgent #에이전트",
+    "데이터": "#데이터 #DataEngineering",
+    "api": "#API #백엔드",
+    "shell": "#Shell #터미널 #CLI",
+    "생산성": "#생산성 #DevProductivity",
+    "코딩": "#코딩 #개발",
+    "오픈소스": "#오픈소스 #OpenSource",
+    "rust": "#Rust #RustLang",
+    "python": "#Python #파이썬",
+    "go": "#Go #Golang",
+    "javascript": "#JavaScript #JS",
+    "typescript": "#TypeScript #TS",
+    "react": "#React #프론트엔드",
+    "devops": "#DevOps #인프라",
+    "보안": "#보안 #Security",
+    "스타트업": "#스타트업 #Startup",
+    "saas": "#SaaS #소프트웨어",
+    "디자인": "#디자인 #UXUI",
+    "테스트": "#테스트 #Testing",
+    "커리어": "#개발자커리어 #성장",
+}
+
+
+def generate_news_hashtags(data):
+    """기사 제목과 콘텐츠에서 관련 해시태그를 자동 생성한다."""
+    title = data.get("title", "").lower()
+    # 슬라이드 텍스트 합치기
+    text_parts = [title]
+    for slide in data.get("slides", []):
+        content = slide.get("content", {})
+        for val in content.values():
+            if isinstance(val, str):
+                text_parts.append(val.lower())
+            elif isinstance(val, list):
+                for item in val:
+                    if isinstance(item, str):
+                        text_parts.append(item.lower())
+    full_text = " ".join(text_parts)
+
+    # 매칭되는 해시태그 수집
+    matched = []
+    for keyword, tags in HASHTAG_MAP.items():
+        if keyword in full_text:
+            matched.append(tags)
+
+    # 기본 해시태그 + 매칭 해시태그 (최대 15개)
+    base = "#GeekNews #개발자뉴스 #테크뉴스 #주간뉴스 #개발"
+    all_tags = base + " " + " ".join(matched)
+    # 중복 제거 후 최대 15개
+    seen = set()
+    unique = []
+    for tag in all_tags.split():
+        if tag not in seen:
+            seen.add(tag)
+            unique.append(tag)
+    return " ".join(unique[:15])
+
+
 def generate_news_caption(content_id):
     """GeekNews 기사 캡션을 자동 생성한다. JSON 콘텐츠에서 핵심 포인트를 추출하여 풍성한 캡션을 만든다."""
     data = load_content_json(content_id)
     title = data.get("title", "")
-    week = data.get("week", "")
-    article_index = data.get("article_index", 1)
     source_url = data.get("source_url", "")
 
     # 슬라이드에서 핵심 포인트 추출
@@ -95,6 +157,9 @@ def generate_news_caption(content_id):
         elif slide.get("type") == "news-why":
             one_liner = content.get("one_liner", "")
 
+    # 해시태그 자동 생성
+    hashtags = generate_news_hashtags(data)
+
     # 캡션 구성
     lines = [f"GeekNews 주간 픽 🔥 {title}"]
     lines.append("")
@@ -106,6 +171,8 @@ def generate_news_caption(content_id):
     if source_url:
         lines.append("")
         lines.append(f"🔗 원문: {source_url}")
+    lines.append("")
+    lines.append(hashtags)
 
     return "\n".join(lines)
 
@@ -259,8 +326,8 @@ def main():
         print("  ❌ --caption 또는 --auto-caption을 지정해주세요.")
         sys.exit(1)
 
-    # 해시태그 결정
-    hashtags = NEWS_HASHTAGS if is_news else args.hashtags
+    # 해시태그 결정 (뉴스 auto-caption은 캡션에 해시태그 포함)
+    hashtags = "" if (is_news and args.auto_caption) else (NEWS_HASHTAGS if is_news else args.hashtags)
 
     # dry-run 모드
     if args.dry_run:
