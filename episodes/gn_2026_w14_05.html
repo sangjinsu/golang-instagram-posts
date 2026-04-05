@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1080">
+  <title>GN 2026_w14 #5 데이터만이 유일한 해자다</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  padding: 40px;
+}
+
+/* 슬라이드 컨테이너 */
+.slide {
+  width: 1080px;
+  height: 1350px;
+  position: relative;
+  overflow: hidden;
+  font-family: 'Noto Sans KR', sans-serif;
+  color: #e0e0e0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 배경 그라데이션 */
+.slide-thumbnail { background: linear-gradient(135deg, #0f0f23 0%, #0a3d5c 40%, #00ADD8 100%); }
+.slide-concept   { background: linear-gradient(160deg, #0f0f23 0%, #1a1a3e 40%, #0d1b2a 100%); }
+.slide-code      { background: linear-gradient(160deg, #0d1117 0%, #161b22 50%, #0d1117 100%); }
+.slide-summary   { background: linear-gradient(160deg, #1a0a2e 0%, #16213e 50%, #0a1628 100%); }
+
+/* 장식 원 */
+.slide::before, .slide::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.06;
+  pointer-events: none;
+}
+.slide::before { width: 500px; height: 500px; background: #667eea; top: -150px; right: -100px; }
+.slide::after  { width: 350px; height: 350px; background: #f093fb; bottom: -100px; left: -80px; }
+
+/* 상단 바 */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 40px 60px 20px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+.series-tag { font-size: 26px; font-weight: 700; color: #00ADD8; }
+.ep-num     { font-size: 26px; font-weight: 700; color: rgba(255,255,255,0.4); }
+
+/* 타이포그래피 */
+.slide-title    { font-size: 48px; font-weight: 900; color: #fff; line-height: 1.3; margin-bottom: 24px; }
+.slide-subtitle { font-size: 32px; font-weight: 700; color: #00ADD8; margin-bottom: 20px; }
+.body-text      { font-size: 30px; font-weight: 400; color: #e0e0e0; line-height: 1.6; }
+.muted-text     { font-size: 26px; color: rgba(255,255,255,0.5); margin-bottom: 12px; }
+
+/* 코드 블록 */
+.code-block {
+  background: #0d1117;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 32px;
+  margin: 20px 0;
+  position: relative;
+  z-index: 1;
+  flex: 1;
+}
+.code-block pre {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 26px;
+  line-height: 1.7;
+  color: #e6edf3;
+  white-space: pre;
+  overflow: hidden;
+}
+
+/* 코드 구문 색상 */
+.kw  { color: #ff7b72; }
+.str { color: #a5d6ff; }
+.num { color: #79c0ff; }
+.cm  { color: #8b949e; }
+.tp  { color: #7ee787; }
+.fn  { color: #d2a8ff; }
+.op  { color: #ffa657; }
+
+/* 노트 박스 */
+.note-box {
+  background: rgba(0, 173, 216, 0.1);
+  border-left: 4px solid #00ADD8;
+  border-radius: 0 12px 12px 0;
+  padding: 20px 28px;
+  margin-top: auto;
+  position: relative;
+  z-index: 1;
+}
+.note-box p { font-size: 26px; color: #e0e0e0; line-height: 1.5; }
+
+/* === 썸네일 === */
+.thumb-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 80px 60px;
+  position: relative;
+  z-index: 1;
+}
+.thumb-series  { font-size: 36px; font-weight: 700; color: rgba(255,255,255,0.9); }
+.thumb-sub     { font-size: 48px; font-weight: 900; color: #fff; margin-top: 8px; }
+.thumb-divider { width: 80px; height: 4px; background: rgba(255,255,255,0.5); margin: 40px 0; border-radius: 2px; }
+.thumb-ep      { font-size: 64px; font-weight: 900; color: #fff; }
+.thumb-topic   { font-size: 56px; font-weight: 900; color: #fff; margin-top: 16px; }
+.thumb-hook    { font-size: 32px; color: rgba(255,255,255,0.8); margin-top: 32px; }
+.thumb-tags    { text-align: center; padding: 40px; font-size: 24px; color: rgba(255,255,255,0.4); position: relative; z-index: 1; }
+
+/* === 컨셉 === */
+.concept-body     { flex: 1; padding: 20px 60px 40px; display: flex; flex-direction: column; gap: 28px; position: relative; z-index: 1; }
+.concept-explain  { }
+.concept-compare  { background: rgba(255,255,255,0.04); border-radius: 16px; padding: 24px 28px; }
+.concept-features { background: rgba(0,173,216,0.08); border-radius: 16px; padding: 24px 28px; }
+
+/* === 코드 바디 === */
+.code-body { flex: 1; padding: 10px 60px 40px; display: flex; flex-direction: column; position: relative; z-index: 1; }
+
+/* === 요약 === */
+.summary-body   { flex: 1; padding: 20px 60px 40px; display: flex; flex-direction: column; gap: 24px; position: relative; z-index: 1; }
+.summary-points,
+.summary-tips   { background: rgba(255,255,255,0.04); border-radius: 16px; padding: 24px 28px; }
+.summary-next   { text-align: center; padding: 20px; background: rgba(0,173,216,0.08); border-radius: 16px; }
+.summary-cta    { text-align: center; padding: 24px; font-size: 28px; color: rgba(255,255,255,0.6); position: relative; z-index: 1; }
+
+
+/* === GeekNews 뉴스 카드 === */
+.slide-news-thumbnail { background: linear-gradient(135deg, #0f0f23 0%, #1a1530 50%, #2d1a00 100%); }
+.slide-news           { background: linear-gradient(160deg, #0f0f23 0%, #161b22 40%, #1a1000 100%); }
+.slide-news-closing   { background: linear-gradient(160deg, #1a0a0e 0%, #2a1a0a 50%, #0a1628 100%); }
+
+.news-accent   { color: #FF6B35; }
+.news-tag      { font-size: 26px; font-weight: 700; color: #FF6B35; }
+.news-ep-num   { font-size: 26px; font-weight: 700; color: rgba(255,255,255,0.4); }
+
+/* 뉴스 썸네일 */
+.news-thumb-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 80px 60px;
+  position: relative;
+  z-index: 1;
+}
+.news-thumb-series  { font-size: 36px; font-weight: 700; color: rgba(255,255,255,0.9); }
+.news-thumb-sub     { font-size: 44px; font-weight: 900; color: #fff; margin-top: 8px; }
+.news-thumb-divider { width: 80px; height: 4px; background: #FF6B35; margin: 36px 0; border-radius: 2px; }
+.news-thumb-icon    { font-size: 80px; margin: 20px 0 8px; filter: drop-shadow(0 0 20px rgba(255,107,53,0.3)); }
+.news-thumb-week    { font-size: 28px; font-weight: 700; color: #FF6B35; }
+.news-thumb-num     { font-size: 28px; font-weight: 700; color: rgba(255,255,255,0.5); margin-top: 8px; }
+.news-thumb-topic   { font-size: 48px; font-weight: 900; color: #fff; margin-top: 20px; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.news-thumb-hook    { font-size: 30px; color: rgba(255,255,255,0.8); margin-top: 28px; }
+.news-thumb-tags    { text-align: center; padding: 40px; font-size: 24px; color: rgba(255,255,255,0.4); position: relative; z-index: 1; }
+
+/* 뉴스 본문 공통 */
+.news-body { flex: 1; padding: 20px 60px 40px; display: flex; flex-direction: column; gap: 24px; position: relative; z-index: 1; }
+
+/* 핵심 포인트 리스트 */
+.news-point-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.news-point-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 28px;
+  font-weight: 700;
+  color: #FF6B35;
+  min-width: 40px;
+}
+.news-point-text { font-size: 28px; color: #e0e0e0; line-height: 1.5; }
+
+/* 출처 표시 */
+.news-source {
+  font-size: 22px;
+  color: rgba(255,255,255,0.4);
+  margin-top: auto;
+  padding-top: 16px;
+}
+
+/* 한줄 결론 강조 박스 */
+.news-highlight-box {
+  background: rgba(255, 107, 53, 0.12);
+  border-left: 4px solid #FF6B35;
+  border-radius: 0 12px 12px 0;
+  padding: 24px 28px;
+  margin-top: 16px;
+}
+.news-highlight-box p { font-size: 30px; font-weight: 700; color: #fff; line-height: 1.5; }
+
+/* 상세 포인트 카드 */
+.news-detail-card {
+  background: rgba(255,255,255,0.04);
+  border-radius: 16px;
+  padding: 24px 28px;
+  margin-bottom: 12px;
+}
+.news-detail-label { font-size: 26px; font-weight: 700; color: #FF6B35; margin-bottom: 8px; }
+.news-detail-desc  { font-size: 26px; color: #e0e0e0; line-height: 1.5; }
+
+/* 뉴스 요약/CTA */
+.news-summary-box  { background: rgba(255,255,255,0.04); border-radius: 16px; padding: 24px 28px; }
+.news-cta          { text-align: center; padding: 24px; font-size: 28px; color: rgba(255,255,255,0.6); position: relative; z-index: 1; }
+.news-source-link  { text-align: center; padding: 12px; font-size: 22px; color: rgba(255,107,53,0.85); word-break: break-all; }
+  </style>
+</head>
+<body>
+
+<div class="slide slide-news-thumbnail" id="slide-1">
+  <div class="news-thumb-content">
+    <p class="news-thumb-series">GeekNews 주간 픽</p>
+    <p class="news-thumb-sub">이번 주 핫토픽 🔥</p>
+    <div class="news-thumb-divider"></div>
+    <div class="news-thumb-icon">🏰📊</div>
+    <p class="news-thumb-week">2026년 14주차</p>
+    <h1 class="news-thumb-topic">데이터만이 유일한 해자다</h1>
+    <p class="news-thumb-hook">AI가 모든 걸 복제할 때, 남는 건 뭘까? 🏰</p>
+  </div>
+  <div class="news-thumb-tags">#GeekNews #개발 #테크뉴스</div>
+</div>
+
+<div class="slide slide-news" id="slide-2">
+  <div class="top-bar">
+    <span class="news-tag">GeekNews 주간 픽</span>
+    <span class="news-ep-num">GN W14 #5</span>
+  </div>
+  <div class="news-body">
+    <h2 class="slide-title">무슨 이야기인데? 🤔</h2>
+    <div>
+      <div class="news-point-item">
+        <span class="news-point-num">01</span>
+        <p class="news-point-text">AI가 개발 비용을 급감시키면서 코드 자체는 더 이상 경쟁력이 아니다 ⚡</p>
+      </div>
+      <div class="news-point-item">
+        <span class="news-point-num">02</span>
+        <p class="news-point-text">인간 생성 데이터(팟캐스트, 영상, SNS)는 가치 상승, AI 생성 데이터는 범용재로 전락 📉</p>
+      </div>
+      <div class="news-point-item">
+        <span class="news-point-num">03</span>
+        <p class="news-point-text">Podscan: 5천만 팟캐스트 에피소드 전사·분석 — 이 데이터가 진짜 해자 🎙️</p>
+      </div>
+      <div class="news-point-item">
+        <span class="news-point-num">04</span>
+        <p class="news-point-text">단순 변환 소프트웨어(Excel→PDF)는 AI 에이전트로 즉시 대체 가능 🤖</p>
+      </div>
+      <div class="news-point-item">
+        <span class="news-point-num">05</span>
+        <p class="news-point-text">API-first 설계 + 메타데이터 축적이 생존 전략의 핵심 🔑</p>
+      </div>
+    </div>
+    <p class="news-source">출처: The Bootstrapped Founder (Arvid Kahl)</p>
+  </div>
+</div>
+
+<div class="slide slide-news" id="slide-3">
+  <div class="top-bar">
+    <span class="news-tag">GeekNews 주간 픽</span>
+    <span class="news-ep-num">GN W14 #5</span>
+  </div>
+  <div class="news-body">
+    <h2 class="slide-title">왜 개발자가 알아야 할까? 💡</h2>
+    <div style="flex:1;">
+      <div class="news-point-item">
+        <p class="news-point-text">📊 HarbourVest: 소프트웨어 업계 2008년 이후 최대 가치 재조정 진행 중</p>
+      </div>
+      <div class="news-point-item">
+        <p class="news-point-text">🏗️ 수평형 SaaS(CRM, 프로젝트 도구)는 AI가 대체 → 버티컬 데이터가 승자</p>
+      </div>
+      <div class="news-point-item">
+        <p class="news-point-text">💰 미국 임베디드 금융 2026년 거래액 $7조 돌파 전망 — 데이터+핀테크 결합이 트렌드</p>
+      </div>
+      <div class="news-point-item">
+        <p class="news-point-text">🔄 당신이 만드는 제품의 메타데이터(사용 패턴, 참여도)가 곧 경쟁력</p>
+      </div>
+    </div>
+    <div class="news-highlight-box">
+      <p>코드는 복제 가능, 데이터는 복제 불가 — 이것이 유일한 해자 🏰</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-news" id="slide-4">
+  <div class="top-bar">
+    <span class="news-tag">GeekNews 주간 픽</span>
+    <span class="news-ep-num">GN W14 #5</span>
+  </div>
+  <div class="news-body">
+    <h2 class="slide-title">실전 전략 3가지 🔍</h2>
+    <div class="news-detail-card">
+      <p class="news-detail-label">🎯 3-Tier 플랫폼 패리티</p>
+      <p class="news-detail-desc">UI·REST API·MCP 모두 동일 기능 제공 — 인간과 AI 에이전트 모두 접근 가능하게</p>
+    </div>
+    <div class="news-detail-card">
+      <p class="news-detail-label">📈 메타데이터 수집</p>
+      <p class="news-detail-desc">사용자 행동 패턴, 참여도, 타이밍 데이터를 자산으로 축적 — 제품을 쓸수록 해자가 깊어진다</p>
+    </div>
+    <div class="news-detail-card">
+      <p class="news-detail-label">🔒 시스템 오브 레코드</p>
+      <p class="news-detail-desc">고객의 핵심 비즈니스 프로세스에 깊이 임베딩 — 전환 비용이 곧 방어벽</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-news-closing" id="slide-5">
+  <div class="top-bar">
+    <span class="news-tag">GeekNews 주간 픽</span>
+    <span class="news-ep-num">GN W14 #5</span>
+  </div>
+  <div class="news-body">
+    <h2 class="slide-subtitle">📌 핵심 정리</h2>
+    <div class="news-summary-box">
+      <p class="body-text">✅ AI 시대에 코드는 복제 가능, 데이터만이 진짜 해자</p>
+      <p class="body-text">✅ 인간 생성 데이터 &gt; AI 생성 데이터 (가치 양분화)</p>
+      <p class="body-text">✅ API-first + 메타데이터 축적 = 생존 전략</p>
+    </div>
+    <p class="news-source-link">원문: https://thebootstrappedfounder.com/data-is-the-only-moat/</p>
+    <div class="news-cta">
+      <p>저장하고 우리 제품의 데이터 해자 점검하기 📌</p>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
