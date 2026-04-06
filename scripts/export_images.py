@@ -27,11 +27,25 @@ def export_slides(content_id, slide_filter=None):
     os.makedirs(output_dir, exist_ok=True)
     abs_html = os.path.abspath(html_path)
 
+    chromium_path = None
+    for candidate in [
+        '/opt/pw-browsers/chromium-1194/chrome-linux/chrome',
+        '/opt/pw-browsers/chromium-1208/chrome-linux64/chrome',
+    ]:
+        if os.path.exists(candidate):
+            chromium_path = candidate
+            break
+
     with sync_playwright() as p:
-        browser = p.chromium.launch()
+        launch_kwargs = {}
+        if chromium_path:
+            launch_kwargs['executable_path'] = chromium_path
+        browser = p.chromium.launch(**launch_kwargs)
         page = browser.new_page(viewport={'width': 1080, 'height': 1350})
-        page.goto(f'file://{abs_html}')
-        page.wait_for_load_state('networkidle')
+        # Block external resource requests (fonts, etc.) that may fail in restricted environments
+        page.route('**/*', lambda route: route.abort() if route.request.resource_type in ('font', 'stylesheet') and 'googleapis' in route.request.url else route.continue_())
+        page.goto(f'file://{abs_html}', wait_until='domcontentloaded', timeout=15000)
+        page.wait_for_timeout(2000)  # Wait for rendering
 
         slides = page.query_selector_all('.slide')
         total = len(slides)
