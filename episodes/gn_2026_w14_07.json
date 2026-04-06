@@ -16,7 +16,7 @@
         "week_label": "2026년 14주차",
         "article_num": "7/7",
         "topic": "구글 TurboQuant: 극한 압축으로 AI 효율성을 재정의하다",
-        "hook": "3비트 압축으로 반도체 시장을 뒤흔든 기술 💥"
+        "hook": "3비트 압축, FP16과 동일한 품질 — 반도체 시장을 뒤흔든 기술 💥"
       }
     },
     {
@@ -25,12 +25,12 @@
       "content": {
         "question": "TurboQuant, 진짜 뭔데? 🤔",
         "key_points": [
-          "구글 리서치가 ICLR 2026에서 공개한 LLM KV 캐시 극한 압축 알고리즘 🏆",
-          "3비트 압축으로 메모리 최대 6배 절감 + H100에서 추론 속도 8배 향상 ⚡",
-          "파인튜닝 없이 기존 모델에 즉시 적용 — 99.5% 어텐션 정확도 유지 🎯",
-          "발표 직후 SK하이닉스 -6.2%, 삼성전자 -4.7% 등 메모리 반도체 섹터 충격 📉"
+          "ICLR 2026 채택 — Google Research + KAIST(한국과학기술원) + NYU 공동 연구 🏆",
+          "3.5-bit 압축으로 LongBench 50.06점 — FP16(16-bit)과 완전 동일한 품질 유지 🎯",
+          "메모리 최대 6배 절감, H100 어텐션 연산 8배 가속 — 파인튜닝·캘리브레이션 불필요 ⚡",
+          "발표 당일 SK하이닉스 -6.2%, 삼성전자 -4.7% 급락 — Cloudflare CEO 'Google판 DeepSeek 모먼트' 📉"
         ],
-        "source": "Google Research Blog"
+        "source": "Google Research Blog / arXiv:2504.19874"
       }
     },
     {
@@ -39,12 +39,12 @@
       "content": {
         "title": "왜 개발자가 주목해야 할까? 💡",
         "points": [
-          "📊 KV 캐시는 100K 토큰 처리 시 수십 GB 소모 — 긴 컨텍스트 추론의 최대 병목",
-          "🔬 llama.cpp 커뮤니티 구현 진행 중 — 70B 모델에서 4.6배 압축, perplexity 허용 범위 내",
-          "💰 Cloudflare CEO: '구글판 DeepSeek 모먼트' — HBM 수요 파괴 우려에 메모리 주식 전반 하락",
-          "🔄 Morgan Stanley 반박: 효율↑ → 채택↑ → 총 수요↑ (Jevons Paradox) — DeepSeek과 같은 패턴"
+          "📊 70B 모델 32K 컨텍스트 처리 시 KV 캐시만 20~40 GB 소모 — 긴 컨텍스트의 최대 병목 'Memory Wall'",
+          "🔬 Needle-in-Haystack: 최대 104,000 토큰에서 99.7% 검색 정확도 — KIVI(3-bit) 98.1% 대비 우월",
+          "💻 실측: 8GB Mac Mini에서 26B 모델 구동 가능 (TurboQuant + SSD 스트리밍 결합 시)",
+          "🔄 Jevons Paradox: 효율↑ → 법률 문서 분석·장기 기억 AI 에이전트 등 새 수요 폭발 → HBM 총 수요 증가 예측"
         ],
-        "one_liner": "같은 GPU로 6배 더 긴 컨텍스트, 더 큰 모델을 돌리는 시대! 🚀"
+        "one_liner": "같은 하드웨어로 6배 더 긴 컨텍스트, FP16과 동일한 품질로! 🚀"
       }
     },
     {
@@ -55,19 +55,19 @@
         "points": [
           {
             "label": "🌀 PolarQuant",
-            "desc": "극좌표 변환으로 K/V 벡터 분포를 균일화 — 정보 손실 없이 비트 수 최소화"
+            "desc": "Walsh-Hadamard 무작위 회전으로 K/V 벡터 분포 균일화 → Lloyd-Max 알고리즘으로 최적 코드북 수학적 계산 (학습 데이터 불필요)"
           },
           {
-            "label": "🔧 QJL (Query JL)",
-            "desc": "Johnson-Lindenstrauss 변환 기반 1비트 잔차 오차 보정 — 99.5% 어텐션 정확도 달성"
+            "label": "🔧 QJL (잔차 보정)",
+            "desc": "Johnson-Lindenstrauss 변환으로 내적 추정 편향 제거 — 단, 커뮤니티 실험 결과 일반 softmax에선 MSE 단독이 더 우수"
           },
           {
-            "label": "🤗 생태계 통합",
-            "desc": "HuggingFace TurboQuantDynamicCache, vLLM, llama.cpp 통합 모두 진행 중 (Metal/CUDA/Vulkan 지원)"
+            "label": "📐 K/V 비대칭 최적 구성",
+            "desc": "커뮤니티 발견: K벡터 크기가 V벡터보다 최대 182배 큼 → '4-bit Keys + 2-bit Values = 평균 3-bit' 구성이 실전 최적"
           },
           {
-            "label": "📐 K/V 비대칭 발견",
-            "desc": "커뮤니티 실험: K벡터 크기가 V벡터보다 4~182배 — K에 더 많은 비트 할당이 최적 압축 전략"
+            "label": "🤗 생태계 통합 현황",
+            "desc": "pip install turboquant (HuggingFace drop-in), vLLM PR #38280, SGLang PR #21617, llama.cpp Discussion #20969 — 7개 커뮤니티 구현체 활성화"
           }
         ]
       }
@@ -77,9 +77,9 @@
       "type": "news-closing",
       "content": {
         "summary": [
-          "3비트 KV 캐시 압축 = 메모리 6배 절감, 추론 속도 8배 향상 (H100 기준)",
-          "파인튜닝 없이 기존 모델에 즉시 적용 가능한 인퍼런스 최적화 기술",
-          "llama.cpp·HuggingFace·vLLM 통합으로 실전 투입 임박"
+          "3.5-bit KV 캐시 = 메모리 6배 절감, FP16과 동일 품질 (LongBench 50.06점)",
+          "104K 토큰 Needle-in-Haystack 99.7% — 파인튜닝·캘리브레이션 0% 필요",
+          "pip install turboquant으로 오늘 바로 적용 가능"
         ],
         "source_link": "https://research.google/blog/turboquant-redefining-ai-efficiency-with-extreme-compression/",
         "next_article": "",
