@@ -1,0 +1,87 @@
+{
+  "type": "geeknews",
+  "week": "2026_w14",
+  "article_index": 6,
+  "title": "Anthropic의 AI 하네스 설계: 혼자서 4시간 코딩하는 법",
+  "source_url": "https://www.anthropic.com/engineering/harness-design-long-running-apps",
+  "geeknews_url": "https://news.hada.io/topic?id=27863",
+  "slides": [
+    {
+      "slide_number": 1,
+      "type": "news-thumbnail",
+      "content": {
+        "series_name": "GeekNews 주간 픽",
+        "series_sub": "이번 주 핫토픽 🔥",
+        "week_label": "2026년 14주차",
+        "article_num": "6/7",
+        "topic": "AI 에이전트가 4시간 동안 혼자 코딩한다",
+        "hook": "GAN에서 영감 받은 3-에이전트 구조 🤖🤖🤖",
+        "icon": "🏗️🤖"
+      }
+    },
+    {
+      "slide_number": 2,
+      "type": "news-summary",
+      "content": {
+        "question": "뭘 만든 건데? 🤔",
+        "key_points": [
+          "Anthropic이 공개한 장기 자율 코딩용 멀티 에이전트 설계 🏗️",
+          "GAN에서 영감: 만드는 놈(Generator)과 채점하는 놈(Evaluator)을 분리 ⚔️",
+          "Planner→Generator→Evaluator 3단계로 풀스택 앱 자동 빌드 🔄",
+          "DAW(음악 편집기)를 3시간 50분, $124에 완성한 실제 사례 🎵",
+          "Opus 4.6에서는 스프린트 분해 없이 2시간+ 연속 코딩 가능 ⚡"
+        ],
+        "source": "Anthropic Engineering Blog"
+      }
+    },
+    {
+      "slide_number": 3,
+      "type": "news-why",
+      "content": {
+        "title": "왜 개발자가 주목해야 할까? 💡",
+        "points": [
+          "📊 Solo agent: 20분/$9 vs Harness: 6시간/$200 — 비용 22배지만 품질 차원이 다름",
+          "🐛 Solo의 게임은 조작 불능, Harness는 완성된 게임플레이+AI 스프라이트 생성",
+          "🔑 핵심 발견: AI는 자기 코드를 과대평가한다 → 평가자 분리가 해법",
+          "🔮 모델이 좋아질수록 하네스가 불필요해지는 게 아니라 가능성이 이동한다"
+        ],
+        "one_liner": "만드는 놈과 채점하는 놈을 분리하면 AI도 퀄리티를 낸다 ⚔️"
+      }
+    },
+    {
+      "slide_number": 4,
+      "type": "news-detail",
+      "content": {
+        "title": "3-Agent 구조 상세 🔍",
+        "points": [
+          {
+            "label": "📋 Planner (계획자)",
+            "desc": "1~4문장 프롬프트를 상세 제품 스펙으로 확장. 범위와 기술 방향을 설정한다"
+          },
+          {
+            "label": "⚙️ Generator (생성자)",
+            "desc": "React+Vite+FastAPI 스택으로 스프린트 단위 구현. 자체 평가 후 QA로 핸드오프"
+          },
+          {
+            "label": "🔍 Evaluator (평가자)",
+            "desc": "Playwright로 실제 앱을 조작하며 테스트. 디자인·독창성·완성도·기능 4기준으로 채점"
+          }
+        ]
+      }
+    },
+    {
+      "slide_number": 5,
+      "type": "news-closing",
+      "content": {
+        "summary": [
+          "GAN 영감의 Generator-Evaluator 분리가 핵심",
+          "Solo 20분/$9 vs Harness 6시간/$200 — 퀄리티 투자",
+          "컨텍스트 리셋으로 장시간 코딩의 품질 유지"
+        ],
+        "source_link": "https://www.anthropic.com/engineering/harness-design-long-running-apps",
+        "next_article": "",
+        "cta": "저장하고 나만의 에이전트 하네스 설계해보기 📌"
+      }
+    }
+  ]
+}
