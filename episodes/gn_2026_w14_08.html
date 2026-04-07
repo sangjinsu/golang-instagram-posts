@@ -263,14 +263,18 @@ body {
       </div>
       <div class="news-point-item">
         <span class="news-point-num">03</span>
-        <p class="news-point-text">개인 생산성: 태스크 완료 +21%, PR 머지 +98% — Anthropic 내부 지표 📈</p>
+        <p class="news-point-text">혼자 2개월 — '4명 × 6개월' 규모 프로젝트를 1인이 완료한 실제 사례 💪</p>
       </div>
       <div class="news-point-item">
         <span class="news-point-num">04</span>
-        <p class="news-point-text">핵심은 AI 능력이 아니라 에이전트가 일하는 '인프라' 최적화 🏗️</p>
+        <p class="news-point-text">개인 생산성: 태스크 완료 +21%, PR 머지 +98% — Anthropic 내부 지표 📈</p>
       </div>
       <div class="news-point-item">
         <span class="news-point-num">05</span>
+        <p class="news-point-text">핵심은 AI 능력이 아니라 에이전트가 일하는 '인프라' 최적화 🏗️</p>
+      </div>
+      <div class="news-point-item">
+        <span class="news-point-num">06</span>
         <p class="news-point-text">CLAUDE.md + Hooks + 병렬 워크트리 = 2026년 생산성 스택 ⚡</p>
       </div>
     </div>
@@ -296,10 +300,10 @@ body {
         <p class="news-point-text">⚡ 하루 평균 비용 $6/인 — 90th 퍼센타일도 $12 미만, 월 $100~200 수준</p>
       </div>
       <div class="news-point-item">
-        <p class="news-point-text">🔄 제약이론(ToC) 패턴: /git-pr 자동화 → SWC 빌드 → 프리뷰 검증 → 병렬 워크트리 순으로 병목 이동</p>
+        <p class="news-point-text">🔬 METR 연구(2026.02): 개발자들은 AI로 20% 빨라졌다 '느끼지만' 실측은 오히려 19% 느림 — 성숙한 코드베이스일수록 효과 제한적</p>
       </div>
       <div class="news-point-item">
-        <p class="news-point-text">⚠️ 생산성 역설: PR +98%지만 리뷰 시간도 +91% 증가 — 새 병목을 주시해야 함</p>
+        <p class="news-point-text">⚠️ 생산성 역설: PR +98%지만 리뷰 시간도 +91% 증가 — 마찰 제거 후 새 병목을 즉시 찾아야 함</p>
       </div>
     </div>
     <div class="news-highlight-box">
@@ -317,7 +321,7 @@ body {
     <h2 class="slide-title">실전 적용 가이드 🔍</h2>
     <div class="news-detail-card">
       <p class="news-detail-label">🗂️ CLAUDE.md: 100줄 이내로 유지</p>
-      <p class="news-detail-desc">Boris의 CLAUDE.md는 100줄. LLM이 일관되게 따를 수 있는 지시는 150~200개 한계. 매 줄마다 'Claude가 없으면 실수하나?'를 자문. 반드시 지켜야 할 규칙(포맷, 린트)은 Hooks로 위임 — Hooks는 100% 결정론적</p>
+      <p class="news-detail-desc">LLM이 일관되게 따를 수 있는 지시는 150~200개 한계. Claude 시스템 프롬프트가 이미 ~50개 사용 → 실제 여유는 100~150개뿐. Boris의 CLAUDE.md도 ~100줄. 매 줄 'Claude가 없으면 실수하나?' 자문. 반드시 지켜야 할 규칙은 Hooks로 — 100% 결정론적</p>
     </div>
     <div class="news-detail-card">
       <p class="news-detail-label">⚙️ Plan Mode로 시작하기</p>
@@ -325,7 +329,7 @@ body {
     </div>
     <div class="news-detail-card">
       <p class="news-detail-label">🔀 병렬 워크트리 실전</p>
-      <p class="news-detail-desc">git worktree add로 기능별 독립 체크아웃 생성, 각 터미널에서 claude --worktree 실행. 파일 충돌 없이 기능 개발·버그 수정·리뷰 동시 진행. 완료된 워크트리는 자동 정리, 변경사항 있으면 보존 여부 확인</p>
+      <p class="news-detail-desc">incident.io 팀: UI·빌드·테스트·백엔드 에이전트 4~5개 동시 실행 → JS 에디터 개선 작업 '2시간 → 10분' 달성. claude --worktree feature-name 한 명령으로 독립 체크아웃 생성. 실용적 상한선은 3~5개 — 더 많으면 컨텍스트 스위칭 비용이 역전</p>
     </div>
     <div class="news-detail-card">
       <p class="news-detail-label">🧠 컨텍스트 윈도우 관리</p>
