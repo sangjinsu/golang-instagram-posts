@@ -15,17 +15,46 @@ upload-post 라이브러리를 사용하여 8장 슬라이드를 캐러셀로 �
 import os
 import sys
 import json
+import re
 import argparse
 
 DEFAULT_USER = "code_snacku"
 DEFAULT_HASHTAGS = (
     "#golang #go #개발 #프로그래밍 #코딩 #개발자 "
-    "#golang #go #백엔드 #서버개발"
+    "#백엔드 #서버개발"
 )
-NEWS_HASHTAGS = (
-    "#geeknews #개발 #테크뉴스 #개발자뉴스 #주간뉴스 "
-    "#개발자 #프로그래밍 #코딩 #IT뉴스"
-)
+
+MAX_KEY_POINTS = 3
+MAX_HASHTAGS = 15
+BASE_NEWS_TAGS = "#GeekNews #개발자뉴스 #테크뉴스 #주간뉴스 #개발"
+
+HASHTAG_MAP = {
+    "ai": "#AI #인공지능",
+    "llm": "#LLM #대규모언어모델",
+    "gpt": "#GPT #ChatGPT",
+    "claude": "#Claude #Anthropic",
+    "codex": "#Codex #OpenAI",
+    "agent": "#AIAgent #에이전트",
+    "데이터": "#데이터 #DataEngineering",
+    "api": "#API #백엔드",
+    "shell": "#Shell #터미널 #CLI",
+    "생산성": "#생산성 #DevProductivity",
+    "코딩": "#코딩 #개발",
+    "오픈소스": "#오픈소스 #OpenSource",
+    "rust": "#Rust #RustLang",
+    "python": "#Python #파이썬",
+    "go": "#Go #Golang",
+    "javascript": "#JavaScript #JS",
+    "typescript": "#TypeScript #TS",
+    "react": "#React #프론트엔드",
+    "devops": "#DevOps #인프라",
+    "보안": "#보안 #Security",
+    "스타트업": "#스타트업 #Startup",
+    "saas": "#SaaS #소프트웨어",
+    "디자인": "#디자인 #UXUI",
+    "테스트": "#테스트 #Testing",
+    "커리어": "#개발자커리어 #성장",
+}
 
 
 def load_episode_json(ep_num):
@@ -66,9 +95,10 @@ def load_content_json(content_id):
         sys.exit(1)
 
 
-def build_slide_paths_by_id(content_id):
+def build_slide_paths_by_id(content_id, data=None):
     """content_id로 슬라이드 PNG 경로 리스트를 만든다."""
-    data = load_content_json(content_id)
+    if data is None:
+        data = load_content_json(content_id)
     output_dir = os.path.join("output", content_id)
     slide_count = len(data.get("slides", []))
     return [
@@ -77,42 +107,21 @@ def build_slide_paths_by_id(content_id):
     ]
 
 
-HASHTAG_MAP = {
-    "ai": "#AI #인공지능",
-    "llm": "#LLM #대규모언어모델",
-    "gpt": "#GPT #ChatGPT",
-    "claude": "#Claude #Anthropic",
-    "codex": "#Codex #OpenAI",
-    "agent": "#AIAgent #에이전트",
-    "데이터": "#데이터 #DataEngineering",
-    "api": "#API #백엔드",
-    "shell": "#Shell #터미널 #CLI",
-    "생산성": "#생산성 #DevProductivity",
-    "코딩": "#코딩 #개발",
-    "오픈소스": "#오픈소스 #OpenSource",
-    "rust": "#Rust #RustLang",
-    "python": "#Python #파이썬",
-    "go": "#Go #Golang",
-    "javascript": "#JavaScript #JS",
-    "typescript": "#TypeScript #TS",
-    "react": "#React #프론트엔드",
-    "devops": "#DevOps #인프라",
-    "보안": "#보안 #Security",
-    "스타트업": "#스타트업 #Startup",
-    "saas": "#SaaS #소프트웨어",
-    "디자인": "#디자인 #UXUI",
-    "테스트": "#테스트 #Testing",
-    "커리어": "#개발자커리어 #성장",
-}
+def _extract_slide_data(data):
+    """슬라이드를 한 번 순회하여 text_parts, key_points, one_liner를 반환한다."""
+    text_parts = [data.get("title", "").lower()]
+    key_points = []
+    one_liner = ""
 
-
-def generate_news_hashtags(data):
-    """기사 제목과 콘텐츠에서 관련 해시태그를 자동 생성한다."""
-    title = data.get("title", "").lower()
-    # 슬라이드 텍스트 합치기
-    text_parts = [title]
     for slide in data.get("slides", []):
+        slide_type = slide.get("type", "")
         content = slide.get("content", {})
+
+        if slide_type == "news-summary":
+            key_points = content.get("key_points", [])[:MAX_KEY_POINTS]
+        elif slide_type == "news-why":
+            one_liner = content.get("one_liner", "")
+
         for val in content.values():
             if isinstance(val, str):
                 text_parts.append(val.lower())
@@ -120,59 +129,58 @@ def generate_news_hashtags(data):
                 for item in val:
                     if isinstance(item, str):
                         text_parts.append(item.lower())
-    full_text = " ".join(text_parts)
 
-    # 매칭되는 해시태그 수집
+    return " ".join(text_parts), key_points, one_liner
+
+
+def _extract_all_text(data):
+    """generate_news_hashtags가 단독 호출될 때만 사용되는 fallback."""
+    full_text, _, _ = _extract_slide_data(data)
+    return full_text
+
+
+def generate_news_hashtags(data, full_text=None):
+    """기사 콘텐츠에서 키워드 매칭으로 해시태그를 생성한다."""
+    if full_text is None:
+        full_text = _extract_all_text(data)
+
+    # Tokenize for word-boundary matching (avoids "go" matching "goroutine")
+    tokens = set(re.findall(r'[a-z가-힣]+', full_text))
+
     matched = []
     for keyword, tags in HASHTAG_MAP.items():
-        if keyword in full_text:
+        if keyword in tokens:
             matched.append(tags)
 
-    # 기본 해시태그 + 매칭 해시태그 (최대 15개)
-    base = "#GeekNews #개발자뉴스 #테크뉴스 #주간뉴스 #개발"
-    all_tags = base + " " + " ".join(matched)
-    # 중복 제거 후 최대 15개
+    all_tags = BASE_NEWS_TAGS + " " + " ".join(matched)
     seen = set()
     unique = []
     for tag in all_tags.split():
         if tag not in seen:
             seen.add(tag)
             unique.append(tag)
-    return " ".join(unique[:15])
+    return " ".join(unique[:MAX_HASHTAGS])
 
 
-def generate_news_caption(content_id):
-    """GeekNews 기사 캡션을 자동 생성한다. JSON 콘텐츠에서 핵심 포인트를 추출하여 풍성한 캡션을 만든다."""
-    data = load_content_json(content_id)
+def generate_news_caption(content_id, data=None):
+    """GeekNews 기사 캡션과 해시태그를 자동 생성한다."""
+    if data is None:
+        data = load_content_json(content_id)
+
+    full_text, key_points, one_liner = _extract_slide_data(data)
+    hashtags = generate_news_hashtags(data, full_text=full_text)
+
     title = data.get("title", "")
     source_url = data.get("source_url", "")
 
-    # 슬라이드에서 핵심 포인트 추출
-    key_points = []
-    one_liner = ""
-    for slide in data.get("slides", []):
-        content = slide.get("content", {})
-        if slide.get("type") == "news-summary":
-            key_points = content.get("key_points", [])[:3]
-        elif slide.get("type") == "news-why":
-            one_liner = content.get("one_liner", "")
-
-    # 해시태그 자동 생성
-    hashtags = generate_news_hashtags(data)
-
-    # 캡션 구성
-    lines = [f"GeekNews 주간 픽 🔥 {title}"]
-    lines.append("")
+    lines = [f"GeekNews 주간 픽 🔥 {title}", ""]
     for kp in key_points:
         lines.append(f"👉 {kp}")
     if one_liner:
-        lines.append("")
-        lines.append(f"💡 {one_liner}")
+        lines.extend(["", f"💡 {one_liner}"])
     if source_url:
-        lines.append("")
-        lines.append(f"🔗 원문: {source_url}")
-    lines.append("")
-    lines.append(hashtags)
+        lines.extend(["", f"🔗 원문: {source_url}"])
+    lines.extend(["", hashtags])
 
     return "\n".join(lines)
 
@@ -281,12 +289,10 @@ def main():
     )
     args = parser.parse_args()
 
-    # 상태 확인 모드
     if args.status:
         check_status(args.status)
         return
 
-    # content_id 결정
     if args.id:
         content_id = args.id
     elif args.ep:
@@ -295,17 +301,20 @@ def main():
         print("  ❌ --ep, --id, 또는 --status를 지정해주세요.")
         sys.exit(1)
 
-    # 슬라이드 경로 결정
+    news_data = None
     if content_id:
-        photos = build_slide_paths_by_id(content_id)
         is_news = content_id.startswith("gn_")
+        if is_news:
+            news_data = load_content_json(content_id)
+            photos = build_slide_paths_by_id(content_id, data=news_data)
+        else:
+            photos = build_slide_paths_by_id(content_id)
     else:
         ep_num = int(args.ep)
         photos = build_slide_paths(ep_num)
         is_news = False
         content_id = f"ep{ep_num:02d}"
 
-    # 슬라이드 파일 존재 확인
     if not check_slides_exist(photos):
         print(f"\n  먼저 이미지를 생성해주세요:")
         if args.ep:
@@ -314,22 +323,22 @@ def main():
             print(f"    python3 scripts/export_images.py --id {args.id}")
         sys.exit(1)
 
-    # 캡션 결정
     if args.caption:
         caption = args.caption
     elif args.auto_caption:
         if is_news:
-            caption = generate_news_caption(content_id)
+            caption = generate_news_caption(content_id, data=news_data)
         else:
             caption = generate_caption(int(args.ep))
     else:
         print("  ❌ --caption 또는 --auto-caption을 지정해주세요.")
         sys.exit(1)
 
-    # 해시태그 결정 (뉴스 auto-caption은 캡션에 해시태그 포함)
-    hashtags = "" if (is_news and args.auto_caption) else (NEWS_HASHTAGS if is_news else args.hashtags)
+    if is_news and args.auto_caption:
+        hashtags = ""
+    else:
+        hashtags = args.hashtags
 
-    # dry-run 모드
     if args.dry_run:
         print(f"  📋 [DRY RUN] 업로드 파라미터:")
         print(f"    플랫폼:  instagram")
@@ -347,7 +356,6 @@ def main():
         print(f"\n  ✅ DRY RUN 완료 (실제 업로드는 실행되지 않았습니다)")
         return
 
-    # 실제 업로드
     print(f"  🚀 {content_id} 인스타그램 업로드 시작...")
     response = upload(
         photos=photos,
