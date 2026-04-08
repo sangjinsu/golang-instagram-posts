@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1080">
+  <title>GN 2026_w14 #9 emulate - 로컬에서 GitHub·Vercel·AWS를 완전 복제해 실행하기</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  padding: 40px;
+}
+
+/* 슬라이드 컨테이너 */
+.slide {
+  width: 1080px;
+  height: 1350px;
+  position: relative;
+  overflow: hidden;
+  font-family: 'Noto Sans KR', sans-serif;
+  color: #e0e0e0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 배경 그라데이션 */
+.slide-thumbnail { background: linear-gradient(135deg, #0f0f23 0%, #0a3d5c 40%, #00ADD8 100%); }
+.slide-concept   { background: linear-gradient(160deg, #0f0f23 0%, #1a1a3e 40%, #0d1b2a 100%); }
+.slide-code      { background: linear-gradient(160deg, #0d1117 0%, #161b22 50%, #0d1117 100%); }
+.slide-summary   { background: linear-gradient(160deg, #1a0a2e 0%, #16213e 50%, #0a1628 100%); }
+
+/* 장식 원 */
+.slide::before, .slide::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.06;
+  pointer-events: none;
+}
+.slide::before { width: 500px; height: 500px; background: #667eea; top: -150px; right: -100px; }
+.slide::after  { width: 350px; height: 350px; background: #f093fb; bottom: -100px; left: -80px; }
+
+/* 상단 바 */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 40px 60px 20px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+.series-tag { font-size: 26px; font-weight: 700; color: #00ADD8; }
+.ep-num     { font-size: 26px; font-weight: 700; color: rgba(255,255,255,0.4); }
+
+/* 타이포그래피 */
+.slide-title    { font-size: 48px; font-weight: 900; color: #fff; line-height: 1.3; margin-bottom: 24px; }
+.slide-subtitle { font-size: 32px; font-weight: 700; color: #00ADD8; margin-bottom: 20px; }
+.body-text      { font-size: 30px; font-weight: 400; color: #e0e0e0; line-height: 1.6; }
+.muted-text     { font-size: 26px; color: rgba(255,255,255,0.5); margin-bottom: 12px; }
+
+/* 코드 블록 */
+.code-block {
+  background: #0d1117;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 32px;
+  margin: 20px 0;
+  position: relative;
+  z-index: 1;
+  flex: 1;
+}
+.code-block pre {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 26px;
+  line-height: 1.7;
+  color: #e6edf3;
+  white-space: pre;
+  overflow: hidden;
+}
+
+/* 코드 구문 색상 */
+.kw  { color: #ff7b72; }
+.str { color: #a5d6ff; }
+.num { color: #79c0ff; }
+.cm  { color: #8b949e; }
+.tp  { color: #7ee787; }
+.fn  { color: #d2a8ff; }
+.op  { color: #ffa657; }
+
+/* 노트 박스 */
+.note-box {
+  background: rgba(0, 173, 216, 0.1);
+  border-left: 4px solid #00ADD8;
+  border-radius: 0 12px 12px 0;
+  padding: 20px 28px;
+  margin-top: auto;
+  position: relative;
+  z-index: 1;
+}
+.note-box p { font-size: 26px; color: #e0e0e0; line-height: 1.5; }
+
+/* === 썸네일 === */
+.thumb-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 80px 60px;
+  position: relative;
+  z-index: 1;
+}
+.thumb-series  { font-size: 36px; font-weight: 700; color: rgba(255,255,255,0.9); }
+.thumb-sub     { font-size: 48px; font-weight: 900; color: #fff; margin-top: 8px; }
+.thumb-divider { width: 80px; height: 4px; background: rgba(255,255,255,0.5); margin: 40px 0; border-radius: 2px; }
+.thumb-ep      { font-size: 64px; font-weight: 900; color: #fff; }
+.thumb-topic   { font-size: 56px; font-weight: 900; color: #fff; margin-top: 16px; }
+.thumb-hook    { font-size: 32px; color: rgba(255,255,255,0.8); margin-top: 32px; }
+.thumb-tags    { text-align: center; padding: 40px; font-size: 24px; color: rgba(255,255,255,0.4); position: relative; z-index: 1; }
+
+/* === 컨셉 === */
+.concept-body     { flex: 1; padding: 20px 60px 40px; display: flex; flex-direction: column; gap: 28px; position: relative; z-index: 1; }
+.concept-explain  { }
+.concept-compare  { background: rgba(255,255,255,0.04); border-radius: 16px; padding: 24px 28px; }
+.concept-features { background: rgba(0,173,216,0.08); border-radius: 16px; padding: 24px 28px; }
+
+/* === 코드 바디 === */
+.code-body { flex: 1; padding: 10px 60px 40px; display: flex; flex-direction: column; position: relative; z-index: 1; }
+
+/* === 요약 === */
+.summary-body   { flex: 1; padding: 20px 60px 40px; display: flex; flex-direction: column; gap: 24px; position: relative; z-index: 1; }
+.summary-points,
+.summary-tips   { background: rgba(255,255,255,0.04); border-radius: 16px; padding: 24px 28px; }
+.summary-next   { text-align: center; padding: 20px; background: rgba(0,173,216,0.08); border-radius: 16px; }
+.summary-cta    { text-align: center; padding: 24px; font-size: 28px; color: rgba(255,255,255,0.6); position: relative; z-index: 1; }
+
+
+/* === GeekNews 뉴스 카드 === */
+.slide-news-thumbnail { background: linear-gradient(135deg, #0f0f23 0%, #1a1530 50%, #2d1a00 100%); }
+.slide-news           { background: linear-gradient(160deg, #0f0f23 0%, #161b22 40%, #1a1000 100%); }
+.slide-news-closing   { background: linear-gradient(160deg, #1a0a0e 0%, #2a1a0a 50%, #0a1628 100%); }
+
+.news-accent   { color: #FF6B35; }
+.news-tag      { font-size: 26px; font-weight: 700; color: #FF6B35; }
+.news-ep-num   { font-size: 26px; font-weight: 700; color: rgba(255,255,255,0.4); }
+
+/* 뉴스 썸네일 */
+.news-thumb-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 80px 60px;
+  position: relative;
+  z-index: 1;
+}
+.news-thumb-series  { font-size: 36px; font-weight: 700; color: rgba(255,255,255,0.9); }
+.news-thumb-sub     { font-size: 44px; font-weight: 900; color: #fff; margin-top: 8px; }
+.news-thumb-divider { width: 80px; height: 4px; background: #FF6B35; margin: 36px 0; border-radius: 2px; }
+.news-thumb-icon    { font-size: 80px; margin: 20px 0 8px; filter: drop-shadow(0 0 20px rgba(255,107,53,0.3)); }
+.news-thumb-week    { font-size: 28px; font-weight: 700; color: #FF6B35; }
+.news-thumb-num     { font-size: 28px; font-weight: 700; color: rgba(255,255,255,0.5); margin-top: 8px; }
+.news-thumb-topic   { font-size: 48px; font-weight: 900; color: #fff; margin-top: 20px; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.news-thumb-hook    { font-size: 30px; color: rgba(255,255,255,0.8); margin-top: 28px; }
+.news-thumb-tags    { text-align: center; padding: 40px; font-size: 24px; color: rgba(255,255,255,0.4); position: relative; z-index: 1; }
+
+/* 뉴스 본문 공통 */
+.news-body { flex: 1; padding: 20px 60px 40px; display: flex; flex-direction: column; gap: 24px; position: relative; z-index: 1; }
+
+/* 핵심 포인트 리스트 */
+.news-point-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.news-point-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 28px;
+  font-weight: 700;
+  color: #FF6B35;
+  min-width: 40px;
+}
+.news-point-text { font-size: 28px; color: #e0e0e0; line-height: 1.5; }
+
+/* 출처 표시 */
+.news-source {
+  font-size: 22px;
+  color: rgba(255,255,255,0.4);
+  margin-top: auto;
+  padding-top: 16px;
+}
+
+/* 한줄 결론 강조 박스 */
+.news-highlight-box {
+  background: rgba(255, 107, 53, 0.12);
+  border-left: 4px solid #FF6B35;
+  border-radius: 0 12px 12px 0;
+  padding: 24px 28px;
+  margin-top: 16px;
+}
+.news-highlight-box p { font-size: 30px; font-weight: 700; color: #fff; line-height: 1.5; }
+
+/* 상세 포인트 카드 */
+.news-detail-card {
+  background: rgba(255,255,255,0.04);
+  border-radius: 16px;
+  padding: 24px 28px;
+  margin-bottom: 12px;
+}
+.news-detail-label { font-size: 26px; font-weight: 700; color: #FF6B35; margin-bottom: 8px; }
+.news-detail-desc  { font-size: 26px; color: #e0e0e0; line-height: 1.5; }
+
+/* 뉴스 요약/CTA */
+.news-summary-box  { background: rgba(255,255,255,0.04); border-radius: 16px; padding: 24px 28px; }
+.news-cta          { text-align: center; padding: 24px; font-size: 28px; color: rgba(255,255,255,0.6); position: relative; z-index: 1; }
+.news-source-link  { text-align: center; padding: 12px; font-size: 22px; color: rgba(255,107,53,0.85); word-break: break-all; }
+  </style>
+</head>
+<body>
+
+<div class="slide slide-news-thumbnail" id="slide-1">
+  <div class="news-thumb-content">
+    <p class="news-thumb-series">GeekNews 주간 픽</p>
+    <p class="news-thumb-sub">이번 주 핫토픽 🔥</p>
+    <div class="news-thumb-divider"></div>
+    <div class="news-thumb-icon">🧪</div>
+    <p class="news-thumb-week">2026년 14주차</p>
+    <h1 class="news-thumb-topic">로컬에서 7개 외부 API를 완전 복제</h1>
+    <p class="news-thumb-hook">npx 한 줄로 GitHub·Vercel·AWS가 내 컴퓨터에? 🤯</p>
+  </div>
+  <div class="news-thumb-tags">#GeekNews #개발 #테크뉴스</div>
+</div>
+
+<div class="slide slide-news" id="slide-2">
+  <div class="top-bar">
+    <span class="news-tag">GeekNews 주간 픽</span>
+    <span class="news-ep-num">GN W14 #9</span>
+  </div>
+  <div class="news-body">
+    <h2 class="slide-title">emulate가 뭔데? 🤔</h2>
+    <div>
+      <div class="news-point-item">
+        <span class="news-point-num">01</span>
+        <p class="news-point-text">GitHub·Vercel·Google·Slack·AWS를 로컬에서 완전히 에뮬레이션 🖥️</p>
+      </div>
+      <div class="news-point-item">
+        <span class="news-point-num">02</span>
+        <p class="news-point-text">단순 Mock이 아닌 실제 상태가 유지되는 Production-fidelity 에뮬레이션 ⚡</p>
+      </div>
+      <div class="news-point-item">
+        <span class="news-point-num">03</span>
+        <p class="news-point-text">npx emulate 한 줄로 7개 서비스 즉시 실행 — 설정 파일 불필요 🚀</p>
+      </div>
+      <div class="news-point-item">
+        <span class="news-point-num">04</span>
+        <p class="news-point-text">OAuth 인증 플로우, Webhook 전달까지 로컬에서 완전 재현 🔐</p>
+      </div>
+      <div class="news-point-item">
+        <span class="news-point-num">05</span>
+        <p class="news-point-text">Vitest/Jest 통합으로 테스트 코드 안에서 직접 제어 가능 🧪</p>
+      </div>
+    </div>
+    <p class="news-source">출처: GitHub (vercel-labs/emulate)</p>
+  </div>
+</div>
+
+<div class="slide slide-news" id="slide-3">
+  <div class="top-bar">
+    <span class="news-tag">GeekNews 주간 픽</span>
+    <span class="news-ep-num">GN W14 #9</span>
+  </div>
+  <div class="news-body">
+    <h2 class="slide-title">왜 중요한가? 💡</h2>
+    <div style="flex:1;">
+      <div class="news-point-item">
+        <p class="news-point-text">📊 마이크로서비스 PR 1개당 평균 11개 외부 의존성 — 11개의 네트워크 장애 지점</p>
+      </div>
+      <div class="news-point-item">
+        <p class="news-point-text">⚡ API 에뮬레이션 도입 팀: CI 시간 20~60% 단축 실증 데이터</p>
+      </div>
+      <div class="news-point-item">
+        <p class="news-point-text">🔴 외부 API 의존 테스트: 팀의 5%가 코드 변경 없이도 매 실행마다 CI 실패 경험</p>
+      </div>
+      <div class="news-point-item">
+        <p class="news-point-text">🚀 핀테크 팀 실제 사례: CI 신뢰도 92% → 99.2%, 파이프라인 2분 11초 단축</p>
+      </div>
+    </div>
+    <div class="news-highlight-box">
+      <p>외부 API 없이 테스트 → 더 빠르고 더 안정적인 CI 💪</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-news" id="slide-4">
+  <div class="top-bar">
+    <span class="news-tag">GeekNews 주간 픽</span>
+    <span class="news-ep-num">GN W14 #9</span>
+  </div>
+  <div class="news-body">
+    <h2 class="slide-title">핵심 기능 살펴보기 🔍</h2>
+    <div class="news-detail-card">
+      <p class="news-detail-label">🔧 7개 서비스 지원</p>
+      <p class="news-detail-desc">Vercel·GitHub·Google·Slack·Apple·Microsoft·AWS — 각각 고유 포트(4000~4006) 할당</p>
+    </div>
+    <div class="news-detail-card">
+      <p class="news-detail-label">🔐 OAuth 완전 지원</p>
+      <p class="news-detail-desc">OAuth 2.0·OIDC·GitHub App JWT 인증·Webhook 전달까지 완벽 재현</p>
+    </div>
+    <div class="news-detail-card">
+      <p class="news-detail-label">💾 완전 Stateful</p>
+      <p class="news-detail-desc">생성·수정·삭제가 메모리에 지속 — Mock과 달리 실제 API처럼 상태 유지</p>
+    </div>
+    <div class="news-detail-card">
+      <p class="news-detail-label">🧪 테스트 프레임워크 통합</p>
+      <p class="news-detail-desc">Vitest/Jest에서 reset()·close()로 테스트 간 격리 보장, 프로그래밍 방식 제어 가능</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-news-closing" id="slide-5">
+  <div class="top-bar">
+    <span class="news-tag">GeekNews 주간 픽</span>
+    <span class="news-ep-num">GN W14 #9</span>
+  </div>
+  <div class="news-body">
+    <h2 class="slide-subtitle">📌 핵심 정리</h2>
+    <div class="news-summary-box">
+      <p class="body-text">✅ 외부 API 없이도 실제처럼 작동하는 로컬 에뮬레이터</p>
+      <p class="body-text">✅ npx 한 줄로 7개 서비스 즉시 실행, 설정 불필요</p>
+      <p class="body-text">✅ CI 안정성과 속도를 동시에 잡는 실용 도구</p>
+    </div>
+    <p class="news-source-link">원문: https://github.com/vercel-labs/emulate</p>
+    <div class="news-cta">
+      <p>저장하고 나중에 읽기 📌</p>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

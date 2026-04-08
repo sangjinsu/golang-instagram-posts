@@ -1,0 +1,91 @@
+{
+  "type": "geeknews",
+  "week": "2026_w14",
+  "article_index": 9,
+  "title": "emulate - 로컬에서 GitHub·Vercel·AWS를 완전 복제해 실행하기",
+  "source_url": "https://github.com/vercel-labs/emulate",
+  "geeknews_url": "https://news.hada.io/topic?id=27802",
+  "slides": [
+    {
+      "slide_number": 1,
+      "type": "news-thumbnail",
+      "content": {
+        "series_name": "GeekNews 주간 픽",
+        "series_sub": "이번 주 핫토픽 🔥",
+        "icon": "🧪",
+        "week_label": "2026년 14주차",
+        "article_num": "9/9",
+        "topic": "로컬에서 7개 외부 API를 완전 복제",
+        "hook": "npx 한 줄로 GitHub·Vercel·AWS가 내 컴퓨터에? 🤯"
+      }
+    },
+    {
+      "slide_number": 2,
+      "type": "news-summary",
+      "content": {
+        "question": "emulate가 뭔데? 🤔",
+        "key_points": [
+          "GitHub·Vercel·Google·Slack·AWS를 로컬에서 완전히 에뮬레이션 🖥️",
+          "단순 Mock이 아닌 실제 상태가 유지되는 Production-fidelity 에뮬레이션 ⚡",
+          "npx emulate 한 줄로 7개 서비스 즉시 실행 — 설정 파일 불필요 🚀",
+          "OAuth 인증 플로우, Webhook 전달까지 로컬에서 완전 재현 🔐",
+          "Vitest/Jest 통합으로 테스트 코드 안에서 직접 제어 가능 🧪"
+        ],
+        "source": "GitHub (vercel-labs/emulate)"
+      }
+    },
+    {
+      "slide_number": 3,
+      "type": "news-why",
+      "content": {
+        "title": "왜 중요한가? 💡",
+        "points": [
+          "📊 마이크로서비스 PR 1개당 평균 11개 외부 의존성 — 11개의 네트워크 장애 지점",
+          "⚡ API 에뮬레이션 도입 팀: CI 시간 20~60% 단축 실증 데이터",
+          "🔴 외부 API 의존 테스트: 팀의 5%가 코드 변경 없이도 매 실행마다 CI 실패 경험",
+          "🚀 핀테크 팀 실제 사례: CI 신뢰도 92% → 99.2%, 파이프라인 2분 11초 단축"
+        ],
+        "one_liner": "외부 API 없이 테스트 → 더 빠르고 더 안정적인 CI 💪"
+      }
+    },
+    {
+      "slide_number": 4,
+      "type": "news-detail",
+      "content": {
+        "title": "핵심 기능 살펴보기 🔍",
+        "points": [
+          {
+            "label": "🔧 7개 서비스 지원",
+            "desc": "Vercel·GitHub·Google·Slack·Apple·Microsoft·AWS — 각각 고유 포트(4000~4006) 할당"
+          },
+          {
+            "label": "🔐 OAuth 완전 지원",
+            "desc": "OAuth 2.0·OIDC·GitHub App JWT 인증·Webhook 전달까지 완벽 재현"
+          },
+          {
+            "label": "💾 완전 Stateful",
+            "desc": "생성·수정·삭제가 메모리에 지속 — Mock과 달리 실제 API처럼 상태 유지"
+          },
+          {
+            "label": "🧪 테스트 프레임워크 통합",
+            "desc": "Vitest/Jest에서 reset()·close()로 테스트 간 격리 보장, 프로그래밍 방식 제어 가능"
+          }
+        ]
+      }
+    },
+    {
+      "slide_number": 5,
+      "type": "news-closing",
+      "content": {
+        "summary": [
+          "외부 API 없이도 실제처럼 작동하는 로컬 에뮬레이터",
+          "npx 한 줄로 7개 서비스 즉시 실행, 설정 불필요",
+          "CI 안정성과 속도를 동시에 잡는 실용 도구"
+        ],
+        "source_link": "https://github.com/vercel-labs/emulate",
+        "next_article": "",
+        "cta": "저장하고 나중에 읽기 📌"
+      }
+    }
+  ]
+}
