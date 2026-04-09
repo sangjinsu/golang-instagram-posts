@@ -1,0 +1,91 @@
+{
+  "type": "geeknews",
+  "week": "2026_w14",
+  "article_index": 10,
+  "title": "cq - AI 에이전트를 위한 Stack Overflow",
+  "source_url": "https://github.com/mozilla-ai/cq",
+  "geeknews_url": "https://news.hada.io/topic?id=27855",
+  "slides": [
+    {
+      "slide_number": 1,
+      "type": "news-thumbnail",
+      "content": {
+        "series_name": "GeekNews 주간 픽",
+        "series_sub": "이번 주 핫토픽 🔥",
+        "icon": "🧠",
+        "week_label": "2026년 14주차",
+        "article_num": "10/10",
+        "topic": "AI 에이전트의 집단 지성 플랫폼",
+        "hook": "에이전트가 같은 실수를 반복한다? 이제 집단 지식으로 해결! 🤯"
+      }
+    },
+    {
+      "slide_number": 2,
+      "type": "news-summary",
+      "content": {
+        "question": "cq가 뭔데? 🤔",
+        "key_points": [
+          "Mozilla AI가 만든 'AI 에이전트를 위한 Stack Overflow' 오픈소스 (Apache 2.0) 📚",
+          "에이전트가 발견한 해결책을 팀·글로벌 차원에서 공유 — 같은 실패 두 번 없음 🔄",
+          "Propose→Confirm→Graduate→Query 4단계 사이클로 지식 신뢰도 자동 검증 ✅",
+          "Claude Code·Cursor·Windsurf·OpenCode 한 줄 설치로 바로 연동 ⚡",
+          "로컬 SQLite → 팀 Private → 글로벌 커먼즈 3단계 티어로 점진적 확장 🌐"
+        ],
+        "source": "GitHub (mozilla-ai/cq)"
+      }
+    },
+    {
+      "slide_number": 3,
+      "type": "news-why",
+      "content": {
+        "title": "왜 중요한가? 💡",
+        "points": [
+          "📉 Stack Overflow 질문 수: 2014년 월 20만 건 → 2025년 12월 3,862건 (98% 급감) — LLM이 스스로 키운 플랫폼을 공동화",
+          "🔁 LLMs가 Stack Overflow를 죽인 뒤, AI 에이전트가 자신만의 Stack Overflow를 필요로 하는 아이러니한 순환",
+          "💸 Cursor 유저 1명이 2일 만에 토큰 1억 7천만 개 소비 (~$1,700) — 반복 실패가 핵심 원인",
+          "🔄 220건의 에이전트 루프 분석: 막히면 같은 시도를 반복하며 1회당 2K~5K 토큰 추가 낭비, 15회 반복 시 75K 토큰 소모"
+        ],
+        "one_liner": "집단 지성이 토큰 낭비를 막는다 — 하나가 배우면 모두가 이득 💪"
+      }
+    },
+    {
+      "slide_number": 4,
+      "type": "news-detail",
+      "content": {
+        "title": "핵심 기능 살펴보기 🔍",
+        "points": [
+          {
+            "label": "🧠 4단계 지식 사이클",
+            "desc": "Propose(제안)→Confirm(검증)→Graduate(승급)→Query(조회) — 여러 에이전트 검증이 쌓여야 공유 지식으로 승급"
+          },
+          {
+            "label": "💾 3단계 지식 티어",
+            "desc": "로컬(SQLite, 내 PC만) → 팀 Private Remote → 글로벌 커먼즈(예정) — 설정 없이 로컬 모드로 즉시 시작"
+          },
+          {
+            "label": "🔌 한 줄 설치",
+            "desc": "claude plugin marketplace add mozilla-ai/cq — Claude Code, Cursor, Windsurf, OpenCode 모두 지원, 에러 발생 시 자동 쿼리 훅 포함"
+          },
+          {
+            "label": "🛡️ 보안 설계",
+            "desc": "이상 탐지·소스 다양성 요건·휴먼 인더루프 검증으로 데이터 오염 방어 — 현재 0.x 탐색 단계, 프로덕션 미지원"
+          }
+        ]
+      }
+    },
+    {
+      "slide_number": 5,
+      "type": "news-closing",
+      "content": {
+        "summary": [
+          "LLMs가 Stack Overflow를 죽인 뒤, AI 에이전트가 자신만의 집단 지식 플랫폼을 만들다",
+          "4단계 사이클로 에이전트 집단 지성을 구현, 토큰 낭비와 반복 실패를 집단으로 해결",
+          "Claude Code·Cursor 한 줄 설치, 로컬부터 글로벌까지 점진적으로 지식 공유 확장"
+        ],
+        "source_link": "https://github.com/mozilla-ai/cq",
+        "next_article": "",
+        "cta": "저장하고 나중에 읽기 📌"
+      }
+    }
+  ]
+}
