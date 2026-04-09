@@ -258,3 +258,17 @@ python3 scripts/upload_instagram.py --id {content_id} --auto-caption --dry-run
 - 코드 블록 내 한 줄 최대 40자 권장 (가로 스크롤 방지)
 - 이전 에피소드와 시각적 일관성 유지
 - 각 슬라이드는 독립적으로 이해 가능해야 함
+
+---
+
+## 하네스: Card News Pipeline
+
+**목표:** Go 기초 문법 에피소드(ep) 및 GeekNews 주간 픽(gn_) 카드뉴스의 콘텐츠 작성 → 검증 → HTML/PNG 빌드 → 시각 QA → 인스타그램 업로드까지 5인 에이전트 팀으로 조율.
+
+**트리거:** 카드뉴스 파이프라인 관련 요청(에피소드 생성/빌드/수정/재빌드/업로드, GeekNews 주간 카드뉴스, 특정 슬라이드 재생성 등) 시 `orchestrate-pipeline` 스킬을 사용하라. 단순 JSON/스키마 질문이나 개별 스크립트 한 줄 실행만 필요한 경우는 예외.
+
+**변경 이력:**
+
+| 날짜 | 변경 내용 | 대상 | 사유 |
+|------|----------|------|------|
+| 2026-04-09 | 초기 구성 | `.claude/agents/` 5개 + `.claude/skills/orchestrate-pipeline/` + 이 포인터 | 파이프라인 조율 팀 신설 요청. 기존 `go-episode-maker.md`가 에이전트에서 오케스트레이터 역할을 잘못 수행하던 것을 스킬로 이전. writer/validator/builder/visual-qa/uploader 5인 팀 구성, generator/validator/visual-qa 단일 책임 분리. |
