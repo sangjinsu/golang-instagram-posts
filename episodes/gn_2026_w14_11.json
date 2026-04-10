@@ -1,0 +1,91 @@
+{
+  "type": "geeknews",
+  "week": "2026_w14",
+  "article_index": 11,
+  "title": "gitagent - AI 에이전트를 위한 Git 기반 오픈 표준",
+  "source_url": "https://github.com/open-gitagent/gitagent",
+  "geeknews_url": "https://news.hada.io/topic?id=27859",
+  "slides": [
+    {
+      "slide_number": 1,
+      "type": "news-thumbnail",
+      "content": {
+        "series_name": "GeekNews 주간 픽",
+        "series_sub": "이번 주 핫토픽 🔥",
+        "icon": "🐙",
+        "week_label": "2026년 14주차",
+        "article_num": "11/35",
+        "topic": "AI 에이전트의 Dockerfile",
+        "hook": "LangChain에서 Claude Code로 이사하고 싶다고? 에이전트째 들고 이동하면 됩니다 🚀"
+      }
+    },
+    {
+      "slide_number": 2,
+      "type": "news-summary",
+      "content": {
+        "question": "gitagent가 뭔데? 🤔",
+        "key_points": [
+          "GitHub 2.6k⭐ — AI 에이전트를 Git 레포 파일로 정의하는 프레임워크 무관(agnostic) 오픈 표준 📦",
+          "필수 파일 단 2개: agent.yaml(설정 매니페스트) + SOUL.md(성격·가치관) — 나머지는 전부 선택 🗂️",
+          "gitagent export -f claude-code 한 줄로 Claude Code, OpenAI, LangChain, CrewAI, AutoGen 등 8개 프레임워크에 배포 ⚡",
+          "에이전트가 새 스킬 학습 시 자동 브랜치+PR 생성 → 인간 검토 후 머지 — 휴먼 인더루프 내장 🔍",
+          "FINRA·SEC·연준 규정 컴플라이언스 내장: 감사 로그, 권한 분리(SOD), Kill Switch까지 🛡️"
+        ],
+        "source": "GitHub (open-gitagent/gitagent)"
+      }
+    },
+    {
+      "slide_number": 3,
+      "type": "news-why",
+      "content": {
+        "title": "왜 중요한가? 💡",
+        "points": [
+          "🧩 2026년 AI 에이전트 프레임워크 177개 이상 — LangChain·AutoGen·CrewAI 중 하나를 고르면 전환 비용이 눈덩이처럼 불어나는 벤더 락인 구조",
+          "📈 Databricks 보고서: 멀티 에이전트 워크플로우가 2025년 6월~10월 사이 327% 급성장, 기술 기업은 타 산업 대비 4배 빠른 속도로 채택 중",
+          "🐳 Docker가 '내 컴퓨터에서만 돌아가는' 문제를 해결했듯, gitagent는 '프레임워크에서만 돌아가는' 에이전트 문제를 표준 포맷으로 해결",
+          "🔄 Git의 diff/blame/rollback이 에이전트 행동 변경 내역을 완전히 추적 — 프롬프트 롤백도 git checkout 한 줄이면 끝"
+        ],
+        "one_liner": "에이전트도 코드처럼 버전 관리 — 프레임워크 잠금 없이 어디서든 실행 💪"
+      }
+    },
+    {
+      "slide_number": 4,
+      "type": "news-detail",
+      "content": {
+        "title": "핵심 기능 살펴보기 🔍",
+        "points": [
+          {
+            "label": "📄 2파일 최소 구조",
+            "desc": "agent.yaml(이름·버전·모델 설정)과 SOUL.md(성격·소통 스타일·가치관)만으로 완전한 에이전트 정의 가능 — skills/, memory/, compliance/ 등은 필요할 때 추가"
+          },
+          {
+            "label": "🔌 8개 프레임워크 내보내기",
+            "desc": "system-prompt·claude-code·openai·crewai·lyzr·cursor·gemini·opencode 어댑터 지원 — 한 번 정의하면 어디서든 실행, 벤더 락인 탈출"
+          },
+          {
+            "label": "🧠 Git 기반 학습 루프",
+            "desc": "에이전트가 context.md 또는 SOUL.md 수정 시 자동으로 브랜치+PR 생성 → 인간 검토 후 머지 — 승인 없이 에이전트 스스로 자신을 바꾸지 못하는 안전 구조"
+          },
+          {
+            "label": "🏛️ 엔터프라이즈 컴플라이언스",
+            "desc": "FINRA Rule 3110·4511, SEC 17a-4, 연준 SR 11-7 내장 지원 — 감사 로그·권한분리·Kill Switch·드리프트 감지까지, 금융권도 바로 도입 가능"
+          }
+        ]
+      }
+    },
+    {
+      "slide_number": 5,
+      "type": "news-closing",
+      "content": {
+        "summary": [
+          "177개 프레임워크 난립 속에서 gitagent는 'AI 에이전트의 Dockerfile'을 자처하며 표준 정의 포맷을 제안",
+          "agent.yaml + SOUL.md 2파일로 시작, 8개 프레임워크 내보내기 — 에이전트를 코드처럼 버전 관리",
+          "학습·메모리 변경 시 자동 PR로 휴먼 인더루프 실현, 규제 컴플라이언스도 내장"
+        ],
+        "source_link": "https://github.com/open-gitagent/gitagent",
+        "next_article": "",
+        "cta": "저장하고 나중에 읽기 📌"
+      }
+    }
+  ]
+}
