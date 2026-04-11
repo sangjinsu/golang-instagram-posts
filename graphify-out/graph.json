@@ -1,0 +1,3394 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {
+    "hyperedges": [
+      {
+        "id": "pipeline_flow",
+        "label": "Card News Production Pipeline",
+        "nodes": [
+          "script_generate_html",
+          "script_export_images",
+          "script_upload_instagram",
+          "script_geeknews_pipeline"
+        ],
+        "relation": "participate_in",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "claude.md"
+      },
+      {
+        "id": "gn_developer_productivity_theme",
+        "label": "Developer Productivity Theme",
+        "nodes": [
+          "gn_w14_01_virtual_team",
+          "gn_w14_02_shell_tricks",
+          "gn_w14_03_coding_limit",
+          "concept_dev_productivity"
+        ],
+        "relation": "form",
+        "confidence": "INFERRED",
+        "confidence_score": 0.75,
+        "source_file": "output/gn_2026_w14_01/slide_01.png"
+      },
+      {
+        "id": "ai_powered_features",
+        "label": "AI-Powered Features (Claude API)",
+        "nodes": [
+          "concept_ai_article_selection",
+          "concept_ai_json_generation",
+          "concept_quality_validation",
+          "entity_claude_api"
+        ],
+        "relation": "implement",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "scripts/geeknews_pipeline.py"
+      }
+    ]
+  },
+  "nodes": [
+    {
+      "label": "generate_html.py",
+      "file_type": "code",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L1",
+      "id": "generate_html",
+      "community": 2
+    },
+    {
+      "label": "esc()",
+      "file_type": "code",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L48",
+      "id": "generate_html_esc",
+      "community": 2
+    },
+    {
+      "label": "extract_user_types()",
+      "file_type": "code",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L61",
+      "id": "generate_html_extract_user_types",
+      "community": 2
+    },
+    {
+      "label": "highlight_line()",
+      "file_type": "code",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L71",
+      "id": "generate_html_highlight_line",
+      "community": 2
+    },
+    {
+      "label": "highlight_code()",
+      "file_type": "code",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L158",
+      "id": "generate_html_highlight_code",
+      "community": 2
+    },
+    {
+      "label": "render_thumbnail()",
+      "file_type": "code",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L398",
+      "id": "generate_html_render_thumbnail",
+      "community": 2
+    },
+    {
+      "label": "render_concept()",
+      "file_type": "code",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L413",
+      "id": "generate_html_render_concept",
+      "community": 2
+    },
+    {
+      "label": "render_code_slide()",
+      "file_type": "code",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L458",
+      "id": "generate_html_render_code_slide",
+      "community": 2
+    },
+    {
+      "label": "render_summary()",
+      "file_type": "code",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L483",
+      "id": "generate_html_render_summary",
+      "community": 2
+    },
+    {
+      "label": "render_news_thumbnail()",
+      "file_type": "code",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L522",
+      "id": "generate_html_render_news_thumbnail",
+      "community": 2
+    },
+    {
+      "label": "render_news_summary()",
+      "file_type": "code",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L541",
+      "id": "generate_html_render_news_summary",
+      "community": 2
+    },
+    {
+      "label": "render_news_why()",
+      "file_type": "code",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L568",
+      "id": "generate_html_render_news_why",
+      "community": 2
+    },
+    {
+      "label": "render_news_detail()",
+      "file_type": "code",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L597",
+      "id": "generate_html_render_news_detail",
+      "community": 2
+    },
+    {
+      "label": "render_news_closing()",
+      "file_type": "code",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L618",
+      "id": "generate_html_render_news_closing",
+      "community": 2
+    },
+    {
+      "label": "generate_html()",
+      "file_type": "code",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L654",
+      "id": "generate_html_generate_html",
+      "community": 2
+    },
+    {
+      "label": "main()",
+      "file_type": "code",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L721",
+      "id": "generate_html_main",
+      "community": 2
+    },
+    {
+      "label": "\ucf54\ub4dc \uc2ac\ub77c\uc774\ub4dc\uc5d0\uc11c type X struct \ud328\ud134\uc73c\ub85c \uc0ac\uc6a9\uc790 \uc815\uc758 \ud0c0\uc785 \ucd94\ucd9c",
+      "file_type": "rationale",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L62",
+      "id": "generate_html_rationale_62",
+      "community": 2
+    },
+    {
+      "label": "\ud55c \uc904\uc758 Go \ucf54\ub4dc\uc5d0 \uad6c\ubb38 \ud558\uc774\ub77c\uc774\ud305 HTML \uc801\uc6a9",
+      "file_type": "rationale",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L72",
+      "id": "generate_html_rationale_72",
+      "community": 2
+    },
+    {
+      "label": "Go \ucf54\ub4dc \uc804\uccb4\uc5d0 \uad6c\ubb38 \ud558\uc774\ub77c\uc774\ud305 \uc801\uc6a9",
+      "file_type": "rationale",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L159",
+      "id": "generate_html_rationale_159",
+      "community": 2
+    },
+    {
+      "label": "\uc5d0\ud53c\uc18c\ub4dc JSON \ub370\uc774\ud130\ub85c \uc644\uc804\ud55c HTML \ubb38\uc11c \uc0dd\uc131",
+      "file_type": "rationale",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L655",
+      "id": "generate_html_rationale_655",
+      "community": 2
+    },
+    {
+      "label": "upload_instagram.py",
+      "file_type": "code",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L1",
+      "id": "upload_instagram",
+      "community": 1
+    },
+    {
+      "label": "load_episode_json()",
+      "file_type": "code",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L60",
+      "id": "upload_instagram_load_episode_json",
+      "community": 1
+    },
+    {
+      "label": "get_slide_count()",
+      "file_type": "code",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L71",
+      "id": "upload_instagram_get_slide_count",
+      "community": 1
+    },
+    {
+      "label": "build_slide_paths()",
+      "file_type": "code",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L77",
+      "id": "upload_instagram_build_slide_paths",
+      "community": 1
+    },
+    {
+      "label": "load_content_json()",
+      "file_type": "code",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L87",
+      "id": "upload_instagram_load_content_json",
+      "community": 1
+    },
+    {
+      "label": "build_slide_paths_by_id()",
+      "file_type": "code",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L98",
+      "id": "upload_instagram_build_slide_paths_by_id",
+      "community": 1
+    },
+    {
+      "label": "_extract_slide_data()",
+      "file_type": "code",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L110",
+      "id": "upload_instagram_extract_slide_data",
+      "community": 1
+    },
+    {
+      "label": "_extract_all_text()",
+      "file_type": "code",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L136",
+      "id": "upload_instagram_extract_all_text",
+      "community": 1
+    },
+    {
+      "label": "generate_news_hashtags()",
+      "file_type": "code",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L142",
+      "id": "upload_instagram_generate_news_hashtags",
+      "community": 1
+    },
+    {
+      "label": "generate_news_caption()",
+      "file_type": "code",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L165",
+      "id": "upload_instagram_generate_news_caption",
+      "community": 1
+    },
+    {
+      "label": "check_slides_exist()",
+      "file_type": "code",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L188",
+      "id": "upload_instagram_check_slides_exist",
+      "community": 1
+    },
+    {
+      "label": "generate_caption()",
+      "file_type": "code",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L199",
+      "id": "upload_instagram_generate_caption",
+      "community": 1
+    },
+    {
+      "label": "check_status()",
+      "file_type": "code",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L210",
+      "id": "upload_instagram_check_status",
+      "community": 1
+    },
+    {
+      "label": "upload()",
+      "file_type": "code",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L236",
+      "id": "upload_instagram_upload",
+      "community": 1
+    },
+    {
+      "label": "main()",
+      "file_type": "code",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L264",
+      "id": "upload_instagram_main",
+      "community": 1
+    },
+    {
+      "label": "episodes/epXX.json\uc744 \ub85c\ub4dc\ud558\uc5ec \ubc18\ud658\ud55c\ub2e4.",
+      "file_type": "rationale",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L61",
+      "id": "upload_instagram_rationale_61",
+      "community": 1
+    },
+    {
+      "label": "episodes/epXX.json\uc5d0\uc11c \uc2ac\ub77c\uc774\ub4dc \uc218\ub97c \uc77d\uc5b4 \ubc18\ud658\ud55c\ub2e4.",
+      "file_type": "rationale",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L72",
+      "id": "upload_instagram_rationale_72",
+      "community": 1
+    },
+    {
+      "label": "\uc5d0\ud53c\uc18c\ub4dc \ubc88\ud638\ub85c \uc2ac\ub77c\uc774\ub4dc PNG \uacbd\ub85c \ub9ac\uc2a4\ud2b8\ub97c \ub9cc\ub4e0\ub2e4 (JSON \uae30\ubc18 \ub3d9\uc801 \uac10\uc9c0).",
+      "file_type": "rationale",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L78",
+      "id": "upload_instagram_rationale_78",
+      "community": 1
+    },
+    {
+      "label": "content_id\ub85c JSON\uc744 \ub85c\ub4dc\ud558\uc5ec \ubc18\ud658\ud55c\ub2e4.",
+      "file_type": "rationale",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L88",
+      "id": "upload_instagram_rationale_88",
+      "community": 1
+    },
+    {
+      "label": "content_id\ub85c \uc2ac\ub77c\uc774\ub4dc PNG \uacbd\ub85c \ub9ac\uc2a4\ud2b8\ub97c \ub9cc\ub4e0\ub2e4.",
+      "file_type": "rationale",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L99",
+      "id": "upload_instagram_rationale_99",
+      "community": 1
+    },
+    {
+      "label": "\uc2ac\ub77c\uc774\ub4dc\ub97c \ud55c \ubc88 \uc21c\ud68c\ud558\uc5ec text_parts, key_points, one_liner\ub97c \ubc18\ud658\ud55c\ub2e4.",
+      "file_type": "rationale",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L111",
+      "id": "upload_instagram_rationale_111",
+      "community": 1
+    },
+    {
+      "label": "generate_news_hashtags\uac00 \ub2e8\ub3c5 \ud638\ucd9c\ub420 \ub54c\ub9cc \uc0ac\uc6a9\ub418\ub294 fallback.",
+      "file_type": "rationale",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L137",
+      "id": "upload_instagram_rationale_137",
+      "community": 1
+    },
+    {
+      "label": "\uae30\uc0ac \ucf58\ud150\uce20\uc5d0\uc11c \ud0a4\uc6cc\ub4dc \ub9e4\uce6d\uc73c\ub85c \ud574\uc2dc\ud0dc\uadf8\ub97c \uc0dd\uc131\ud55c\ub2e4.",
+      "file_type": "rationale",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L143",
+      "id": "upload_instagram_rationale_143",
+      "community": 1
+    },
+    {
+      "label": "GeekNews \uae30\uc0ac \ucea1\uc158\uacfc \ud574\uc2dc\ud0dc\uadf8\ub97c \uc790\ub3d9 \uc0dd\uc131\ud55c\ub2e4.",
+      "file_type": "rationale",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L166",
+      "id": "upload_instagram_rationale_166",
+      "community": 1
+    },
+    {
+      "label": "\ubaa8\ub4e0 \uc2ac\ub77c\uc774\ub4dc \ud30c\uc77c\uc774 \uc874\uc7ac\ud558\ub294\uc9c0 \ud655\uc778\ud55c\ub2e4.",
+      "file_type": "rationale",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L189",
+      "id": "upload_instagram_rationale_189",
+      "community": 1
+    },
+    {
+      "label": "episodes/epXX.json\uc5d0\uc11c \ucea1\uc158\uc744 \uc790\ub3d9 \uc0dd\uc131\ud55c\ub2e4.",
+      "file_type": "rationale",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L200",
+      "id": "upload_instagram_rationale_200",
+      "community": 1
+    },
+    {
+      "label": "upload-post \ub77c\uc774\ube0c\ub7ec\ub9ac\ub85c \uc778\uc2a4\ud0c0\uadf8\ub7a8 \uc5c5\ub85c\ub4dc\ub97c \uc2e4\ud589\ud55c\ub2e4.",
+      "file_type": "rationale",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L237",
+      "id": "upload_instagram_rationale_237",
+      "community": 1
+    },
+    {
+      "label": "geeknews_pipeline.py",
+      "file_type": "code",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L1",
+      "id": "geeknews_pipeline",
+      "community": 0
+    },
+    {
+      "label": "extract_json()",
+      "file_type": "code",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L39",
+      "id": "geeknews_pipeline_extract_json",
+      "community": 0
+    },
+    {
+      "label": "get_anthropic_client()",
+      "file_type": "code",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L56",
+      "id": "geeknews_pipeline_get_anthropic_client",
+      "community": 0
+    },
+    {
+      "label": "_get_latest_weekly_issue_url()",
+      "file_type": "code",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L86",
+      "id": "geeknews_pipeline_get_latest_weekly_issue_url",
+      "community": 0
+    },
+    {
+      "label": "fetch_weekly_articles_html()",
+      "file_type": "code",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L106",
+      "id": "geeknews_pipeline_fetch_weekly_articles_html",
+      "community": 0
+    },
+    {
+      "label": "fetch_weekly_articles_rss()",
+      "file_type": "code",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L161",
+      "id": "geeknews_pipeline_fetch_weekly_articles_rss",
+      "community": 0
+    },
+    {
+      "label": "fetch_articles()",
+      "file_type": "code",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L187",
+      "id": "geeknews_pipeline_fetch_articles",
+      "community": 0
+    },
+    {
+      "label": "fetch_article_detail()",
+      "file_type": "code",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L207",
+      "id": "geeknews_pipeline_fetch_article_detail",
+      "community": 0
+    },
+    {
+      "label": "select_articles_ai()",
+      "file_type": "code",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L229",
+      "id": "geeknews_pipeline_select_articles_ai",
+      "community": 0
+    },
+    {
+      "label": "select_articles_fallback()",
+      "file_type": "code",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L319",
+      "id": "geeknews_pipeline_select_articles_fallback",
+      "community": 0
+    },
+    {
+      "label": "generate_article_json()",
+      "file_type": "code",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L333",
+      "id": "geeknews_pipeline_generate_article_json",
+      "community": 0
+    },
+    {
+      "label": "validate_article_json()",
+      "file_type": "code",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L437",
+      "id": "geeknews_pipeline_validate_article_json",
+      "community": 0
+    },
+    {
+      "label": "generate_and_validate()",
+      "file_type": "code",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L483",
+      "id": "geeknews_pipeline_generate_and_validate",
+      "community": 0
+    },
+    {
+      "label": "get_week_string()",
+      "file_type": "code",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L511",
+      "id": "geeknews_pipeline_get_week_string",
+      "community": 0
+    },
+    {
+      "label": "parse_week_arg()",
+      "file_type": "code",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L518",
+      "id": "geeknews_pipeline_parse_week_arg",
+      "community": 0
+    },
+    {
+      "label": "save_json()",
+      "file_type": "code",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L535",
+      "id": "geeknews_pipeline_save_json",
+      "community": 0
+    },
+    {
+      "label": "run_existing_pipeline()",
+      "file_type": "code",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L544",
+      "id": "geeknews_pipeline_run_existing_pipeline",
+      "community": 0
+    },
+    {
+      "label": "main()",
+      "file_type": "code",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L587",
+      "id": "geeknews_pipeline_main",
+      "community": 0
+    },
+    {
+      "label": "LLM \uc751\ub2f5\uc5d0\uc11c \uccab \ubc88\uc9f8 \uc720\ud6a8\ud55c JSON \uac1d\uccb4\ub97c \ucd94\ucd9c\ud55c\ub2e4.",
+      "file_type": "rationale",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L40",
+      "id": "geeknews_pipeline_rationale_40",
+      "community": 0
+    },
+    {
+      "label": "Anthropic \ud074\ub77c\uc774\uc5b8\ud2b8\ub97c \uc2f1\uae00\ud1a4\uc73c\ub85c \ubc18\ud658\ud55c\ub2e4.",
+      "file_type": "rationale",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L57",
+      "id": "geeknews_pipeline_rationale_57",
+      "community": 0
+    },
+    {
+      "label": "\uc8fc\uac04 \ud398\uc774\uc9c0\uc5d0\uc11c \ucd5c\uc2e0 \uc774\uc288 URL\uc744 \uac00\uc838\uc628\ub2e4.",
+      "file_type": "rationale",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L87",
+      "id": "geeknews_pipeline_rationale_87",
+      "community": 0
+    },
+    {
+      "label": "\ucd5c\uc2e0 GeekNews Weekly \uc774\uc288 \ud398\uc774\uc9c0\uc5d0\uc11c \uae30\uc0ac \ubaa9\ub85d\uc744 \uc218\uc9d1\ud55c\ub2e4.",
+      "file_type": "rationale",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L107",
+      "id": "geeknews_pipeline_rationale_107",
+      "community": 0
+    },
+    {
+      "label": "RSS \ud53c\ub4dc\uc5d0\uc11c \uae30\uc0ac \ubaa9\ub85d\uc744 \uc218\uc9d1\ud55c\ub2e4 (fallback).",
+      "file_type": "rationale",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L162",
+      "id": "geeknews_pipeline_rationale_162",
+      "community": 0
+    },
+    {
+      "label": "\uae30\uc0ac \ubaa9\ub85d\uc744 \uc218\uc9d1\ud55c\ub2e4. HTML \uc6b0\uc120, RSS fallback.",
+      "file_type": "rationale",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L188",
+      "id": "geeknews_pipeline_rationale_188",
+      "community": 0
+    },
+    {
+      "label": "GeekNews \uac1c\ubcc4 \uae30\uc0ac \ud398\uc774\uc9c0\uc5d0\uc11c \uc0c1\uc138 \uc694\uc57d\uc744 \uac00\uc838\uc628\ub2e4.",
+      "file_type": "rationale",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L208",
+      "id": "geeknews_pipeline_rationale_208",
+      "community": 0
+    },
+    {
+      "label": "Claude API\ub85c \uc0c1\uc704 \uae30\uc0ac\ub97c \uc120\ubcc4\ud55c\ub2e4.",
+      "file_type": "rationale",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L230",
+      "id": "geeknews_pipeline_rationale_230",
+      "community": 0
+    },
+    {
+      "label": "\ud3ec\uc778\ud2b8 + \ub313\uae00 \uc218 \uae30\uc900\uc73c\ub85c \uc0c1\uc704 \uae30\uc0ac\ub97c \uc120\ubcc4\ud55c\ub2e4.",
+      "file_type": "rationale",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L320",
+      "id": "geeknews_pipeline_rationale_320",
+      "community": 0
+    },
+    {
+      "label": "Claude API\ub85c \uae30\uc0ac \ud558\ub098\uc758 \uce74\ub4dc\ub274\uc2a4 JSON\uc744 \uc0dd\uc131\ud55c\ub2e4.",
+      "file_type": "rationale",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L334",
+      "id": "geeknews_pipeline_rationale_334",
+      "community": 0
+    },
+    {
+      "label": "JSON \uc0dd\uc131 + \ud488\uc9c8 \uac80\uc99d. \uc2e4\ud328 \uc2dc \uc7ac\uc0dd\uc131.",
+      "file_type": "rationale",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L484",
+      "id": "geeknews_pipeline_rationale_484",
+      "community": 0
+    },
+    {
+      "label": "export_images.py",
+      "file_type": "code",
+      "source_file": "scripts/export_images.py",
+      "source_location": "L1",
+      "id": "export_images",
+      "community": 6
+    },
+    {
+      "label": "export_slides()",
+      "file_type": "code",
+      "source_file": "scripts/export_images.py",
+      "source_location": "L25",
+      "id": "export_images_export_slides",
+      "community": 6
+    },
+    {
+      "label": "main()",
+      "file_type": "code",
+      "source_file": "scripts/export_images.py",
+      "source_location": "L69",
+      "id": "export_images_main",
+      "community": 6
+    },
+    {
+      "label": "Card News Pipeline",
+      "file_type": "document",
+      "source_file": "claude.md",
+      "source_location": null,
+      "id": "project_card_news_pipeline",
+      "community": 3
+    },
+    {
+      "label": "HTML Generator (generate_html.py)",
+      "file_type": "code",
+      "source_file": "scripts/generate_html.py",
+      "source_location": null,
+      "id": "script_generate_html",
+      "community": 4
+    },
+    {
+      "label": "Image Exporter (export_images.py)",
+      "file_type": "code",
+      "source_file": "scripts/export_images.py",
+      "source_location": null,
+      "id": "script_export_images",
+      "community": 3
+    },
+    {
+      "label": "Instagram Uploader (upload_instagram.py)",
+      "file_type": "code",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": null,
+      "id": "script_upload_instagram",
+      "community": 3
+    },
+    {
+      "label": "GeekNews Pipeline (geeknews_pipeline.py)",
+      "file_type": "code",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": null,
+      "id": "script_geeknews_pipeline",
+      "community": 3
+    },
+    {
+      "label": "Go Syntax Highlighter",
+      "file_type": "code",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "line 61-155",
+      "id": "concept_go_syntax_highlighter",
+      "community": 4
+    },
+    {
+      "label": "Slide Type System (thumbnail/concept/code/summary)",
+      "file_type": "code",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "line 398-515",
+      "id": "concept_slide_types",
+      "community": 4
+    },
+    {
+      "label": "News Slide Types (news-thumbnail/summary/why/detail/closing)",
+      "file_type": "code",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "line 522-648",
+      "id": "concept_news_slide_types",
+      "community": 4
+    },
+    {
+      "label": "CSS Design System (1080x1350)",
+      "file_type": "code",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "line 168-391",
+      "id": "concept_css_design_system",
+      "community": 4
+    },
+    {
+      "label": "Playwright Chromium Capture",
+      "file_type": "code",
+      "source_file": "scripts/export_images.py",
+      "source_location": "line 25-66",
+      "id": "concept_playwright_capture",
+      "community": 3
+    },
+    {
+      "label": "Web Font Loading (Noto Sans KR + JetBrains Mono)",
+      "file_type": "code",
+      "source_file": "scripts/export_images.py",
+      "source_location": "line 43-44",
+      "id": "concept_font_loading",
+      "community": 4
+    },
+    {
+      "label": "Upload-Post API Integration",
+      "file_type": "code",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "line 236-261",
+      "id": "concept_upload_post_api",
+      "community": 3
+    },
+    {
+      "label": "Auto Caption Generation",
+      "file_type": "code",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "line 165-185",
+      "id": "concept_auto_caption",
+      "community": 4
+    },
+    {
+      "label": "News Hashtag Generation (keyword matching)",
+      "file_type": "code",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "line 142-162",
+      "id": "concept_news_hashtag_generation",
+      "community": 3
+    },
+    {
+      "label": "GeekNews Article Scraping (HTML + RSS)",
+      "file_type": "code",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "line 86-204",
+      "id": "concept_article_scraping",
+      "community": 3
+    },
+    {
+      "label": "AI Article Selection (Claude API)",
+      "file_type": "code",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "line 228-316",
+      "id": "concept_ai_article_selection",
+      "community": 3
+    },
+    {
+      "label": "AI JSON Generation (Claude API)",
+      "file_type": "code",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "line 332-430",
+      "id": "concept_ai_json_generation",
+      "community": 3
+    },
+    {
+      "label": "AI Quality Validation",
+      "file_type": "code",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "line 437-504",
+      "id": "concept_quality_validation",
+      "community": 3
+    },
+    {
+      "label": "Project Rules (CLAUDE.md)",
+      "file_type": "document",
+      "source_file": "claude.md",
+      "source_location": null,
+      "id": "doc_claude_md",
+      "community": 4
+    },
+    {
+      "label": "Slide Content Rules",
+      "file_type": "document",
+      "source_file": "skills/slide-content.md",
+      "source_location": null,
+      "id": "doc_slide_content",
+      "community": 4
+    },
+    {
+      "label": "HTML Template Guide",
+      "file_type": "document",
+      "source_file": "skills/html-template.md",
+      "source_location": null,
+      "id": "doc_html_template",
+      "community": 4
+    },
+    {
+      "label": "Image Export Guide",
+      "file_type": "document",
+      "source_file": "skills/image-exporter.md",
+      "source_location": null,
+      "id": "doc_image_exporter",
+      "community": 3
+    },
+    {
+      "label": "Go EP Track (ep01-ep21)",
+      "file_type": "document",
+      "source_file": "claude.md",
+      "source_location": null,
+      "id": "track_go_ep",
+      "community": 3
+    },
+    {
+      "label": "GeekNews Track (gn_YYYY_wWW_NN)",
+      "file_type": "document",
+      "source_file": "claude.md",
+      "source_location": null,
+      "id": "track_geeknews",
+      "community": 5
+    },
+    {
+      "label": "EP08: \uad6c\uc870\uccb4 (Struct)",
+      "file_type": "image",
+      "source_file": "output/ep08/slide_01.png",
+      "source_location": null,
+      "id": "ep08_struct",
+      "community": 3
+    },
+    {
+      "label": "EP09: \ud3ec\uc778\ud130 (Pointer)",
+      "file_type": "image",
+      "source_file": "output/ep09/slide_01.png",
+      "source_location": null,
+      "id": "ep09_pointer",
+      "community": 3
+    },
+    {
+      "label": "GN W14 #1: Claude Code \uac00\uc0c1 \uc5d4\uc9c0\ub2c8\uc5b4\ub9c1 \ud300 (gstack)",
+      "file_type": "image",
+      "source_file": "output/gn_2026_w14_01/slide_01.png",
+      "source_location": null,
+      "id": "gn_w14_01_virtual_team",
+      "community": 5
+    },
+    {
+      "label": "GN W14 #2: Shell \ud2b8\ub9ad\uc73c\ub85c \uc0dd\uc0b0\uc131 10\ubc30 \uc62c\ub9ac\uae30",
+      "file_type": "image",
+      "source_file": "output/gn_2026_w14_02/slide_01.png",
+      "source_location": null,
+      "id": "gn_w14_02_shell_tricks",
+      "community": 5
+    },
+    {
+      "label": "GN W14 #3: \ud558\ub8e8 \ucf54\ub529 4\uc2dc\uac04\uc774 \ud55c\uacc4\uc778 \uc774\uc720",
+      "file_type": "image",
+      "source_file": "output/gn_2026_w14_03/slide_01.png",
+      "source_location": null,
+      "id": "gn_w14_03_coding_limit",
+      "community": 5
+    },
+    {
+      "label": "GN W14 #4: \ucf54\ub4dc\uc758 \uc8fd\uc74c\uc740 \uacfc\uc7a5\ub418\uc5c8\ub2e4",
+      "file_type": "image",
+      "source_file": "output/gn_2026_w14_04/slide_01.png",
+      "source_location": null,
+      "id": "gn_w14_04_code_not_dead",
+      "community": 5
+    },
+    {
+      "label": "GN W14 #5",
+      "file_type": "image",
+      "source_file": "output/gn_2026_w14_05/slide_01.png",
+      "source_location": null,
+      "id": "gn_w14_05",
+      "community": 5
+    },
+    {
+      "label": "GN W14 #6: Anthropic AI \ud558\ub124\uc2a4 \uc124\uacc4",
+      "file_type": "image",
+      "source_file": "output/gn_2026_w14_06/slide_01.png",
+      "source_location": null,
+      "id": "gn_w14_06",
+      "community": 5
+    },
+    {
+      "label": "GN W14 #7: \uad6c\uae00 TurboQuant",
+      "file_type": "image",
+      "source_file": "output/gn_2026_w14_07/slide_01.png",
+      "source_location": null,
+      "id": "gn_w14_07_turboquant",
+      "community": 5
+    },
+    {
+      "label": "EP JSON Schema (8 slides fixed)",
+      "file_type": "document",
+      "source_file": "skills/slide-content.md",
+      "source_location": null,
+      "id": "concept_json_schema_ep",
+      "community": 4
+    },
+    {
+      "label": "GN JSON Schema (3-9 slides variable)",
+      "file_type": "code",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "line 350-410",
+      "id": "concept_json_schema_gn",
+      "community": 4
+    },
+    {
+      "label": "Code Constraints (40char/15line)",
+      "file_type": "document",
+      "source_file": "skills/slide-content.md",
+      "source_location": null,
+      "id": "concept_code_constraints",
+      "community": 4
+    },
+    {
+      "label": "Color System (Go Blue #00ADD8 + GeekNews Orange #FF6B35)",
+      "file_type": "code",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "line 168-391",
+      "id": "concept_color_system",
+      "community": 4
+    },
+    {
+      "label": "Garry Tan (YC CEO)",
+      "file_type": "image",
+      "source_file": "output/gn_2026_w14_01/slide_02.png",
+      "source_location": null,
+      "id": "entity_garry_tan",
+      "community": 5
+    },
+    {
+      "label": "gstack Framework",
+      "file_type": "image",
+      "source_file": "output/gn_2026_w14_01/slide_01.png",
+      "source_location": null,
+      "id": "entity_gstack",
+      "community": 5
+    },
+    {
+      "label": "Claude API (Anthropic)",
+      "file_type": "code",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "line 56-67",
+      "id": "entity_claude_api",
+      "community": 3
+    },
+    {
+      "label": "Playwright (Python)",
+      "file_type": "code",
+      "source_file": "scripts/export_images.py",
+      "source_location": null,
+      "id": "entity_playwright",
+      "community": 3
+    },
+    {
+      "label": "Instagram Platform",
+      "file_type": "code",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": null,
+      "id": "entity_instagram",
+      "community": 3
+    },
+    {
+      "label": "Google Fonts CDN",
+      "file_type": "code",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "line 703",
+      "id": "entity_google_fonts",
+      "community": 4
+    },
+    {
+      "label": "Developer Productivity",
+      "file_type": "image",
+      "source_file": "output/gn_2026_w14_03/slide_01.png",
+      "source_location": null,
+      "id": "concept_dev_productivity",
+      "community": 5
+    },
+    {
+      "label": "AI Coding Tools",
+      "file_type": "image",
+      "source_file": "output/gn_2026_w14_01/slide_01.png",
+      "source_location": null,
+      "id": "concept_ai_coding",
+      "community": 5
+    }
+  ],
+  "links": [
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L48",
+      "weight": 1.0,
+      "_src": "generate_html",
+      "_tgt": "generate_html_esc",
+      "source": "generate_html",
+      "target": "generate_html_esc",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L61",
+      "weight": 1.0,
+      "_src": "generate_html",
+      "_tgt": "generate_html_extract_user_types",
+      "source": "generate_html",
+      "target": "generate_html_extract_user_types",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L71",
+      "weight": 1.0,
+      "_src": "generate_html",
+      "_tgt": "generate_html_highlight_line",
+      "source": "generate_html",
+      "target": "generate_html_highlight_line",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L158",
+      "weight": 1.0,
+      "_src": "generate_html",
+      "_tgt": "generate_html_highlight_code",
+      "source": "generate_html",
+      "target": "generate_html_highlight_code",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L398",
+      "weight": 1.0,
+      "_src": "generate_html",
+      "_tgt": "generate_html_render_thumbnail",
+      "source": "generate_html",
+      "target": "generate_html_render_thumbnail",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L413",
+      "weight": 1.0,
+      "_src": "generate_html",
+      "_tgt": "generate_html_render_concept",
+      "source": "generate_html",
+      "target": "generate_html_render_concept",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L458",
+      "weight": 1.0,
+      "_src": "generate_html",
+      "_tgt": "generate_html_render_code_slide",
+      "source": "generate_html",
+      "target": "generate_html_render_code_slide",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L483",
+      "weight": 1.0,
+      "_src": "generate_html",
+      "_tgt": "generate_html_render_summary",
+      "source": "generate_html",
+      "target": "generate_html_render_summary",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L522",
+      "weight": 1.0,
+      "_src": "generate_html",
+      "_tgt": "generate_html_render_news_thumbnail",
+      "source": "generate_html",
+      "target": "generate_html_render_news_thumbnail",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L541",
+      "weight": 1.0,
+      "_src": "generate_html",
+      "_tgt": "generate_html_render_news_summary",
+      "source": "generate_html",
+      "target": "generate_html_render_news_summary",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L568",
+      "weight": 1.0,
+      "_src": "generate_html",
+      "_tgt": "generate_html_render_news_why",
+      "source": "generate_html",
+      "target": "generate_html_render_news_why",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L597",
+      "weight": 1.0,
+      "_src": "generate_html",
+      "_tgt": "generate_html_render_news_detail",
+      "source": "generate_html",
+      "target": "generate_html_render_news_detail",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L618",
+      "weight": 1.0,
+      "_src": "generate_html",
+      "_tgt": "generate_html_render_news_closing",
+      "source": "generate_html",
+      "target": "generate_html_render_news_closing",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L654",
+      "weight": 1.0,
+      "_src": "generate_html",
+      "_tgt": "generate_html_generate_html",
+      "source": "generate_html",
+      "target": "generate_html_generate_html",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L721",
+      "weight": 1.0,
+      "_src": "generate_html",
+      "_tgt": "generate_html_main",
+      "source": "generate_html",
+      "target": "generate_html_main",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L77",
+      "weight": 1.0,
+      "_src": "generate_html_highlight_line",
+      "_tgt": "generate_html_esc",
+      "source": "generate_html_esc",
+      "target": "generate_html_highlight_line",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L402",
+      "weight": 1.0,
+      "_src": "generate_html_render_thumbnail",
+      "_tgt": "generate_html_esc",
+      "source": "generate_html_esc",
+      "target": "generate_html_render_thumbnail",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L416",
+      "weight": 1.0,
+      "_src": "generate_html_render_concept",
+      "_tgt": "generate_html_esc",
+      "source": "generate_html_esc",
+      "target": "generate_html_render_concept",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L466",
+      "weight": 1.0,
+      "_src": "generate_html_render_code_slide",
+      "_tgt": "generate_html_esc",
+      "source": "generate_html_esc",
+      "target": "generate_html_render_code_slide",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L486",
+      "weight": 1.0,
+      "_src": "generate_html_render_summary",
+      "_tgt": "generate_html_esc",
+      "source": "generate_html_esc",
+      "target": "generate_html_render_summary",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L526",
+      "weight": 1.0,
+      "_src": "generate_html_render_news_thumbnail",
+      "_tgt": "generate_html_esc",
+      "source": "generate_html_esc",
+      "target": "generate_html_render_news_thumbnail",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L548",
+      "weight": 1.0,
+      "_src": "generate_html_render_news_summary",
+      "_tgt": "generate_html_esc",
+      "source": "generate_html_esc",
+      "target": "generate_html_render_news_summary",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L576",
+      "weight": 1.0,
+      "_src": "generate_html_render_news_why",
+      "_tgt": "generate_html_esc",
+      "source": "generate_html_esc",
+      "target": "generate_html_render_news_why",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L603",
+      "weight": 1.0,
+      "_src": "generate_html_render_news_detail",
+      "_tgt": "generate_html_esc",
+      "source": "generate_html_esc",
+      "target": "generate_html_render_news_detail",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L621",
+      "weight": 1.0,
+      "_src": "generate_html_render_news_closing",
+      "_tgt": "generate_html_esc",
+      "source": "generate_html_esc",
+      "target": "generate_html_render_news_closing",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L700",
+      "weight": 1.0,
+      "_src": "generate_html_generate_html",
+      "_tgt": "generate_html_esc",
+      "source": "generate_html_esc",
+      "target": "generate_html_generate_html",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L664",
+      "weight": 1.0,
+      "_src": "generate_html_generate_html",
+      "_tgt": "generate_html_extract_user_types",
+      "source": "generate_html_extract_user_types",
+      "target": "generate_html_generate_html",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L62",
+      "weight": 1.0,
+      "_src": "generate_html_rationale_62",
+      "_tgt": "generate_html_extract_user_types",
+      "source": "generate_html_extract_user_types",
+      "target": "generate_html_rationale_62",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L161",
+      "weight": 1.0,
+      "_src": "generate_html_highlight_code",
+      "_tgt": "generate_html_highlight_line",
+      "source": "generate_html_highlight_line",
+      "target": "generate_html_highlight_code",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L72",
+      "weight": 1.0,
+      "_src": "generate_html_rationale_72",
+      "_tgt": "generate_html_highlight_line",
+      "source": "generate_html_highlight_line",
+      "target": "generate_html_rationale_72",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L460",
+      "weight": 1.0,
+      "_src": "generate_html_render_code_slide",
+      "_tgt": "generate_html_highlight_code",
+      "source": "generate_html_highlight_code",
+      "target": "generate_html_render_code_slide",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L159",
+      "weight": 1.0,
+      "_src": "generate_html_rationale_159",
+      "_tgt": "generate_html_highlight_code",
+      "source": "generate_html_highlight_code",
+      "target": "generate_html_rationale_159",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L675",
+      "weight": 1.0,
+      "_src": "generate_html_generate_html",
+      "_tgt": "generate_html_render_thumbnail",
+      "source": "generate_html_render_thumbnail",
+      "target": "generate_html_generate_html",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L677",
+      "weight": 1.0,
+      "_src": "generate_html_generate_html",
+      "_tgt": "generate_html_render_concept",
+      "source": "generate_html_render_concept",
+      "target": "generate_html_generate_html",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L679",
+      "weight": 1.0,
+      "_src": "generate_html_generate_html",
+      "_tgt": "generate_html_render_code_slide",
+      "source": "generate_html_render_code_slide",
+      "target": "generate_html_generate_html",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L681",
+      "weight": 1.0,
+      "_src": "generate_html_generate_html",
+      "_tgt": "generate_html_render_summary",
+      "source": "generate_html_render_summary",
+      "target": "generate_html_generate_html",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L683",
+      "weight": 1.0,
+      "_src": "generate_html_generate_html",
+      "_tgt": "generate_html_render_news_thumbnail",
+      "source": "generate_html_render_news_thumbnail",
+      "target": "generate_html_generate_html",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L685",
+      "weight": 1.0,
+      "_src": "generate_html_generate_html",
+      "_tgt": "generate_html_render_news_summary",
+      "source": "generate_html_render_news_summary",
+      "target": "generate_html_generate_html",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L687",
+      "weight": 1.0,
+      "_src": "generate_html_generate_html",
+      "_tgt": "generate_html_render_news_why",
+      "source": "generate_html_render_news_why",
+      "target": "generate_html_generate_html",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L689",
+      "weight": 1.0,
+      "_src": "generate_html_generate_html",
+      "_tgt": "generate_html_render_news_detail",
+      "source": "generate_html_render_news_detail",
+      "target": "generate_html_generate_html",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L691",
+      "weight": 1.0,
+      "_src": "generate_html_generate_html",
+      "_tgt": "generate_html_render_news_closing",
+      "source": "generate_html_render_news_closing",
+      "target": "generate_html_generate_html",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L746",
+      "weight": 1.0,
+      "_src": "generate_html_main",
+      "_tgt": "generate_html_generate_html",
+      "source": "generate_html_generate_html",
+      "target": "generate_html_main",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/generate_html.py",
+      "source_location": "L655",
+      "weight": 1.0,
+      "_src": "generate_html_rationale_655",
+      "_tgt": "generate_html_generate_html",
+      "source": "generate_html_generate_html",
+      "target": "generate_html_rationale_655",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L60",
+      "weight": 1.0,
+      "_src": "upload_instagram",
+      "_tgt": "upload_instagram_load_episode_json",
+      "source": "upload_instagram",
+      "target": "upload_instagram_load_episode_json",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L71",
+      "weight": 1.0,
+      "_src": "upload_instagram",
+      "_tgt": "upload_instagram_get_slide_count",
+      "source": "upload_instagram",
+      "target": "upload_instagram_get_slide_count",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L77",
+      "weight": 1.0,
+      "_src": "upload_instagram",
+      "_tgt": "upload_instagram_build_slide_paths",
+      "source": "upload_instagram",
+      "target": "upload_instagram_build_slide_paths",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L87",
+      "weight": 1.0,
+      "_src": "upload_instagram",
+      "_tgt": "upload_instagram_load_content_json",
+      "source": "upload_instagram",
+      "target": "upload_instagram_load_content_json",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L98",
+      "weight": 1.0,
+      "_src": "upload_instagram",
+      "_tgt": "upload_instagram_build_slide_paths_by_id",
+      "source": "upload_instagram",
+      "target": "upload_instagram_build_slide_paths_by_id",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L110",
+      "weight": 1.0,
+      "_src": "upload_instagram",
+      "_tgt": "upload_instagram_extract_slide_data",
+      "source": "upload_instagram",
+      "target": "upload_instagram_extract_slide_data",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L136",
+      "weight": 1.0,
+      "_src": "upload_instagram",
+      "_tgt": "upload_instagram_extract_all_text",
+      "source": "upload_instagram",
+      "target": "upload_instagram_extract_all_text",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L142",
+      "weight": 1.0,
+      "_src": "upload_instagram",
+      "_tgt": "upload_instagram_generate_news_hashtags",
+      "source": "upload_instagram",
+      "target": "upload_instagram_generate_news_hashtags",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L165",
+      "weight": 1.0,
+      "_src": "upload_instagram",
+      "_tgt": "upload_instagram_generate_news_caption",
+      "source": "upload_instagram",
+      "target": "upload_instagram_generate_news_caption",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L188",
+      "weight": 1.0,
+      "_src": "upload_instagram",
+      "_tgt": "upload_instagram_check_slides_exist",
+      "source": "upload_instagram",
+      "target": "upload_instagram_check_slides_exist",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L199",
+      "weight": 1.0,
+      "_src": "upload_instagram",
+      "_tgt": "upload_instagram_generate_caption",
+      "source": "upload_instagram",
+      "target": "upload_instagram_generate_caption",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L210",
+      "weight": 1.0,
+      "_src": "upload_instagram",
+      "_tgt": "upload_instagram_check_status",
+      "source": "upload_instagram",
+      "target": "upload_instagram_check_status",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L236",
+      "weight": 1.0,
+      "_src": "upload_instagram",
+      "_tgt": "upload_instagram_upload",
+      "source": "upload_instagram",
+      "target": "upload_instagram_upload",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L264",
+      "weight": 1.0,
+      "_src": "upload_instagram",
+      "_tgt": "upload_instagram_main",
+      "source": "upload_instagram",
+      "target": "upload_instagram_main",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L73",
+      "weight": 1.0,
+      "_src": "upload_instagram_get_slide_count",
+      "_tgt": "upload_instagram_load_episode_json",
+      "source": "upload_instagram_load_episode_json",
+      "target": "upload_instagram_get_slide_count",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L201",
+      "weight": 1.0,
+      "_src": "upload_instagram_generate_caption",
+      "_tgt": "upload_instagram_load_episode_json",
+      "source": "upload_instagram_load_episode_json",
+      "target": "upload_instagram_generate_caption",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L61",
+      "weight": 1.0,
+      "_src": "upload_instagram_rationale_61",
+      "_tgt": "upload_instagram_load_episode_json",
+      "source": "upload_instagram_load_episode_json",
+      "target": "upload_instagram_rationale_61",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L80",
+      "weight": 1.0,
+      "_src": "upload_instagram_build_slide_paths",
+      "_tgt": "upload_instagram_get_slide_count",
+      "source": "upload_instagram_get_slide_count",
+      "target": "upload_instagram_build_slide_paths",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L72",
+      "weight": 1.0,
+      "_src": "upload_instagram_rationale_72",
+      "_tgt": "upload_instagram_get_slide_count",
+      "source": "upload_instagram_get_slide_count",
+      "target": "upload_instagram_rationale_72",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L314",
+      "weight": 1.0,
+      "_src": "upload_instagram_main",
+      "_tgt": "upload_instagram_build_slide_paths",
+      "source": "upload_instagram_build_slide_paths",
+      "target": "upload_instagram_main",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L78",
+      "weight": 1.0,
+      "_src": "upload_instagram_rationale_78",
+      "_tgt": "upload_instagram_build_slide_paths",
+      "source": "upload_instagram_build_slide_paths",
+      "target": "upload_instagram_rationale_78",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L101",
+      "weight": 1.0,
+      "_src": "upload_instagram_build_slide_paths_by_id",
+      "_tgt": "upload_instagram_load_content_json",
+      "source": "upload_instagram_load_content_json",
+      "target": "upload_instagram_build_slide_paths_by_id",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L168",
+      "weight": 1.0,
+      "_src": "upload_instagram_generate_news_caption",
+      "_tgt": "upload_instagram_load_content_json",
+      "source": "upload_instagram_load_content_json",
+      "target": "upload_instagram_generate_news_caption",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L308",
+      "weight": 1.0,
+      "_src": "upload_instagram_main",
+      "_tgt": "upload_instagram_load_content_json",
+      "source": "upload_instagram_load_content_json",
+      "target": "upload_instagram_main",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L88",
+      "weight": 1.0,
+      "_src": "upload_instagram_rationale_88",
+      "_tgt": "upload_instagram_load_content_json",
+      "source": "upload_instagram_load_content_json",
+      "target": "upload_instagram_rationale_88",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L309",
+      "weight": 1.0,
+      "_src": "upload_instagram_main",
+      "_tgt": "upload_instagram_build_slide_paths_by_id",
+      "source": "upload_instagram_build_slide_paths_by_id",
+      "target": "upload_instagram_main",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L99",
+      "weight": 1.0,
+      "_src": "upload_instagram_rationale_99",
+      "_tgt": "upload_instagram_build_slide_paths_by_id",
+      "source": "upload_instagram_build_slide_paths_by_id",
+      "target": "upload_instagram_rationale_99",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L138",
+      "weight": 1.0,
+      "_src": "upload_instagram_extract_all_text",
+      "_tgt": "upload_instagram_extract_slide_data",
+      "source": "upload_instagram_extract_slide_data",
+      "target": "upload_instagram_extract_all_text",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L170",
+      "weight": 1.0,
+      "_src": "upload_instagram_generate_news_caption",
+      "_tgt": "upload_instagram_extract_slide_data",
+      "source": "upload_instagram_extract_slide_data",
+      "target": "upload_instagram_generate_news_caption",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L111",
+      "weight": 1.0,
+      "_src": "upload_instagram_rationale_111",
+      "_tgt": "upload_instagram_extract_slide_data",
+      "source": "upload_instagram_extract_slide_data",
+      "target": "upload_instagram_rationale_111",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L145",
+      "weight": 1.0,
+      "_src": "upload_instagram_generate_news_hashtags",
+      "_tgt": "upload_instagram_extract_all_text",
+      "source": "upload_instagram_extract_all_text",
+      "target": "upload_instagram_generate_news_hashtags",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L137",
+      "weight": 1.0,
+      "_src": "upload_instagram_rationale_137",
+      "_tgt": "upload_instagram_extract_all_text",
+      "source": "upload_instagram_extract_all_text",
+      "target": "upload_instagram_rationale_137",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L171",
+      "weight": 1.0,
+      "_src": "upload_instagram_generate_news_caption",
+      "_tgt": "upload_instagram_generate_news_hashtags",
+      "source": "upload_instagram_generate_news_hashtags",
+      "target": "upload_instagram_generate_news_caption",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L143",
+      "weight": 1.0,
+      "_src": "upload_instagram_rationale_143",
+      "_tgt": "upload_instagram_generate_news_hashtags",
+      "source": "upload_instagram_generate_news_hashtags",
+      "target": "upload_instagram_rationale_143",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L330",
+      "weight": 1.0,
+      "_src": "upload_instagram_main",
+      "_tgt": "upload_instagram_generate_news_caption",
+      "source": "upload_instagram_generate_news_caption",
+      "target": "upload_instagram_main",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L166",
+      "weight": 1.0,
+      "_src": "upload_instagram_rationale_166",
+      "_tgt": "upload_instagram_generate_news_caption",
+      "source": "upload_instagram_generate_news_caption",
+      "target": "upload_instagram_rationale_166",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L318",
+      "weight": 1.0,
+      "_src": "upload_instagram_main",
+      "_tgt": "upload_instagram_check_slides_exist",
+      "source": "upload_instagram_check_slides_exist",
+      "target": "upload_instagram_main",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L189",
+      "weight": 1.0,
+      "_src": "upload_instagram_rationale_189",
+      "_tgt": "upload_instagram_check_slides_exist",
+      "source": "upload_instagram_check_slides_exist",
+      "target": "upload_instagram_rationale_189",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L332",
+      "weight": 1.0,
+      "_src": "upload_instagram_main",
+      "_tgt": "upload_instagram_generate_caption",
+      "source": "upload_instagram_generate_caption",
+      "target": "upload_instagram_main",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L200",
+      "weight": 1.0,
+      "_src": "upload_instagram_rationale_200",
+      "_tgt": "upload_instagram_generate_caption",
+      "source": "upload_instagram_generate_caption",
+      "target": "upload_instagram_rationale_200",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L293",
+      "weight": 1.0,
+      "_src": "upload_instagram_main",
+      "_tgt": "upload_instagram_check_status",
+      "source": "upload_instagram_check_status",
+      "target": "upload_instagram_main",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L360",
+      "weight": 1.0,
+      "_src": "upload_instagram_main",
+      "_tgt": "upload_instagram_upload",
+      "source": "upload_instagram_upload",
+      "target": "upload_instagram_main",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/upload_instagram.py",
+      "source_location": "L237",
+      "weight": 1.0,
+      "_src": "upload_instagram_rationale_237",
+      "_tgt": "upload_instagram_upload",
+      "source": "upload_instagram_upload",
+      "target": "upload_instagram_rationale_237",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L39",
+      "weight": 1.0,
+      "_src": "geeknews_pipeline",
+      "_tgt": "geeknews_pipeline_extract_json",
+      "source": "geeknews_pipeline",
+      "target": "geeknews_pipeline_extract_json",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L56",
+      "weight": 1.0,
+      "_src": "geeknews_pipeline",
+      "_tgt": "geeknews_pipeline_get_anthropic_client",
+      "source": "geeknews_pipeline",
+      "target": "geeknews_pipeline_get_anthropic_client",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L86",
+      "weight": 1.0,
+      "_src": "geeknews_pipeline",
+      "_tgt": "geeknews_pipeline_get_latest_weekly_issue_url",
+      "source": "geeknews_pipeline",
+      "target": "geeknews_pipeline_get_latest_weekly_issue_url",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L106",
+      "weight": 1.0,
+      "_src": "geeknews_pipeline",
+      "_tgt": "geeknews_pipeline_fetch_weekly_articles_html",
+      "source": "geeknews_pipeline",
+      "target": "geeknews_pipeline_fetch_weekly_articles_html",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L161",
+      "weight": 1.0,
+      "_src": "geeknews_pipeline",
+      "_tgt": "geeknews_pipeline_fetch_weekly_articles_rss",
+      "source": "geeknews_pipeline",
+      "target": "geeknews_pipeline_fetch_weekly_articles_rss",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L187",
+      "weight": 1.0,
+      "_src": "geeknews_pipeline",
+      "_tgt": "geeknews_pipeline_fetch_articles",
+      "source": "geeknews_pipeline",
+      "target": "geeknews_pipeline_fetch_articles",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L207",
+      "weight": 1.0,
+      "_src": "geeknews_pipeline",
+      "_tgt": "geeknews_pipeline_fetch_article_detail",
+      "source": "geeknews_pipeline",
+      "target": "geeknews_pipeline_fetch_article_detail",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L229",
+      "weight": 1.0,
+      "_src": "geeknews_pipeline",
+      "_tgt": "geeknews_pipeline_select_articles_ai",
+      "source": "geeknews_pipeline",
+      "target": "geeknews_pipeline_select_articles_ai",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L319",
+      "weight": 1.0,
+      "_src": "geeknews_pipeline",
+      "_tgt": "geeknews_pipeline_select_articles_fallback",
+      "source": "geeknews_pipeline",
+      "target": "geeknews_pipeline_select_articles_fallback",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L333",
+      "weight": 1.0,
+      "_src": "geeknews_pipeline",
+      "_tgt": "geeknews_pipeline_generate_article_json",
+      "source": "geeknews_pipeline",
+      "target": "geeknews_pipeline_generate_article_json",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L437",
+      "weight": 1.0,
+      "_src": "geeknews_pipeline",
+      "_tgt": "geeknews_pipeline_validate_article_json",
+      "source": "geeknews_pipeline",
+      "target": "geeknews_pipeline_validate_article_json",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L483",
+      "weight": 1.0,
+      "_src": "geeknews_pipeline",
+      "_tgt": "geeknews_pipeline_generate_and_validate",
+      "source": "geeknews_pipeline",
+      "target": "geeknews_pipeline_generate_and_validate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L511",
+      "weight": 1.0,
+      "_src": "geeknews_pipeline",
+      "_tgt": "geeknews_pipeline_get_week_string",
+      "source": "geeknews_pipeline",
+      "target": "geeknews_pipeline_get_week_string",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L518",
+      "weight": 1.0,
+      "_src": "geeknews_pipeline",
+      "_tgt": "geeknews_pipeline_parse_week_arg",
+      "source": "geeknews_pipeline",
+      "target": "geeknews_pipeline_parse_week_arg",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L535",
+      "weight": 1.0,
+      "_src": "geeknews_pipeline",
+      "_tgt": "geeknews_pipeline_save_json",
+      "source": "geeknews_pipeline",
+      "target": "geeknews_pipeline_save_json",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L544",
+      "weight": 1.0,
+      "_src": "geeknews_pipeline",
+      "_tgt": "geeknews_pipeline_run_existing_pipeline",
+      "source": "geeknews_pipeline",
+      "target": "geeknews_pipeline_run_existing_pipeline",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L587",
+      "weight": 1.0,
+      "_src": "geeknews_pipeline",
+      "_tgt": "geeknews_pipeline_main",
+      "source": "geeknews_pipeline",
+      "target": "geeknews_pipeline_main",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L274",
+      "weight": 1.0,
+      "_src": "geeknews_pipeline_select_articles_ai",
+      "_tgt": "geeknews_pipeline_extract_json",
+      "source": "geeknews_pipeline_extract_json",
+      "target": "geeknews_pipeline_select_articles_ai",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L421",
+      "weight": 1.0,
+      "_src": "geeknews_pipeline_generate_article_json",
+      "_tgt": "geeknews_pipeline_extract_json",
+      "source": "geeknews_pipeline_extract_json",
+      "target": "geeknews_pipeline_generate_article_json",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L473",
+      "weight": 1.0,
+      "_src": "geeknews_pipeline_validate_article_json",
+      "_tgt": "geeknews_pipeline_extract_json",
+      "source": "geeknews_pipeline_extract_json",
+      "target": "geeknews_pipeline_validate_article_json",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L40",
+      "weight": 1.0,
+      "_src": "geeknews_pipeline_rationale_40",
+      "_tgt": "geeknews_pipeline_extract_json",
+      "source": "geeknews_pipeline_extract_json",
+      "target": "geeknews_pipeline_rationale_40",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L249",
+      "weight": 1.0,
+      "_src": "geeknews_pipeline_select_articles_ai",
+      "_tgt": "geeknews_pipeline_get_anthropic_client",
+      "source": "geeknews_pipeline_get_anthropic_client",
+      "target": "geeknews_pipeline_select_articles_ai",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L345",
+      "weight": 1.0,
+      "_src": "geeknews_pipeline_generate_article_json",
+      "_tgt": "geeknews_pipeline_get_anthropic_client",
+      "source": "geeknews_pipeline_get_anthropic_client",
+      "target": "geeknews_pipeline_generate_article_json",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L442",
+      "weight": 1.0,
+      "_src": "geeknews_pipeline_validate_article_json",
+      "_tgt": "geeknews_pipeline_get_anthropic_client",
+      "source": "geeknews_pipeline_get_anthropic_client",
+      "target": "geeknews_pipeline_validate_article_json",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L57",
+      "weight": 1.0,
+      "_src": "geeknews_pipeline_rationale_57",
+      "_tgt": "geeknews_pipeline_get_anthropic_client",
+      "source": "geeknews_pipeline_get_anthropic_client",
+      "target": "geeknews_pipeline_rationale_57",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L110",
+      "weight": 1.0,
+      "_src": "geeknews_pipeline_fetch_weekly_articles_html",
+      "_tgt": "geeknews_pipeline_get_latest_weekly_issue_url",
+      "source": "geeknews_pipeline_get_latest_weekly_issue_url",
+      "target": "geeknews_pipeline_fetch_weekly_articles_html",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L87",
+      "weight": 1.0,
+      "_src": "geeknews_pipeline_rationale_87",
+      "_tgt": "geeknews_pipeline_get_latest_weekly_issue_url",
+      "source": "geeknews_pipeline_get_latest_weekly_issue_url",
+      "target": "geeknews_pipeline_rationale_87",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L190",
+      "weight": 1.0,
+      "_src": "geeknews_pipeline_fetch_articles",
+      "_tgt": "geeknews_pipeline_fetch_weekly_articles_html",
+      "source": "geeknews_pipeline_fetch_weekly_articles_html",
+      "target": "geeknews_pipeline_fetch_articles",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L107",
+      "weight": 1.0,
+      "_src": "geeknews_pipeline_rationale_107",
+      "_tgt": "geeknews_pipeline_fetch_weekly_articles_html",
+      "source": "geeknews_pipeline_fetch_weekly_articles_html",
+      "target": "geeknews_pipeline_rationale_107",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L197",
+      "weight": 1.0,
+      "_src": "geeknews_pipeline_fetch_articles",
+      "_tgt": "geeknews_pipeline_fetch_weekly_articles_rss",
+      "source": "geeknews_pipeline_fetch_weekly_articles_rss",
+      "target": "geeknews_pipeline_fetch_articles",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L162",
+      "weight": 1.0,
+      "_src": "geeknews_pipeline_rationale_162",
+      "_tgt": "geeknews_pipeline_fetch_weekly_articles_rss",
+      "source": "geeknews_pipeline_fetch_weekly_articles_rss",
+      "target": "geeknews_pipeline_rationale_162",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L609",
+      "weight": 1.0,
+      "_src": "geeknews_pipeline_main",
+      "_tgt": "geeknews_pipeline_fetch_articles",
+      "source": "geeknews_pipeline_fetch_articles",
+      "target": "geeknews_pipeline_main",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L188",
+      "weight": 1.0,
+      "_src": "geeknews_pipeline_rationale_188",
+      "_tgt": "geeknews_pipeline_fetch_articles",
+      "source": "geeknews_pipeline_fetch_articles",
+      "target": "geeknews_pipeline_rationale_188",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L340",
+      "weight": 1.0,
+      "_src": "geeknews_pipeline_generate_article_json",
+      "_tgt": "geeknews_pipeline_fetch_article_detail",
+      "source": "geeknews_pipeline_fetch_article_detail",
+      "target": "geeknews_pipeline_generate_article_json",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L208",
+      "weight": 1.0,
+      "_src": "geeknews_pipeline_rationale_208",
+      "_tgt": "geeknews_pipeline_fetch_article_detail",
+      "source": "geeknews_pipeline_fetch_article_detail",
+      "target": "geeknews_pipeline_rationale_208",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L233",
+      "weight": 1.0,
+      "_src": "geeknews_pipeline_select_articles_ai",
+      "_tgt": "geeknews_pipeline_select_articles_fallback",
+      "source": "geeknews_pipeline_select_articles_ai",
+      "target": "geeknews_pipeline_select_articles_fallback",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L629",
+      "weight": 1.0,
+      "_src": "geeknews_pipeline_main",
+      "_tgt": "geeknews_pipeline_select_articles_ai",
+      "source": "geeknews_pipeline_select_articles_ai",
+      "target": "geeknews_pipeline_main",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L230",
+      "weight": 1.0,
+      "_src": "geeknews_pipeline_rationale_230",
+      "_tgt": "geeknews_pipeline_select_articles_ai",
+      "source": "geeknews_pipeline_select_articles_ai",
+      "target": "geeknews_pipeline_rationale_230",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L320",
+      "weight": 1.0,
+      "_src": "geeknews_pipeline_rationale_320",
+      "_tgt": "geeknews_pipeline_select_articles_fallback",
+      "source": "geeknews_pipeline_select_articles_fallback",
+      "target": "geeknews_pipeline_rationale_320",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L486",
+      "weight": 1.0,
+      "_src": "geeknews_pipeline_generate_and_validate",
+      "_tgt": "geeknews_pipeline_generate_article_json",
+      "source": "geeknews_pipeline_generate_article_json",
+      "target": "geeknews_pipeline_generate_and_validate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L334",
+      "weight": 1.0,
+      "_src": "geeknews_pipeline_rationale_334",
+      "_tgt": "geeknews_pipeline_generate_article_json",
+      "source": "geeknews_pipeline_generate_article_json",
+      "target": "geeknews_pipeline_rationale_334",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L494",
+      "weight": 1.0,
+      "_src": "geeknews_pipeline_generate_and_validate",
+      "_tgt": "geeknews_pipeline_validate_article_json",
+      "source": "geeknews_pipeline_validate_article_json",
+      "target": "geeknews_pipeline_generate_and_validate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L638",
+      "weight": 1.0,
+      "_src": "geeknews_pipeline_main",
+      "_tgt": "geeknews_pipeline_generate_and_validate",
+      "source": "geeknews_pipeline_generate_and_validate",
+      "target": "geeknews_pipeline_main",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L484",
+      "weight": 1.0,
+      "_src": "geeknews_pipeline_rationale_484",
+      "_tgt": "geeknews_pipeline_generate_and_validate",
+      "source": "geeknews_pipeline_generate_and_validate",
+      "target": "geeknews_pipeline_rationale_484",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L521",
+      "weight": 1.0,
+      "_src": "geeknews_pipeline_parse_week_arg",
+      "_tgt": "geeknews_pipeline_get_week_string",
+      "source": "geeknews_pipeline_get_week_string",
+      "target": "geeknews_pipeline_parse_week_arg",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L598",
+      "weight": 1.0,
+      "_src": "geeknews_pipeline_main",
+      "_tgt": "geeknews_pipeline_parse_week_arg",
+      "source": "geeknews_pipeline_parse_week_arg",
+      "target": "geeknews_pipeline_main",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L650",
+      "weight": 1.0,
+      "_src": "geeknews_pipeline_main",
+      "_tgt": "geeknews_pipeline_save_json",
+      "source": "geeknews_pipeline_save_json",
+      "target": "geeknews_pipeline_main",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/geeknews_pipeline.py",
+      "source_location": "L674",
+      "weight": 1.0,
+      "_src": "geeknews_pipeline_main",
+      "_tgt": "geeknews_pipeline_run_existing_pipeline",
+      "source": "geeknews_pipeline_run_existing_pipeline",
+      "target": "geeknews_pipeline_main",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/export_images.py",
+      "source_location": "L25",
+      "weight": 1.0,
+      "_src": "export_images",
+      "_tgt": "export_images_export_slides",
+      "source": "export_images",
+      "target": "export_images_export_slides",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/export_images.py",
+      "source_location": "L69",
+      "weight": 1.0,
+      "_src": "export_images",
+      "_tgt": "export_images_main",
+      "source": "export_images",
+      "target": "export_images_main",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/export_images.py",
+      "source_location": "L84",
+      "weight": 1.0,
+      "_src": "export_images_main",
+      "_tgt": "export_images_export_slides",
+      "source": "export_images_export_slides",
+      "target": "export_images_main",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "claude.md",
+      "weight": 1.0,
+      "_src": "project_card_news_pipeline",
+      "_tgt": "script_generate_html",
+      "source": "project_card_news_pipeline",
+      "target": "script_generate_html"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "claude.md",
+      "weight": 1.0,
+      "_src": "project_card_news_pipeline",
+      "_tgt": "script_export_images",
+      "source": "project_card_news_pipeline",
+      "target": "script_export_images"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "claude.md",
+      "weight": 1.0,
+      "_src": "project_card_news_pipeline",
+      "_tgt": "script_upload_instagram",
+      "source": "project_card_news_pipeline",
+      "target": "script_upload_instagram"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "claude.md",
+      "weight": 1.0,
+      "_src": "project_card_news_pipeline",
+      "_tgt": "track_go_ep",
+      "source": "project_card_news_pipeline",
+      "target": "track_go_ep"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "claude.md",
+      "weight": 1.0,
+      "_src": "project_card_news_pipeline",
+      "_tgt": "track_geeknews",
+      "source": "project_card_news_pipeline",
+      "target": "track_geeknews"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/generate_html.py",
+      "weight": 1.0,
+      "_src": "script_generate_html",
+      "_tgt": "concept_go_syntax_highlighter",
+      "source": "script_generate_html",
+      "target": "concept_go_syntax_highlighter"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/generate_html.py",
+      "weight": 1.0,
+      "_src": "script_generate_html",
+      "_tgt": "concept_slide_types",
+      "source": "script_generate_html",
+      "target": "concept_slide_types"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/generate_html.py",
+      "weight": 1.0,
+      "_src": "script_generate_html",
+      "_tgt": "concept_news_slide_types",
+      "source": "script_generate_html",
+      "target": "concept_news_slide_types"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/generate_html.py",
+      "weight": 1.0,
+      "_src": "script_generate_html",
+      "_tgt": "concept_css_design_system",
+      "source": "script_generate_html",
+      "target": "concept_css_design_system"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/generate_html.py",
+      "weight": 1.0,
+      "_src": "script_generate_html",
+      "_tgt": "entity_google_fonts",
+      "source": "script_generate_html",
+      "target": "entity_google_fonts"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/generate_html.py",
+      "weight": 1.0,
+      "_src": "script_generate_html",
+      "_tgt": "concept_json_schema_ep",
+      "source": "script_generate_html",
+      "target": "concept_json_schema_ep"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/generate_html.py",
+      "weight": 1.0,
+      "_src": "script_generate_html",
+      "_tgt": "concept_json_schema_gn",
+      "source": "script_generate_html",
+      "target": "concept_json_schema_gn"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/geeknews_pipeline.py",
+      "weight": 1.0,
+      "_src": "script_geeknews_pipeline",
+      "_tgt": "script_generate_html",
+      "source": "script_generate_html",
+      "target": "script_geeknews_pipeline"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/export_images.py",
+      "weight": 1.0,
+      "_src": "script_export_images",
+      "_tgt": "concept_playwright_capture",
+      "source": "script_export_images",
+      "target": "concept_playwright_capture"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/export_images.py",
+      "weight": 1.0,
+      "_src": "script_export_images",
+      "_tgt": "concept_font_loading",
+      "source": "script_export_images",
+      "target": "concept_font_loading"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/export_images.py",
+      "weight": 1.0,
+      "_src": "script_export_images",
+      "_tgt": "entity_playwright",
+      "source": "script_export_images",
+      "target": "entity_playwright"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/geeknews_pipeline.py",
+      "weight": 1.0,
+      "_src": "script_geeknews_pipeline",
+      "_tgt": "script_export_images",
+      "source": "script_export_images",
+      "target": "script_geeknews_pipeline"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/upload_instagram.py",
+      "weight": 1.0,
+      "_src": "script_upload_instagram",
+      "_tgt": "concept_upload_post_api",
+      "source": "script_upload_instagram",
+      "target": "concept_upload_post_api"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/upload_instagram.py",
+      "weight": 1.0,
+      "_src": "script_upload_instagram",
+      "_tgt": "concept_auto_caption",
+      "source": "script_upload_instagram",
+      "target": "concept_auto_caption"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/upload_instagram.py",
+      "weight": 1.0,
+      "_src": "script_upload_instagram",
+      "_tgt": "concept_news_hashtag_generation",
+      "source": "script_upload_instagram",
+      "target": "concept_news_hashtag_generation"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/upload_instagram.py",
+      "weight": 1.0,
+      "_src": "script_upload_instagram",
+      "_tgt": "entity_instagram",
+      "source": "script_upload_instagram",
+      "target": "entity_instagram"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/geeknews_pipeline.py",
+      "weight": 1.0,
+      "_src": "script_geeknews_pipeline",
+      "_tgt": "script_upload_instagram",
+      "source": "script_upload_instagram",
+      "target": "script_geeknews_pipeline"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/geeknews_pipeline.py",
+      "weight": 1.0,
+      "_src": "script_geeknews_pipeline",
+      "_tgt": "concept_article_scraping",
+      "source": "script_geeknews_pipeline",
+      "target": "concept_article_scraping"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/geeknews_pipeline.py",
+      "weight": 1.0,
+      "_src": "script_geeknews_pipeline",
+      "_tgt": "concept_ai_article_selection",
+      "source": "script_geeknews_pipeline",
+      "target": "concept_ai_article_selection"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/geeknews_pipeline.py",
+      "weight": 1.0,
+      "_src": "script_geeknews_pipeline",
+      "_tgt": "concept_ai_json_generation",
+      "source": "script_geeknews_pipeline",
+      "target": "concept_ai_json_generation"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/geeknews_pipeline.py",
+      "weight": 1.0,
+      "_src": "script_geeknews_pipeline",
+      "_tgt": "concept_quality_validation",
+      "source": "script_geeknews_pipeline",
+      "target": "concept_quality_validation"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/geeknews_pipeline.py",
+      "weight": 1.0,
+      "_src": "script_geeknews_pipeline",
+      "_tgt": "entity_claude_api",
+      "source": "script_geeknews_pipeline",
+      "target": "entity_claude_api"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/generate_html.py",
+      "weight": 1.0,
+      "_src": "concept_slide_types",
+      "_tgt": "concept_json_schema_ep",
+      "source": "concept_slide_types",
+      "target": "concept_json_schema_ep"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/generate_html.py",
+      "weight": 1.0,
+      "_src": "concept_news_slide_types",
+      "_tgt": "concept_json_schema_gn",
+      "source": "concept_news_slide_types",
+      "target": "concept_json_schema_gn"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "claude.md",
+      "weight": 1.0,
+      "_src": "doc_claude_md",
+      "_tgt": "concept_css_design_system",
+      "source": "concept_css_design_system",
+      "target": "doc_claude_md"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "skills/html-template.md",
+      "weight": 1.0,
+      "_src": "doc_html_template",
+      "_tgt": "concept_css_design_system",
+      "source": "concept_css_design_system",
+      "target": "doc_html_template"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/generate_html.py",
+      "weight": 1.0,
+      "_src": "concept_css_design_system",
+      "_tgt": "concept_color_system",
+      "source": "concept_css_design_system",
+      "target": "concept_color_system"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "skills/image-exporter.md",
+      "weight": 1.0,
+      "_src": "doc_image_exporter",
+      "_tgt": "concept_playwright_capture",
+      "source": "concept_playwright_capture",
+      "target": "doc_image_exporter"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/export_images.py",
+      "weight": 1.0,
+      "_src": "concept_font_loading",
+      "_tgt": "entity_google_fonts",
+      "source": "concept_font_loading",
+      "target": "entity_google_fonts"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/upload_instagram.py",
+      "weight": 1.0,
+      "_src": "concept_auto_caption",
+      "_tgt": "concept_json_schema_ep",
+      "source": "concept_auto_caption",
+      "target": "concept_json_schema_ep"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/upload_instagram.py",
+      "weight": 1.0,
+      "_src": "concept_auto_caption",
+      "_tgt": "concept_json_schema_gn",
+      "source": "concept_auto_caption",
+      "target": "concept_json_schema_gn"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/geeknews_pipeline.py",
+      "weight": 1.0,
+      "_src": "concept_ai_article_selection",
+      "_tgt": "entity_claude_api",
+      "source": "concept_ai_article_selection",
+      "target": "entity_claude_api"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/geeknews_pipeline.py",
+      "weight": 1.0,
+      "_src": "concept_ai_json_generation",
+      "_tgt": "entity_claude_api",
+      "source": "concept_ai_json_generation",
+      "target": "entity_claude_api"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/geeknews_pipeline.py",
+      "weight": 1.0,
+      "_src": "concept_quality_validation",
+      "_tgt": "entity_claude_api",
+      "source": "concept_quality_validation",
+      "target": "entity_claude_api"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "claude.md",
+      "weight": 1.0,
+      "_src": "doc_claude_md",
+      "_tgt": "concept_code_constraints",
+      "source": "doc_claude_md",
+      "target": "concept_code_constraints"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "skills/slide-content.md",
+      "weight": 1.0,
+      "_src": "doc_slide_content",
+      "_tgt": "concept_json_schema_ep",
+      "source": "doc_slide_content",
+      "target": "concept_json_schema_ep"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "skills/slide-content.md",
+      "weight": 1.0,
+      "_src": "doc_slide_content",
+      "_tgt": "concept_code_constraints",
+      "source": "doc_slide_content",
+      "target": "concept_code_constraints"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "claude.md",
+      "weight": 1.0,
+      "_src": "track_go_ep",
+      "_tgt": "ep08_struct",
+      "source": "track_go_ep",
+      "target": "ep08_struct"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "claude.md",
+      "weight": 1.0,
+      "_src": "track_go_ep",
+      "_tgt": "ep09_pointer",
+      "source": "track_go_ep",
+      "target": "ep09_pointer"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "claude.md",
+      "weight": 1.0,
+      "_src": "track_geeknews",
+      "_tgt": "gn_w14_01_virtual_team",
+      "source": "track_geeknews",
+      "target": "gn_w14_01_virtual_team"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "claude.md",
+      "weight": 1.0,
+      "_src": "track_geeknews",
+      "_tgt": "gn_w14_02_shell_tricks",
+      "source": "track_geeknews",
+      "target": "gn_w14_02_shell_tricks"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "claude.md",
+      "weight": 1.0,
+      "_src": "track_geeknews",
+      "_tgt": "gn_w14_03_coding_limit",
+      "source": "track_geeknews",
+      "target": "gn_w14_03_coding_limit"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "claude.md",
+      "weight": 1.0,
+      "_src": "track_geeknews",
+      "_tgt": "gn_w14_04_code_not_dead",
+      "source": "track_geeknews",
+      "target": "gn_w14_04_code_not_dead"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "claude.md",
+      "weight": 1.0,
+      "_src": "track_geeknews",
+      "_tgt": "gn_w14_05",
+      "source": "track_geeknews",
+      "target": "gn_w14_05"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "claude.md",
+      "weight": 1.0,
+      "_src": "track_geeknews",
+      "_tgt": "gn_w14_06",
+      "source": "track_geeknews",
+      "target": "gn_w14_06"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "claude.md",
+      "weight": 1.0,
+      "_src": "track_geeknews",
+      "_tgt": "gn_w14_07_turboquant",
+      "source": "track_geeknews",
+      "target": "gn_w14_07_turboquant"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "output/ep09/slide_02.png",
+      "weight": 1.0,
+      "_src": "ep08_struct",
+      "_tgt": "ep09_pointer",
+      "source": "ep08_struct",
+      "target": "ep09_pointer"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "output/gn_2026_w14_01/slide_02.png",
+      "weight": 1.0,
+      "_src": "gn_w14_01_virtual_team",
+      "_tgt": "entity_garry_tan",
+      "source": "gn_w14_01_virtual_team",
+      "target": "entity_garry_tan"
+    },
+    {
+      "relation": "covers_topic",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "output/gn_2026_w14_01/slide_01.png",
+      "weight": 1.0,
+      "_src": "gn_w14_01_virtual_team",
+      "_tgt": "entity_gstack",
+      "source": "gn_w14_01_virtual_team",
+      "target": "entity_gstack"
+    },
+    {
+      "relation": "covers_topic",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "output/gn_2026_w14_01/slide_01.png",
+      "weight": 1.0,
+      "_src": "gn_w14_01_virtual_team",
+      "_tgt": "concept_ai_coding",
+      "source": "gn_w14_01_virtual_team",
+      "target": "concept_ai_coding"
+    },
+    {
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.7,
+      "source_file": "output/gn_2026_w14_01/slide_01.png",
+      "weight": 1.0,
+      "_src": "gn_w14_01_virtual_team",
+      "_tgt": "gn_w14_03_coding_limit",
+      "source": "gn_w14_01_virtual_team",
+      "target": "gn_w14_03_coding_limit"
+    },
+    {
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.65,
+      "source_file": "output/gn_2026_w14_01/slide_01.png",
+      "weight": 1.0,
+      "_src": "gn_w14_01_virtual_team",
+      "_tgt": "gn_w14_04_code_not_dead",
+      "source": "gn_w14_01_virtual_team",
+      "target": "gn_w14_04_code_not_dead"
+    },
+    {
+      "relation": "covers_topic",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "output/gn_2026_w14_02/slide_01.png",
+      "weight": 1.0,
+      "_src": "gn_w14_02_shell_tricks",
+      "_tgt": "concept_dev_productivity",
+      "source": "gn_w14_02_shell_tricks",
+      "target": "concept_dev_productivity"
+    },
+    {
+      "relation": "covers_topic",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "output/gn_2026_w14_03/slide_01.png",
+      "weight": 1.0,
+      "_src": "gn_w14_03_coding_limit",
+      "_tgt": "concept_dev_productivity",
+      "source": "gn_w14_03_coding_limit",
+      "target": "concept_dev_productivity"
+    },
+    {
+      "relation": "covers_topic",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "output/gn_2026_w14_04/slide_01.png",
+      "weight": 1.0,
+      "_src": "gn_w14_04_code_not_dead",
+      "_tgt": "concept_ai_coding",
+      "source": "gn_w14_04_code_not_dead",
+      "target": "concept_ai_coding"
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "pipeline_flow",
+      "label": "Card News Production Pipeline",
+      "nodes": [
+        "script_generate_html",
+        "script_export_images",
+        "script_upload_instagram",
+        "script_geeknews_pipeline"
+      ],
+      "relation": "participate_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "claude.md"
+    },
+    {
+      "id": "gn_developer_productivity_theme",
+      "label": "Developer Productivity Theme",
+      "nodes": [
+        "gn_w14_01_virtual_team",
+        "gn_w14_02_shell_tricks",
+        "gn_w14_03_coding_limit",
+        "concept_dev_productivity"
+      ],
+      "relation": "form",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "output/gn_2026_w14_01/slide_01.png"
+    },
+    {
+      "id": "ai_powered_features",
+      "label": "AI-Powered Features (Claude API)",
+      "nodes": [
+        "concept_ai_article_selection",
+        "concept_ai_json_generation",
+        "concept_quality_validation",
+        "entity_claude_api"
+      ],
+      "relation": "implement",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/geeknews_pipeline.py"
+    }
+  ]
+}
