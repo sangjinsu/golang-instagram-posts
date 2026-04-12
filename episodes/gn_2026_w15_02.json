@@ -1,0 +1,93 @@
+{
+  "type": "geeknews",
+  "week": "2026_w15",
+  "article_index": 2,
+  "title": "삶을 더 편하게 만드는 Shell 트릭",
+  "source_url": "https://blog.hofstede.it/shell-tricks-that-actually-make-life-easier-and-save-your-sanity/",
+  "geeknews_url": "https://news.hada.io/topic?id=27903",
+  "slides": [
+    {
+      "slide_number": 1,
+      "type": "news-thumbnail",
+      "content": {
+        "series_name": "GeekNews 주간 픽",
+        "series_sub": "이번 주 핫토픽 🔥",
+        "icon": "🐚⌨️",
+        "week_label": "2026년 15주차",
+        "article_num": "2",
+        "topic": "삶을 더 편하게 만드는 Shell 트릭",
+        "hook": "개발자 70%가 복잡한 명령어 기억에 고통 — 이 트릭들로 효율 2배 🚀"
+      }
+    },
+    {
+      "slide_number": 2,
+      "type": "news-summary",
+      "content": {
+        "question": "왜 Shell 트릭이 개발자 생산성을 바꿀까? 🤔",
+        "key_points": [
+          "Warp 1,500명 설문 — 개발자 70%가 복잡한 터미널 명령어 기억을 가장 큰 고충으로 꼽음 😫",
+          "같은 조사에서 69%가 터미널을 항상 열어둔다고 응답 — 하지만 스스로를 전문가라 생각하는 비율은 19%뿐 📉",
+          "fzf(퍼지 검색 도구) GitHub 스타 59,000개 돌파 — CTRL+R 히스토리 검색 효율이 약 2배로 향상된다는 사용자 보고 ⚡",
+          "원문이 소개하는 핵심 트릭: Brace Expansion, CTRL+W, ESC+., ALT+B/F, fc 명령, reset 등 🛠️",
+          "쉘 커스터마이징 1~3위: 자동완성(79%), 별칭(74%), 테마(74%) — 효율 > 미관 순서 (Warp 조사) 🏆",
+          "Arch Linux 2025 설문 — 파워 유저 65% 이상이 GUI보다 CLI를 일상 작업에 선호 🖥️"
+        ],
+        "source": "GeekNews / blog.hofstede.it / Warp State of the CLI 2023 / Laurence Tratt (2025) / Arch Linux Community Survey 2025"
+      }
+    },
+    {
+      "slide_number": 3,
+      "type": "news-why",
+      "content": {
+        "title": "왜 개발자가 주목해야 할까? 💡",
+        "points": [
+          "📊 Warp 설문(1,500+ 명) — 개발자 70%가 '복잡한 명령어 기억'을 최대 고충으로 선택. 패키지 관리(12%)·스크립팅(14%)보다 압도적. 트릭 몇 개로 이 고통의 상당 부분이 해소됨",
+          "⚡ Laurence Tratt(2025) — fzf로 CTRL+R을 교체하자 쉘 효율이 약 2배 향상. 더 큰 효과는 '기억 부담이 줄어 더 복잡한 명령을 시도하게 된다'는 행동 변화",
+          "🔑 Brace Expansion 하나로 타이핑 50% 절감 — cp config.yml{,.bak} 한 줄이 cp config.yml config.yml.bak 두 줄을 대체. 설정 파일 백업·디렉토리 일괄 생성 등 반복 작업에 즉시 적용 가능",
+          "🧠 쉘 숏컷은 '근육 기억'이 핵심 — 한번에 다 외우지 않아도 CTRL+W(단어 삭제), ESC+.(이전 인자 삽입) 2개만 익혀도 하루 수십 번의 백스페이스를 절약. 점진적 학습이 원문의 핵심 메시지",
+          "🏗️ Google Shell Style Guide — 스크립트 50줄 이하 권장 + ShellCheck 필수. 트릭과 함께 코드 품질 도구를 병행하면 유지보수성까지 확보"
+        ],
+        "one_liner": "외우지 말고, 하루에 하나씩 손에 익히자 — 복리로 돌아온다 💪"
+      }
+    },
+    {
+      "slide_number": 4,
+      "type": "news-detail",
+      "content": {
+        "title": "실전 적용 가이드 🔍",
+        "points": [
+          {
+            "label": "📦 Brace Expansion — 반복 타이핑 제거",
+            "desc": "cp app.conf{,.bak} → 백업 한 줄 완료. mkdir -p project/{src,test,docs} → 디렉토리 3개 일괄 생성. mv file.{txt,md} → 확장자 즉시 변경. 중괄호 안에 빈 항목 ','을 넣으면 원본 이름이 그대로 유지되는 원리"
+          },
+          {
+            "label": "⌨️ 키보드 숏컷 — 백스페이스 탈출",
+            "desc": "CTRL+W: 커서 왼쪽 단어 즉시 삭제. CTRL+Y: 삭제한 텍스트 다시 붙여넣기(kill ring). ESC+.(또는 ALT+.): 이전 명령의 마지막 인자 삽입 — cd /very/long/path 직후 ls ESC+.로 경로 재입력 불필요. ALT+B/F: 단어 단위 커서 이동"
+          },
+          {
+            "label": "🔍 CTRL+R + fzf — 히스토리 검색 혁명",
+            "desc": "기본 CTRL+R은 한 건씩만 표시. fzf를 설치하면 퍼지 매칭 + 여러 후보 동시 표시로 전환. 'c mo'만 쳐도 'cat /etc/motd' 매칭. brew install fzf && $(brew --prefix)/opt/fzf/install 한 줄로 셋업 완료 (Linux: apt install fzf)"
+          },
+          {
+            "label": "🛡️ fc + reset — 실수 복구 트릭",
+            "desc": "fc: 직전 명령을 $EDITOR(vim 등)에서 열어 수정 후 재실행 — 긴 명령어 오타 수정에 최적. reset: 바이너리 파일을 cat으로 열어 터미널이 깨졌을 때 화면 복구. 두 명령 모두 POSIX 호환이라 어떤 쉘에서든 동작"
+          }
+        ]
+      }
+    },
+    {
+      "slide_number": 5,
+      "type": "news-closing",
+      "content": {
+        "summary": [
+          "개발자 70%의 고충 '명령어 기억' — Brace Expansion·숏컷·fzf로 즉시 완화 (Warp 조사)",
+          "하루 1개 트릭만 손에 익혀도 쉘 효율 2배 — 핵심은 점진적 근육 기억 (Tratt 2025)",
+          "한 줄 요약: cp file{,.bak}, CTRL+W, ESC+., fzf — 이 4개부터 시작하세요"
+        ],
+        "source_link": "https://blog.hofstede.it/shell-tricks-that-actually-make-life-easier-and-save-your-sanity/",
+        "next_article": "",
+        "cta": "저장하고 터미널 열어서 cp test{,.bak}부터 직접 쳐보세요 📌"
+      }
+    }
+  ]
+}
