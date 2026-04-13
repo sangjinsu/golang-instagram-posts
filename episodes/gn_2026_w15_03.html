@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1080">
+  <title>GN 2026_w15 #3 .claude/ 폴더 구조 분석</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  padding: 40px;
+}
+
+/* 슬라이드 컨테이너 */
+.slide {
+  width: 1080px;
+  height: 1350px;
+  position: relative;
+  overflow: hidden;
+  font-family: 'Noto Sans KR', sans-serif;
+  color: #e0e0e0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 배경 그라데이션 */
+.slide-thumbnail { background: linear-gradient(135deg, #0f0f23 0%, #0a3d5c 40%, #00ADD8 100%); }
+.slide-concept   { background: linear-gradient(160deg, #0f0f23 0%, #1a1a3e 40%, #0d1b2a 100%); }
+.slide-code      { background: linear-gradient(160deg, #0d1117 0%, #161b22 50%, #0d1117 100%); }
+.slide-summary   { background: linear-gradient(160deg, #1a0a2e 0%, #16213e 50%, #0a1628 100%); }
+
+/* 장식 원 */
+.slide::before, .slide::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.06;
+  pointer-events: none;
+}
+.slide::before { width: 500px; height: 500px; background: #667eea; top: -150px; right: -100px; }
+.slide::after  { width: 350px; height: 350px; background: #f093fb; bottom: -100px; left: -80px; }
+
+/* 상단 바 */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 40px 60px 20px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+.series-tag { font-size: 26px; font-weight: 700; color: #00ADD8; }
+.ep-num     { font-size: 26px; font-weight: 700; color: rgba(255,255,255,0.4); }
+
+/* 타이포그래피 */
+.slide-title    { font-size: 48px; font-weight: 900; color: #fff; line-height: 1.3; margin-bottom: 24px; }
+.slide-subtitle { font-size: 32px; font-weight: 700; color: #00ADD8; margin-bottom: 20px; }
+.body-text      { font-size: 30px; font-weight: 400; color: #e0e0e0; line-height: 1.6; }
+.muted-text     { font-size: 26px; color: rgba(255,255,255,0.5); margin-bottom: 12px; }
+
+/* 코드 블록 */
+.code-block {
+  background: #0d1117;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 32px;
+  margin: 20px 0;
+  position: relative;
+  z-index: 1;
+  flex: 1;
+}
+.code-block pre {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 26px;
+  line-height: 1.7;
+  color: #e6edf3;
+  white-space: pre;
+  overflow: hidden;
+}
+
+/* 코드 구문 색상 */
+.kw  { color: #ff7b72; }
+.str { color: #a5d6ff; }
+.num { color: #79c0ff; }
+.cm  { color: #8b949e; }
+.tp  { color: #7ee787; }
+.fn  { color: #d2a8ff; }
+.op  { color: #ffa657; }
+
+/* 노트 박스 */
+.note-box {
+  background: rgba(0, 173, 216, 0.1);
+  border-left: 4px solid #00ADD8;
+  border-radius: 0 12px 12px 0;
+  padding: 20px 28px;
+  margin-top: auto;
+  position: relative;
+  z-index: 1;
+}
+.note-box p { font-size: 26px; color: #e0e0e0; line-height: 1.5; }
+
+/* === 썸네일 === */
+.thumb-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 80px 60px;
+  position: relative;
+  z-index: 1;
+}
+.thumb-series  { font-size: 36px; font-weight: 700; color: rgba(255,255,255,0.9); }
+.thumb-sub     { font-size: 48px; font-weight: 900; color: #fff; margin-top: 8px; }
+.thumb-divider { width: 80px; height: 4px; background: rgba(255,255,255,0.5); margin: 40px 0; border-radius: 2px; }
+.thumb-ep      { font-size: 64px; font-weight: 900; color: #fff; }
+.thumb-topic   { font-size: 56px; font-weight: 900; color: #fff; margin-top: 16px; }
+.thumb-hook    { font-size: 32px; color: rgba(255,255,255,0.8); margin-top: 32px; }
+.thumb-tags    { text-align: center; padding: 40px; font-size: 24px; color: rgba(255,255,255,0.4); position: relative; z-index: 1; }
+
+/* === 컨셉 === */
+.concept-body     { flex: 1; padding: 20px 60px 40px; display: flex; flex-direction: column; gap: 28px; position: relative; z-index: 1; }
+.concept-explain  { }
+.concept-compare  { background: rgba(255,255,255,0.04); border-radius: 16px; padding: 24px 28px; }
+.concept-features { background: rgba(0,173,216,0.08); border-radius: 16px; padding: 24px 28px; }
+
+/* === 코드 바디 === */
+.code-body { flex: 1; padding: 10px 60px 40px; display: flex; flex-direction: column; position: relative; z-index: 1; }
+
+/* === 요약 === */
+.summary-body   { flex: 1; padding: 20px 60px 40px; display: flex; flex-direction: column; gap: 24px; position: relative; z-index: 1; }
+.summary-points,
+.summary-tips   { background: rgba(255,255,255,0.04); border-radius: 16px; padding: 24px 28px; }
+.summary-next   { text-align: center; padding: 20px; background: rgba(0,173,216,0.08); border-radius: 16px; }
+.summary-cta    { text-align: center; padding: 24px; font-size: 28px; color: rgba(255,255,255,0.6); position: relative; z-index: 1; }
+
+
+/* === GeekNews 뉴스 카드 === */
+.slide-news-thumbnail { background: linear-gradient(135deg, #0f0f23 0%, #1a1530 50%, #2d1a00 100%); }
+.slide-news           { background: linear-gradient(160deg, #0f0f23 0%, #161b22 40%, #1a1000 100%); }
+.slide-news-closing   { background: linear-gradient(160deg, #1a0a0e 0%, #2a1a0a 50%, #0a1628 100%); }
+
+.news-accent   { color: #FF6B35; }
+.news-tag      { font-size: 26px; font-weight: 700; color: #FF6B35; }
+.news-ep-num   { font-size: 26px; font-weight: 700; color: rgba(255,255,255,0.4); }
+
+/* 뉴스 썸네일 */
+.news-thumb-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 80px 60px;
+  position: relative;
+  z-index: 1;
+}
+.news-thumb-series  { font-size: 36px; font-weight: 700; color: rgba(255,255,255,0.9); }
+.news-thumb-sub     { font-size: 44px; font-weight: 900; color: #fff; margin-top: 8px; }
+.news-thumb-divider { width: 80px; height: 4px; background: #FF6B35; margin: 36px 0; border-radius: 2px; }
+.news-thumb-icon    { font-size: 80px; margin: 20px 0 8px; filter: drop-shadow(0 0 20px rgba(255,107,53,0.3)); }
+.news-thumb-week    { font-size: 28px; font-weight: 700; color: #FF6B35; }
+.news-thumb-num     { font-size: 28px; font-weight: 700; color: rgba(255,255,255,0.5); margin-top: 8px; }
+.news-thumb-topic   { font-size: 48px; font-weight: 900; color: #fff; margin-top: 20px; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.news-thumb-hook    { font-size: 30px; color: rgba(255,255,255,0.8); margin-top: 28px; }
+.news-thumb-tags    { text-align: center; padding: 40px; font-size: 24px; color: rgba(255,255,255,0.4); position: relative; z-index: 1; }
+
+/* 뉴스 본문 공통 */
+.news-body { flex: 1; padding: 20px 60px 40px; display: flex; flex-direction: column; gap: 24px; position: relative; z-index: 1; }
+
+/* 핵심 포인트 리스트 */
+.news-point-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.news-point-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 28px;
+  font-weight: 700;
+  color: #FF6B35;
+  min-width: 40px;
+}
+.news-point-text { font-size: 28px; color: #e0e0e0; line-height: 1.5; }
+
+/* 출처 표시 */
+.news-source {
+  font-size: 22px;
+  color: rgba(255,255,255,0.4);
+  margin-top: auto;
+  padding-top: 16px;
+}
+
+/* 한줄 결론 강조 박스 */
+.news-highlight-box {
+  background: rgba(255, 107, 53, 0.12);
+  border-left: 4px solid #FF6B35;
+  border-radius: 0 12px 12px 0;
+  padding: 24px 28px;
+  margin-top: 16px;
+}
+.news-highlight-box p { font-size: 30px; font-weight: 700; color: #fff; line-height: 1.5; }
+
+/* 상세 포인트 카드 */
+.news-detail-card {
+  background: rgba(255,255,255,0.04);
+  border-radius: 16px;
+  padding: 24px 28px;
+  margin-bottom: 12px;
+}
+.news-detail-label { font-size: 26px; font-weight: 700; color: #FF6B35; margin-bottom: 8px; }
+.news-detail-desc  { font-size: 26px; color: #e0e0e0; line-height: 1.5; }
+
+/* 뉴스 요약/CTA */
+.news-summary-box  { background: rgba(255,255,255,0.04); border-radius: 16px; padding: 24px 28px; }
+.news-cta          { text-align: center; padding: 24px; font-size: 28px; color: rgba(255,255,255,0.6); position: relative; z-index: 1; }
+.news-source-link  { text-align: center; padding: 12px; font-size: 22px; color: rgba(255,107,53,0.85); word-break: break-all; }
+  </style>
+</head>
+<body>
+
+<div class="slide slide-news-thumbnail" id="slide-1">
+  <div class="news-thumb-content">
+    <p class="news-thumb-series">GeekNews 주간 픽</p>
+    <p class="news-thumb-sub">이번 주 핫토픽 🔥</p>
+    <div class="news-thumb-divider"></div>
+    <div class="news-thumb-icon">🗂️📁</div>
+    <p class="news-thumb-week">2026년 15주차</p>
+    <h1 class="news-thumb-topic">.claude/ 폴더 구조 분석</h1>
+    <p class="news-thumb-hook">Claude Code 고수들이 숨기는 폴더의 비밀 🤫</p>
+  </div>
+  <div class="news-thumb-tags">#GeekNews #개발 #테크뉴스</div>
+</div>
+
+<div class="slide slide-news" id="slide-2">
+  <div class="top-bar">
+    <span class="news-tag">GeekNews 주간 픽</span>
+    <span class="news-ep-num">GN W15 #3</span>
+  </div>
+  <div class="news-body">
+    <h2 class="slide-title">.claude/ 폴더, 제대로 쓰고 있나요? 🤔</h2>
+    <div>
+      <div class="news-point-item">
+        <span class="news-point-num">01</span>
+        <p class="news-point-text">프로젝트 .claude/ + 개인 ~/.claude/ — 두 폴더가 Claude Code 전체 행동을 제어 📁</p>
+      </div>
+      <div class="news-point-item">
+        <span class="news-point-num">02</span>
+        <p class="news-point-text">CLAUDE.md는 매 세션 시스템 프롬프트에 자동 로드 — 200줄 초과 시 지시 준수율 하락 ⚠️</p>
+      </div>
+      <div class="news-point-item">
+        <span class="news-point-num">03</span>
+        <p class="news-point-text">settings.json은 '강제 집행' — CLAUDE.md가 Claude가 읽는 가이드라면, 이건 Claude Code가 따르는 법 🔒</p>
+      </div>
+      <div class="news-point-item">
+        <span class="news-point-num">04</span>
+        <p class="news-point-text">2026년 Hooks: 21개 라이프사이클 이벤트, 4가지 핸들러 타입 — 포맷터·테스트 자동화 가능 ⚡</p>
+      </div>
+      <div class="news-point-item">
+        <span class="news-point-num">05</span>
+        <p class="news-point-text">skills/ + agents/ + rules/ 폴더 → git commit 가능, 팀 전체가 동일한 AI 규칙 공유 🤝</p>
+      </div>
+      <div class="news-point-item">
+        <span class="news-point-num">06</span>
+        <p class="news-point-text">Anthropic 팀 내부: 설정 30일마다 초기화 → 쌓인 규칙이 오히려 모델 성능을 떨어뜨림 🚨</p>
+      </div>
+    </div>
+    <p class="news-source">출처: Claude Code 공식 문서 / GeekNews / Daily Dose of DS / computingforgeeks</p>
+  </div>
+</div>
+
+<div class="slide slide-news" id="slide-3">
+  <div class="top-bar">
+    <span class="news-tag">GeekNews 주간 픽</span>
+    <span class="news-ep-num">GN W15 #3</span>
+  </div>
+  <div class="news-body">
+    <h2 class="slide-title">왜 개발자가 주목해야 할까? 💡</h2>
+    <div style="flex:1;">
+      <div class="news-point-item">
+        <p class="news-point-text">📊 CLAUDE.md 100줄 이내가 최적 — LLM이 일관되게 따를 수 있는 지시는 150~200개 한계, 시스템 프롬프트가 이미 ~50개 선점해 실제 여유는 100~150개뿐</p>
+      </div>
+      <div class="news-point-item">
+        <p class="news-point-text">⚡ Hooks 하나로 파일 저장 즉시 Prettier 자동 실행 — CLAUDE.md 규칙 대신 hooks 쓰면 100% 결정론적 실행, LLM 지시 무시 불가</p>
+      </div>
+      <div class="news-point-item">
+        <p class="news-point-text">🤖 subagents는 독립된 컨텍스트 창 — 탐색·연구 작업을 메인 대화 노이즈 없이 분리, Explore 서브에이전트는 Haiku로 비용 최적화</p>
+      </div>
+      <div class="news-point-item">
+        <p class="news-point-text">🗂️ rules/에 paths: frontmatter 적용 → 백엔드 파일 열 때만 API 규칙 로드, 불필요한 컨텍스트 소비 제로</p>
+      </div>
+      <div class="news-point-item">
+        <p class="news-point-text">⚠️ 남이 만든 스킬 무분별 설치 금지 — 과도한 설정 누적 시 오히려 모델 응답 품질 저하, 간결함이 성능의 핵심</p>
+      </div>
+    </div>
+    <div class="news-highlight-box">
+      <p>알고 쓰면 생산성 2배, 모르고 쌓으면 AI가 오히려 느려진다 🎯</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-news" id="slide-4">
+  <div class="top-bar">
+    <span class="news-tag">GeekNews 주간 픽</span>
+    <span class="news-ep-num">GN W15 #3</span>
+  </div>
+  <div class="news-body">
+    <h2 class="slide-title">실전 구조 완전 해부 🔍</h2>
+    <div class="news-detail-card">
+      <p class="news-detail-label">🗂️ CLAUDE.md vs rules/ 분리 전략</p>
+      <p class="news-detail-desc">CLAUDE.md는 전체 세션에 항상 로드 — 팀 공통 빌드/테스트 명령, 핵심 아키텍처 규칙만 유지. 200줄 넘어가면 rules/로 분리: `paths: [&quot;**/*.test.ts&quot;]` 같은 frontmatter로 특정 파일 열 때만 로드. 서브디렉토리도 자동 인식 (.claude/rules/frontend/react.md)</p>
+    </div>
+    <div class="news-detail-card">
+      <p class="news-detail-label">⚙️ settings.json Hooks 실전 패턴</p>
+      <p class="news-detail-desc">PostToolUse + matcher: &quot;Edit|Write&quot; → 파일 수정 즉시 Prettier 자동 실행. Pre-hook으로 `rm -rf *` 같은 위험 명령 차단. 우선순위: CLI 플래그 &gt; settings.local.json (gitignored) &gt; settings.json (committed) &gt; ~/.claude/settings.json</p>
+    </div>
+    <div class="news-detail-card">
+      <p class="news-detail-label">🤖 agents/ 커스텀 서브에이전트 설계</p>
+      <p class="news-detail-desc">마크다운 + YAML frontmatter 파일 하나로 독립 에이전트 생성 — 자체 시스템 프롬프트, 도구 권한, 모델 선택, permission 모드 설정 가능. .claude/agents/(팀 공유, git commit) vs ~/.claude/agents/(개인 전용, 전 프로젝트에서 사용) 구분</p>
+    </div>
+    <div class="news-detail-card">
+      <p class="news-detail-label">🔌 .mcp.json + skills/ 활용</p>
+      <p class="news-detail-desc">프로젝트 루트 .mcp.json — 팀 전체가 쓰는 GitHub·DB·API MCP 서버 공유, 비밀값은 `${GITHUB_TOKEN}` 환경변수 참조로 파일 노출 차단. skills/는 이제 commands/ 대체 — /skill-name 호출 또는 Claude 자동 실행, 서포팅 파일도 동일 폴더에 번들링 가능</p>
+    </div>
+  </div>
+</div>
+
+<div class="slide slide-news-closing" id="slide-5">
+  <div class="top-bar">
+    <span class="news-tag">GeekNews 주간 픽</span>
+    <span class="news-ep-num">GN W15 #3</span>
+  </div>
+  <div class="news-body">
+    <h2 class="slide-subtitle">📌 핵심 정리</h2>
+    <div class="news-summary-box">
+      <p class="body-text">✅ .claude/ 5개 하위 시스템: 지시(CLAUDE.md/rules), 워크플로(skills), 전문가(agents), 권한(settings.json), 메모리(~/.claude)</p>
+      <p class="body-text">✅ CLAUDE.md 200줄 한계 · Hooks 21개 이벤트 · subagents 독립 컨텍스트 — 팀 AI 스택의 핵심 설계도</p>
+      <p class="body-text">✅ 설정 과부하 금지 — Anthropic 팀도 30일 주기 초기화, 간결함이 성능</p>
+    </div>
+    <p class="news-source-link">원문: https://code.claude.com/docs/en/claude-directory</p>
+    <div class="news-cta">
+      <p>오늘 .claude/ 폴더 정리하고 팀 CLAUDE.md 100줄 도전! 📌</p>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
