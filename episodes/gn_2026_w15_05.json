@@ -1,0 +1,93 @@
+{
+  "type": "geeknews",
+  "week": "2026_w15",
+  "article_index": 5,
+  "title": "장기 실행 애플리케이션 개발을 위한 하네스 설계",
+  "source_url": "https://www.anthropic.com/engineering/harness-design-long-running-apps",
+  "geeknews_url": "https://news.hada.io/topic?id=27863",
+  "slides": [
+    {
+      "slide_number": 1,
+      "type": "news-thumbnail",
+      "content": {
+        "series_name": "GeekNews 주간 픽",
+        "series_sub": "이번 주 핫토픽 🔥",
+        "icon": "🤖⚙️",
+        "week_label": "2026년 15주차",
+        "article_num": "5",
+        "topic": "장기 실행 애플리케이션 개발을 위한 하네스 설계",
+        "hook": "Claude 혼자 6시간 코딩? 비결은 '만드는 놈 + 채점하는 놈' 분리 🎯"
+      }
+    },
+    {
+      "slide_number": 2,
+      "type": "news-summary",
+      "content": {
+        "question": "Anthropic은 어떻게 Claude를 6시간 자율 코딩시켰을까? 🤔",
+        "key_points": [
+          "Anthropic 엔지니어 Prithvi Rajasekaran이 공개한 장기 자율 코딩 하네스 설계 🧩",
+          "3-에이전트 구조: Planner(스펙 확장) + Generator(구현) + Evaluator(평가) 🎭",
+          "GAN에서 영감 — '만드는 놈과 채점하는 놈을 분리'가 핵심 아이디어 💡",
+          "실험 1: 브라우저 DAW를 4시간 / $124에 빌드 — Web Audio API 전체 구동 🎵",
+          "실험 2: 2D 레트로 게임메이커 6시간 $200 (멀티) vs 솔로 20분 $9 (코어 기능도 작동 X) ⚖️",
+          "Opus 4.6에서 스프린트 분할 없이 2시간+ 연속 코딩 — 하네스가 단순해졌다 🚀"
+        ],
+        "source": "GeekNews / Anthropic Engineering / InfoQ / Epsilla Blog"
+      }
+    },
+    {
+      "slide_number": 3,
+      "type": "news-why",
+      "content": {
+        "title": "왜 개발자가 주목해야 할까? 💡",
+        "points": [
+          "📊 품질 격차가 극단적 — 멀티 에이전트 $200/6시간 vs 솔로 $9/20분: 비용 22배 차이지만 솔로는 '코어 기능조차 작동 X'",
+          "🧠 모델은 자기 결과물을 과대평가한다 — 독립 Evaluator(few-shot + 스코어 기준)가 자기평가보다 훨씬 효과적",
+          "😰 'Context anxiety' 현상 발견 — 컨텍스트 한계 인식하면 작업을 조기 마무리. Sonnet 4.5는 compaction만으론 부족해 컨텍스트 리셋 필수였음",
+          "🔄 Opus 4.6 기준 스프린트 분할·컨텍스트 리셋 모두 제거 — Agent SDK 자동 compaction으로 단일 세션 연속 코딩 가능",
+          "🎯 핵심 결론: '모델이 좋아질수록 하네스 가능성 공간은 줄지 않고 이동한다' — 버리는 조각과 새로 추가할 조각이 함께 바뀐다"
+        ],
+        "one_liner": "좋은 모델 + 좋은 하네스 = 장기 자율 코딩. 둘 다 필요하다 🔑"
+      }
+    },
+    {
+      "slide_number": 4,
+      "type": "news-detail",
+      "content": {
+        "title": "실전 적용 가이드 🔍",
+        "points": [
+          {
+            "label": "🎭 Planner: 결과물로 제약, 경로는 위임",
+            "desc": "Planner는 짧은 프롬프트를 풍부한 스펙으로 확장하되, '무엇을 만들지'(deliverables)만 정의하고 '어떻게'는 하위 에이전트에 위임. 파일·기대 동작·엣지 케이스를 문서화하되 코드는 쓰지 않음. 코드베이스 탐색 컨텍스트로 Generator를 오염시키지 않는 게 핵심"
+          },
+          {
+            "label": "🤝 Generator ↔ Evaluator 계약 협상",
+            "desc": "매 스프린트마다 Generator가 '이번에 무엇을 빌드하고 어떻게 검증할지' 제안 → Evaluator가 리뷰·수정 → 합의 후 빌드 시작. 스택 예시: React + Vite + FastAPI + SQLite(→PostgreSQL). 각 기준에 hard threshold — 하나라도 미달이면 스프린트 실패 + 상세 피드백"
+          },
+          {
+            "label": "🖱️ Evaluator는 Playwright MCP로 '실제 사용'",
+            "desc": "정적 코드 리뷰만이 아니라 실행 중인 앱을 브라우저에서 직접 클릭·스크린샷. UI 기능·API 엔드포인트·DB 상태를 사용자처럼 테스트. 평가 기준: 제품 깊이, 기능, 비주얼 디자인, 코드 품질 — 주관적 판단을 구체 기준으로 변환한 게 승부처"
+          },
+          {
+            "label": "📉 모델이 좋아지면 하네스를 '빼라'",
+            "desc": "Opus 4.5 → 4.6 전환 시 sprint decomposition 제거, context reset 제거. 새 모델이 올 때마다 하네스를 재점검해 '더 이상 load-bearing 아닌 부품'은 제거, 새로 가능해진 부품은 추가. 하네스 자체가 살아있는 설계 문서"
+          }
+        ]
+      }
+    },
+    {
+      "slide_number": 5,
+      "type": "news-closing",
+      "content": {
+        "summary": [
+          "Planner + Generator + Evaluator 3-에이전트 + Playwright MCP로 브라우저 DAW 4시간/$124, 게임메이커 6시간/$200 자율 빌드 성공",
+          "GAN 영감의 Generator-Evaluator 분리가 핵심 — 모델이 자기 결과물 과대평가하는 문제를 독립 평가자로 해결",
+          "Opus 4.6 시대엔 스프린트 분할·컨텍스트 리셋 모두 제거. '하네스 가능성 공간은 줄지 않고 이동한다'는 문장이 가장 오래 남는다"
+        ],
+        "source_link": "https://www.anthropic.com/engineering/harness-design-long-running-apps",
+        "next_article": "",
+        "cta": "저장하고 내 에이전트에 Generator-Evaluator 분리부터 적용해보자 📌"
+      }
+    }
+  ]
+}
