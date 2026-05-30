@@ -1,21 +1,24 @@
 ---
 name: orchestrate-pipeline
-description: Go 기초 문법 에피소드(ep01~epXX) 또는 GeekNews 주간 픽(gn_) 인스타그램 카드뉴스의 전체 파이프라인을 조율하는 오케스트레이터. 콘텐츠 작성 → 검증 → HTML/PNG 빌드 → 시각 QA → 인스타 업로드까지 5인 에이전트 팀을 구성해 자동 실행한다. "EP22 만들어줘", "ep22 에피소드 생성", "GeekNews 주간 카드뉴스 만들어줘", "gn_2026_w15_01 업로드", "에피소드 재빌드", "slide 3 다시 만들어줘", "업데이트", "수정", "재실행" 등 카드뉴스 파이프라인과 관련된 모든 요청에 반드시 이 스킬을 사용할 것. 단순 JSON 질문이나 스크립트 한 줄 실행만 필요한 경우는 예외.
+description: GeekNews 주간 픽(gn_)을 하루 1개 발행하기 위한 인스타그램 카드뉴스 파이프라인을 조율하는 오케스트레이터. 콘텐츠 작성 → 검증 → HTML/PNG 빌드 → 시각 QA → 인스타 업로드까지 5인 에이전트 팀을 구성해 자동 실행한다. "GeekNews 이번 주 7개 만들어줘", "GeekNews daily 생성", "gn_2026_w15_01 업로드", "slide 3 다시 만들어줘", "업데이트", "수정", "재실행" 등 카드뉴스 파이프라인과 관련된 모든 요청에 반드시 이 스킬을 사용할 것. Go EP는 legacy로 지원하며 명시 요청 시만 처리한다. 단순 JSON 질문이나 스크립트 한 줄 실행만 필요한 경우는 예외.
 ---
 
 # orchestrate-pipeline 스킬
 
-"Go 기초 문법 1분 정리" 에피소드 또는 "GeekNews 주간 픽" 기사의 카드뉴스 파이프라인을 **에이전트 팀으로 조율**하는 오케스트레이터.
+"GeekNews 주간 픽" 기사를 하루 1개 발행할 수 있도록, 매주 7개 카드뉴스 배치를 **에이전트 팀으로 조율**하는 오케스트레이터.
+
+기본 운영은 GeekNews daily publishing이다. Go 기초 문법 EP 트랙은 legacy로 보존하며, 사용자가 `epNN` 또는 Go EP를 명시한 경우에만 처리한다.
 
 ## 언제 이 스킬을 쓰는가
 
 | 사용자 요청 | 이 스킬 사용 여부 |
 |------------|------------------|
-| "EP22 파일 입출력 만들어줘" | ✅ 초기 실행 |
-| "ep22 에피소드 전체 생성" | ✅ 초기 실행 |
-| "GeekNews 이번 주 카드뉴스 만들어줘" | ✅ 초기 실행 (GeekNews 트랙) |
+| "GeekNews 이번 주 카드뉴스 만들어줘" | ✅ 초기 실행 (GeekNews daily 7개) |
+| "GeekNews daily 7개 만들어줘" | ✅ 초기 실행 (GeekNews 트랙) |
 | "gn_2026_w15_01 업로드해줘" | ✅ 업로드 단계만 |
 | "EP08 슬라이드 3 다시 만들어줘" | ✅ 부분 재실행 |
+| "EP22 파일 입출력 만들어줘" | ✅ legacy Go EP 초기 실행 |
+| "ep22 에피소드 전체 생성" | ✅ legacy Go EP 초기 실행 |
 | "EP22 content 수정해줘" | ✅ 부분 재실행 (writer만) |
 | "EP22 재빌드" | ✅ 부분 재실행 (builder+qa) |
 | "ep08.json 스키마가 뭐야?" | ❌ 단순 질문, 직접 응답 |
@@ -47,7 +50,7 @@ description: Go 기초 문법 에피소드(ep01~epXX) 또는 GeekNews 주간 픽
 |----------|------|-----------|
 | "EP22", "ep22", "에피소드 22", "22번" | Go EP | `ep22` |
 | "gn_2026_w15_01", "GN W15 01" | GeekNews | `gn_2026_w15_01` |
-| "이번 주 GeekNews" | GeekNews 파이프라인 | (geeknews_pipeline.py 실행) |
+| "이번 주 GeekNews", "GeekNews daily" | GeekNews daily 파이프라인 | 주 7개 배치 (`--count 7`) |
 
 ### 0-2. 산출물 존재 확인
 
@@ -72,13 +75,15 @@ PNG_DIR_EXISTS=$(ls -d output/${CONTENT_ID} 2>/dev/null && echo yes)
 
 애매하면 `AskUserQuestion`으로 사용자에게 의도 확인.
 
-### 0-4. 특수: GeekNews 일괄 파이프라인
+### 0-4. 기본: GeekNews daily 일괄 파이프라인
 
-사용자가 "GeekNews 이번 주" 또는 "GeekNews 주간 카드뉴스"를 요청하면:
+사용자가 "GeekNews 이번 주", "GeekNews daily", "하루 1개" 또는 "GeekNews 주간 카드뉴스"를 요청하면:
 1. `scripts/geeknews_pipeline.py --week latest --scrape-only` 실행 → 후보 목록 확인
 2. `episodes/gn_{week}_candidates.json` 읽어 기사 목록 표시
-3. 사용자에게 "자동 파이프라인(`geeknews_pipeline.py --week latest --dry-run`)으로 일괄 생성할까요, 아니면 개별 기사를 골라 content-writer 팀으로 처리할까요?" 질문
-4. 팀 기반이면 각 기사별로 Phase 1~4 반복
+3. 후보 10개 이상 확보 여부와 기존 `episodes/gn_*.json` 중복 여부 확인
+4. 기본값은 `python3 scripts/geeknews_pipeline.py --week latest --count 7 --dry-run`로 7일치 생성
+5. 사용자에게 "자동 파이프라인으로 주 7개를 만들까요, 아니면 개별 기사를 골라 content-writer 팀으로 처리할까요?" 질문
+6. 팀 기반이면 각 기사별로 Phase 1~4 반복
 
 ## Phase 1-5: 팀 조율 워크플로우
 
@@ -185,14 +190,25 @@ Phase 4 visual-qa:          ✅ PASS (썸네일 95KB, 모두 1080×1350)
 Phase 5 instagram-uploader: ⏭️ 사용자 미요청 (또는 ✅ {post_url})
 
 다음 단계 제안:
-- 업로드: "ep22 인스타에 올려줘"
-- 수정: "ep22 slide 5 다시 만들어줘"
-- 새 에피소드: "EP23 시작"
+- 업로드: "gn_2026_w15_01 인스타에 올려줘"
+- 수정: "gn_2026_w15_01 slide 3 다시 만들어줘"
+- 다음 배치: "이번 주 GeekNews 7개 만들어줘"
 ```
 
 ## 테스트 시나리오
 
-### 정상 흐름 1: Go EP 초기 생성
+### 정상 흐름 1: GeekNews daily 7개 생성
+
+**입력:** "이번 주 GeekNews 7개 만들어줘"
+
+1. Phase 0: GeekNews daily 파싱 → 주 7개 배치
+2. `scripts/geeknews_pipeline.py --week latest --scrape-only`
+3. 후보 목록 확인, 기존 `episodes/gn_*.json` 중복 제거
+4. `scripts/geeknews_pipeline.py --week latest --count 7 --dry-run`
+5. 생성된 JSON/HTML/PNG 결과를 visual-qa로 확인
+6. 리더가 7일치 생성 결과와 업로드 가능 content_id 보고
+
+### 정상 흐름 2: Legacy Go EP 초기 생성
 
 **입력:** "EP22 파일 입출력 에피소드 만들어줘"
 
@@ -205,18 +221,18 @@ Phase 5 instagram-uploader: ⏭️ 사용자 미요청 (또는 ✅ {post_url})
 7. visual-qa가 T4 claim → PNG 검증 PASS → 리더에 SendMessage
 8. 리더가 최종 리포트 출력
 
-### 정상 흐름 2: 부분 재실행 (slide 수정)
+### 정상 흐름 3: 부분 재실행 (slide 수정)
 
-**입력:** "EP08 slide 5 다시 만들어줘"
+**입력:** "gn_2026_w15_01 slide 3 다시 만들어줘"
 
-1. Phase 0: `ep08` 파싱, 모든 파일 존재 → 부분 재실행
+1. Phase 0: `gn_2026_w15_01` 파싱, 모든 파일 존재 → 부분 재실행
 2. 팀 구성 (builder + visual-qa만)
-3. builder에 "rebuild ep08 slide 5" 작업 할당
-4. builder: `generate_html.py --ep 08` 실행 (전체 HTML 재생성) → `export_images.py --ep 08 --slide 5`
-5. visual-qa: 전체 PNG 재검증 (slide 5만이 아니라 전체)
+3. builder에 "rebuild gn_2026_w15_01 slide 3" 작업 할당
+4. builder: `generate_html.py --id gn_2026_w15_01` 실행 (전체 HTML 재생성) → `export_images.py --id gn_2026_w15_01 --slide 3`
+5. visual-qa: 전체 PNG 재검증 (slide 3만이 아니라 전체)
 6. 리더 결과 보고
 
-### 정상 흐름 3: GeekNews 일괄
+### 정상 흐름 4: GeekNews 일괄
 
 **입력:** "이번 주 GeekNews 카드뉴스 만들어줘"
 
@@ -261,7 +277,7 @@ Phase 5 instagram-uploader: ⏭️ 사용자 미요청 (또는 ✅ {post_url})
 
 | 파일 | 용도 |
 |------|------|
-| `AGENTS.md` | 프로젝트 규칙, 에피소드 목록, GeekNews 프로세스 |
+| `AGENTS.md` | 프로젝트 규칙, GeekNews daily 운영 프로세스 |
 | `skills/slide-content.md` | 콘텐츠 작성 규칙 (writer 참조) |
 | `skills/html-template.md` | HTML 템플릿 가이드 (builder 참조) |
 | `skills/image-exporter.md` | 이미지 변환 가이드 (builder 참조) |
@@ -269,5 +285,5 @@ Phase 5 instagram-uploader: ⏭️ 사용자 미요청 (또는 ✅ {post_url})
 | `scripts/export_images.py` | HTML → PNG 변환 (builder 실행) |
 | `scripts/upload_instagram.py` | 인스타 업로드 (uploader 실행) |
 | `scripts/geeknews_pipeline.py` | GeekNews 자동 파이프라인 |
-| `episodes/ep08.json` | Go EP 스키마 예시 (writer 참조) |
+| `episodes/ep08.json` | legacy Go EP 스키마 예시 (writer 참조) |
 | `episodes/gn_2026_w14_08.json` | GeekNews 스키마 예시 (writer 참조) |

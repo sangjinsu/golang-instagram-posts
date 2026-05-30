@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
-"""geeknews_pipeline.py — GeekNews 주간 뉴스 카드뉴스 자동 생성 파이프라인
+"""geeknews_pipeline.py — GeekNews daily 카드뉴스 주간 배치 파이프라인
 
-GeekNews 주간 뉴스에서 7개 기사를 선별하여 인스타그램 카드뉴스를 자동 생성한다.
+GeekNews 주간 뉴스에서 하루 1개 발행용 7개 기사를 선별하여
+인스타그램 카드뉴스를 자동 생성한다.
 
 사용법:
     python3 scripts/geeknews_pipeline.py --week latest
     python3 scripts/geeknews_pipeline.py --week latest --dry-run
+    python3 scripts/geeknews_pipeline.py --week latest --count 7 --json-only
     python3 scripts/geeknews_pipeline.py --week 2026-W14
 """
 
@@ -71,7 +73,7 @@ def get_anthropic_client():
 GEEKNEWS_WEEKLY_URL = "https://news.hada.io/weekly"
 GEEKNEWS_RSS_URL = "https://news.hada.io/rss"
 CLAUDE_MODEL = "claude-sonnet-4-20250514"
-MAX_ARTICLES = 7
+MAX_ARTICLES = 7  # daily publishing: 7 articles per weekly batch
 MAX_CANDIDATES = 15
 MAX_RETRY = 2
 
@@ -586,21 +588,22 @@ def run_existing_pipeline(content_id, dry_run=False):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="GeekNews 주간 뉴스 카드뉴스 자동 생성 파이프라인"
+        description="GeekNews 하루 1개 발행용 주간 7개 카드뉴스 자동 생성 파이프라인"
     )
     parser.add_argument("--week", default="latest", help="주차 (예: latest, 2026-W14)")
     parser.add_argument("--dry-run", action="store_true", help="JSON + HTML + PNG까지만 (업로드 안 함)")
     parser.add_argument("--json-only", action="store_true", help="JSON 생성까지만")
     parser.add_argument("--scrape-only", action="store_true", help="기사 목록만 JSON으로 출력 (AI 없이)")
-    parser.add_argument("--count", type=int, default=MAX_ARTICLES, help=f"선별할 기사 수 (기본: {MAX_ARTICLES})")
+    parser.add_argument("--count", type=int, default=MAX_ARTICLES, help=f"선별할 기사 수 (daily 기본: {MAX_ARTICLES}개 = 7일치)")
     args = parser.parse_args()
 
     week_str = parse_week_arg(args.week)
     num_articles = args.count
 
     print(f"\n{'='*60}")
-    print(f"  GeekNews 카드뉴스 파이프라인")
+    print(f"  GeekNews Daily 카드뉴스 파이프라인")
     print(f"  주차: {week_str} | 기사: {num_articles}개")
+    print(f"  운영: 하루 1개 발행용 주간 배치")
     mode_str = "스크래핑만" if args.scrape_only else "JSON만" if args.json_only else "DRY RUN" if args.dry_run else "전체 실행"
     print(f"  모드: {mode_str}")
     print(f"{'='*60}\n")
@@ -660,6 +663,7 @@ def main():
 
     if args.json_only:
         print("\n  ✅ JSON 생성 완료 (--json-only)")
+        print(f"  발행 계획: 하루 1개 기준 {len(generated)}일치")
         for cid in generated:
             print(f"    📄 episodes/{cid}.json")
         return
@@ -680,6 +684,7 @@ def main():
     print(f"  완료!")
     print(f"  생성: {len(generated)}/{num_articles}개")
     print(f"  파이프라인 성공: {success_count}/{len(generated)}개")
+    print(f"  발행 계획: 하루 1개 기준 {success_count}일치")
     if args.dry_run:
         print(f"  모드: DRY RUN (업로드 건너뜀)")
     print(f"{'='*60}\n")
