@@ -14,3 +14,8 @@ __pycache__/
 
 # Output (generated PNG images)
 output/
+
+# Local analysis artifacts
+repomix-output.xml
+graphify-out/.graphify_*
+scripts/graphify-out/cache/
