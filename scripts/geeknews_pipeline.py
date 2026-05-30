@@ -29,9 +29,9 @@ except ImportError:
     feedparser = None
 
 try:
-    import anthropic
+    from openai import OpenAI
 except ImportError:
-    anthropic = None
+    OpenAI = None
 
 
 # ============================================================
@@ -52,18 +52,50 @@ def extract_json(text):
     return None
 
 
-_anthropic_client = None
+_openai_client = None
 
 
-def get_anthropic_client():
-    """Anthropic 클라이언트를 싱글톤으로 반환한다."""
-    global _anthropic_client
-    if _anthropic_client is None:
-        api_key = os.environ.get("ANTHROPIC_API_KEY")
+def get_openai_client():
+    """OpenAI client singleton."""
+    global _openai_client
+    if _openai_client is None:
+        api_key = os.environ.get("OPENAI_API_KEY")
         if not api_key:
             return None
-        _anthropic_client = anthropic.Anthropic(api_key=api_key)
-    return _anthropic_client
+        _openai_client = OpenAI(api_key=api_key)
+    return _openai_client
+
+
+def get_response_text(response):
+    """Extract text from an OpenAI Responses API response."""
+    output_text = getattr(response, "output_text", None)
+    if output_text:
+        return output_text.strip()
+
+    chunks = []
+    for item in getattr(response, "output", []) or []:
+        for content in getattr(item, "content", []) or []:
+            text = getattr(content, "text", None)
+            if text:
+                chunks.append(text)
+            elif isinstance(content, dict) and content.get("text"):
+                chunks.append(content["text"])
+    return "".join(chunks).strip()
+
+
+def create_openai_response(prompt, instructions, max_output_tokens):
+    """Create a text response using OpenAI Responses API."""
+    client = get_openai_client()
+    if not client:
+        return None
+
+    response = client.responses.create(
+        model=OPENAI_MODEL,
+        instructions=instructions,
+        input=prompt,
+        max_output_tokens=max_output_tokens,
+    )
+    return get_response_text(response)
 
 
 # ============================================================
@@ -72,10 +104,17 @@ def get_anthropic_client():
 
 GEEKNEWS_WEEKLY_URL = "https://news.hada.io/weekly"
 GEEKNEWS_RSS_URL = "https://news.hada.io/rss"
-CLAUDE_MODEL = "claude-sonnet-4-20250514"
+OPENAI_MODEL = os.environ.get("OPENAI_MODEL", "gpt-5.5")
 MAX_ARTICLES = 7  # daily publishing: 7 articles per weekly batch
 MAX_CANDIDATES = 15
 MAX_RETRY = 2
+GEEKNEWS_SLIDE_TYPES = [
+    "news-thumbnail",
+    "news-summary",
+    "news-why",
+    "news-detail",
+    "news-closing",
+]
 
 SCRIPTS_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_DIR = os.path.dirname(SCRIPTS_DIR)
@@ -229,14 +268,14 @@ def fetch_article_detail(geeknews_url):
 # ============================================================
 
 def select_articles_ai(articles, num=MAX_ARTICLES):
-    """Claude API로 상위 기사를 선별한다."""
-    if not anthropic:
-        print("  ⚠️ anthropic 패키지 없음, 포인트 기준 선별로 fallback")
+    """OpenAI API로 상위 기사를 선별한다."""
+    if not OpenAI:
+        print("  ⚠️ openai 패키지 없음, 포인트 기준 선별로 fallback")
         return select_articles_fallback(articles, num)
 
-    api_key = os.environ.get("ANTHROPIC_API_KEY")
+    api_key = os.environ.get("OPENAI_API_KEY")
     if not api_key:
-        print("  ⚠️ ANTHROPIC_API_KEY 없음, 포인트 기준 선별로 fallback")
+        print("  ⚠️ OPENAI_API_KEY 없음, 포인트 기준 선별로 fallback")
         return select_articles_fallback(articles, num)
 
     candidates = sorted(articles, key=lambda a: a["points"] + a["comments"], reverse=True)[:MAX_CANDIDATES]
@@ -247,16 +286,11 @@ def select_articles_ai(articles, num=MAX_ARTICLES):
         candidates_text += f"   포인트: {art['points']} | 댓글: {art['comments']}\n"
         candidates_text += f"   요약: {art['summary'][:200]}\n\n"
 
-    print(f"  🤖 Claude API로 {num}개 기사 선별 중...")
-    client = get_anthropic_client()
+    print(f"  🤖 OpenAI API로 {num}개 기사 선별 중... ({OPENAI_MODEL})")
 
     try:
-        response = client.messages.create(
-            model=CLAUDE_MODEL,
-            max_tokens=1024,
-            messages=[{
-                "role": "user",
-                "content": f"""다음 GeekNews 주간 뉴스 상위 {len(candidates)}개 후보입니다:
+        result_text = create_openai_response(
+            prompt=f"""다음 GeekNews 주간 뉴스 상위 {len(candidates)}개 후보입니다:
 
 {candidates_text}
 
@@ -267,12 +301,11 @@ def select_articles_ai(articles, num=MAX_ARTICLES):
 3. 커뮤니티에서 화제가 되고 있는가 (포인트/댓글 수 참고)
 
 응답은 반드시 아래 JSON 형식만 출력하세요:
-{{"selected": [{{"index": 번호, "reason": "선정 이유"}}, ...]}}"""
-            }],
-            system="당신은 한국 개발자 커뮤니티를 위한 테크 뉴스 큐레이터입니다. 인스타그램 카드뉴스에 적합한 기사를 선정합니다. 응답은 JSON만 출력하세요."
+{{"selected": [{{"index": 번호, "reason": "선정 이유"}}, ...]}}""",
+            instructions="당신은 한국 개발자 커뮤니티를 위한 테크 뉴스 큐레이터입니다. 인스타그램 카드뉴스에 적합한 기사를 선정합니다. 응답은 JSON만 출력하세요.",
+            max_output_tokens=1024,
         )
 
-        result_text = response.content[0].text.strip()
         result = extract_json(result_text)
         if result:
             selected_indices = [s["index"] for s in result["selected"]]
@@ -295,16 +328,11 @@ def select_articles_ai(articles, num=MAX_ARTICLES):
         time.sleep(30)
 
         try:
-            response = client.messages.create(
-                model=CLAUDE_MODEL,
-                max_tokens=1024,
-                messages=[{
-                    "role": "user",
-                    "content": f"다음 뉴스 후보 중 한국 개발자에게 가장 유용한 {num}개를 선정하세요. JSON으로만 응답: {{\"selected\": [{{\"index\": N}}]}}\n\n{candidates_text}"
-                }],
-                system="테크 뉴스 큐레이터. JSON만 응답."
+            result_text = create_openai_response(
+                prompt=f"다음 뉴스 후보 중 한국 개발자에게 가장 유용한 {num}개를 선정하세요. JSON으로만 응답: {{\"selected\": [{{\"index\": N}}]}}\n\n{candidates_text}",
+                instructions="테크 뉴스 큐레이터. JSON만 응답.",
+                max_output_tokens=1024,
             )
-            result_text = response.content[0].text.strip()
             result = extract_json(result_text)
             if result:
                 selected_indices = [s["index"] for s in result["selected"]]
@@ -333,9 +361,9 @@ def select_articles_fallback(articles, num=MAX_ARTICLES):
 # ============================================================
 
 def generate_article_json(article, week_str, article_index, total_articles):
-    """Claude API로 기사 하나의 카드뉴스 JSON을 생성한다."""
-    if not anthropic or not os.environ.get("ANTHROPIC_API_KEY"):
-        print(f"  ❌ Claude API 사용 불가, 기사 #{article_index} 건너뜀")
+    """OpenAI API로 기사 하나의 카드뉴스 JSON을 생성한다."""
+    if not OpenAI or not os.environ.get("OPENAI_API_KEY"):
+        print(f"  ❌ OpenAI API 사용 불가, 기사 #{article_index} 건너뜀")
         return None
 
     time.sleep(1)
@@ -344,8 +372,7 @@ def generate_article_json(article, week_str, article_index, total_articles):
 
     next_article = "다음 기사가 있습니다" if article_index < total_articles else ""
 
-    client = get_anthropic_client()
-    print(f"  🤖 기사 #{article_index} JSON 생성 중: {article['title'][:40]}...")
+    print(f"  🤖 기사 #{article_index} JSON 생성 중: {article['title'][:40]}... ({OPENAI_MODEL})")
 
     source_url = article.get('source_url', '') or article['geeknews_url']
 
@@ -361,12 +388,21 @@ GeekNews URL: {article['geeknews_url']}
 기사 번호: {article_index}/{total_articles}
 
 슬라이드 구성 규칙:
-- 최소 3장, 최대 9장
-- 1장 (필수): news-thumbnail
-- 2장 (필수): news-summary — 핵심 포인트 3~5개
-- 중간 (선택 0~1장): news-why — 왜 중요한가
-- 중간 (선택 0~5장): news-detail — 상세 포인트
-- 마지막 (필수): news-closing — 요약 + CTA
+- 반드시 5장만 생성
+- 1장: news-thumbnail — 첫 화면에서 멈추게 하는 호기심 훅
+- 2장: news-summary — "이게 뭔데?"를 핵심 3개로 설명
+- 3장: news-why — "왜 지금 중요한가?"를 구체적 신호/수치 3개로 설명
+- 4장: news-detail — "개발자가 뭘 해볼까?" 중심의 실행 포인트 3개
+- 5장: news-closing — 저장/공유를 유도하는 3줄 요약 + CTA
+
+가독성/후킹 제약:
+- topic은 28자 내외, hook은 45자 내외
+- key_points, why points, detail points, summary는 각각 정확히 3개
+- detail desc는 70자 내외, 한 슬라이드에 긴 문단 금지
+- 모든 문장은 모바일에서 한눈에 읽히게 짧게 작성
+- 제네릭한 표현보다 제품명, 수치, 명령어, 실무 행동을 우선
+- news-detail content.points는 반드시 {{"label": "...", "desc": "..."}} 객체 배열
+- JSON 외 텍스트, 마크다운 코드펜스, 설명 문장 출력 금지
 
 응답은 반드시 아래 JSON 형식만 출력하세요:
 {{
@@ -383,6 +419,7 @@ GeekNews URL: {article['geeknews_url']}
       "content": {{
         "series_name": "GeekNews 주간 픽",
         "series_sub": "이번 주 핫토픽 🔥",
+        "icon": "주제 이모지",
         "week_label": "주차 라벨 (예: 2026년 14주차)",
         "article_num": "{article_index}/{total_articles}",
         "topic": "기사 제목 (한국어, 간결하게)",
@@ -399,7 +436,28 @@ GeekNews URL: {article['geeknews_url']}
       }}
     }},
     {{
-      "slide_number": N,
+      "slide_number": 3,
+      "type": "news-why",
+      "content": {{
+        "title": "왜 지금 중요한가? 💡",
+        "points": ["구체적 신호/수치 1", "구체적 신호/수치 2", "실무 맥락 3"],
+        "one_liner": "한줄 결론"
+      }}
+    }},
+    {{
+      "slide_number": 4,
+      "type": "news-detail",
+      "content": {{
+        "title": "개발자가 뭘 해볼까? 🔍",
+        "points": [
+          {{"label": "실행 포인트 1", "desc": "짧은 설명"}},
+          {{"label": "실행 포인트 2", "desc": "짧은 설명"}},
+          {{"label": "실행 포인트 3", "desc": "짧은 설명"}}
+        ]
+      }}
+    }},
+    {{
+      "slide_number": 5,
       "type": "news-closing",
       "content": {{
         "summary": ["핵심 1", "핵심 2", "핵심 3"],
@@ -412,14 +470,12 @@ GeekNews URL: {article['geeknews_url']}
 }}"""
 
     try:
-        response = client.messages.create(
-            model=CLAUDE_MODEL,
-            max_tokens=4096,
-            messages=[{"role": "user", "content": prompt}],
-            system="당신은 인스타그램 카드뉴스 콘텐츠 제작자입니다. 한국 개발자를 위한 기술 뉴스를 쉽고 매력적인 카드뉴스로 변환합니다. 이모지를 적극 활용하고, 한국어로 자연스럽게 작성합니다. 응답은 JSON만 출력하세요."
+        result_text = create_openai_response(
+            prompt=prompt,
+            instructions="당신은 인스타그램 카드뉴스 콘텐츠 제작자입니다. 한국 개발자를 위한 기술 뉴스를 쉽고 매력적인 카드뉴스로 변환합니다. 이모지를 적극 활용하고, 한국어로 자연스럽게 작성합니다. 응답은 JSON만 출력하세요.",
+            max_output_tokens=4096,
         )
 
-        result_text = response.content[0].text.strip()
         data = extract_json(result_text)
         if data:
             slide_count = len(data.get('slides', []))
@@ -436,42 +492,186 @@ GeekNews URL: {article['geeknews_url']}
 # Step 4: Quality Validation (AI)
 # ============================================================
 
+def _is_nonempty_string(value):
+    """Return True for useful string fields."""
+    return isinstance(value, str) and bool(value.strip())
+
+
+def _check_string_list(value, field_name, expected_len, max_item_len, issues):
+    """Validate compact list fields used by GeekNews slides."""
+    if not isinstance(value, list):
+        issues.append(f"{field_name} 배열이 없습니다.")
+        return
+    if len(value) != expected_len:
+        issues.append(f"{field_name} 항목 수가 {expected_len}개가 아닙니다.")
+    for i, item in enumerate(value, 1):
+        if not _is_nonempty_string(item):
+            issues.append(f"{field_name}[{i}]가 빈 문자열입니다.")
+        elif len(item) > max_item_len:
+            issues.append(f"{field_name}[{i}]가 너무 깁니다. ({len(item)}자)")
+
+
+def validate_required_structure(data):
+    """Validate required GeekNews structure without asking an LLM."""
+    issues = []
+
+    if not isinstance(data, dict):
+        return False, ["최상위 JSON 객체가 아닙니다."]
+
+    if data.get("type") != "geeknews":
+        issues.append("type은 geeknews여야 합니다.")
+
+    for field in ("week", "article_index", "title", "source_url", "geeknews_url"):
+        if field == "article_index":
+            if not isinstance(data.get(field), int):
+                issues.append("article_index는 정수여야 합니다.")
+        elif not _is_nonempty_string(data.get(field)):
+            issues.append(f"{field} 필드가 비어 있습니다.")
+
+    slides = data.get("slides")
+    if not isinstance(slides, list):
+        return False, issues + ["slides 배열이 없습니다."]
+
+    if len(slides) != len(GEEKNEWS_SLIDE_TYPES):
+        issues.append(f"GeekNews daily는 5장이어야 합니다. 현재 {len(slides)}장입니다.")
+
+    for idx, expected_type in enumerate(GEEKNEWS_SLIDE_TYPES, 1):
+        if idx > len(slides):
+            issues.append(f"{idx}번 슬라이드가 없습니다.")
+            continue
+
+        slide = slides[idx - 1]
+        if slide.get("slide_number") != idx:
+            issues.append(f"{idx}번 슬라이드 번호가 연속되지 않습니다.")
+        if slide.get("type") != expected_type:
+            issues.append(f"{idx}번 슬라이드는 {expected_type} 타입이어야 합니다.")
+
+        content = slide.get("content")
+        if not isinstance(content, dict):
+            issues.append(f"{idx}번 슬라이드 content가 객체가 아닙니다.")
+            continue
+
+        if expected_type == "news-thumbnail":
+            for field in ("series_name", "series_sub", "week_label", "article_num", "topic", "hook"):
+                if not _is_nonempty_string(content.get(field)):
+                    issues.append(f"news-thumbnail.{field} 필드가 비어 있습니다.")
+            if len(str(content.get("topic", ""))) > 40:
+                issues.append("news-thumbnail.topic이 너무 깁니다.")
+            if len(str(content.get("hook", ""))) > 70:
+                issues.append("news-thumbnail.hook이 너무 깁니다.")
+
+        elif expected_type == "news-summary":
+            if not _is_nonempty_string(content.get("question")):
+                issues.append("news-summary.question 필드가 비어 있습니다.")
+            _check_string_list(content.get("key_points"), "news-summary.key_points", 3, 95, issues)
+
+        elif expected_type == "news-why":
+            if not _is_nonempty_string(content.get("title")):
+                issues.append("news-why.title 필드가 비어 있습니다.")
+            _check_string_list(content.get("points"), "news-why.points", 3, 95, issues)
+            if not _is_nonempty_string(content.get("one_liner")):
+                issues.append("news-why.one_liner 필드가 비어 있습니다.")
+            elif len(content["one_liner"]) > 90:
+                issues.append("news-why.one_liner가 너무 깁니다.")
+
+        elif expected_type == "news-detail":
+            if not _is_nonempty_string(content.get("title")):
+                issues.append("news-detail.title 필드가 비어 있습니다.")
+            points = content.get("points")
+            if not isinstance(points, list):
+                issues.append("news-detail.points 배열이 없습니다.")
+            else:
+                if len(points) != 3:
+                    issues.append("news-detail.points 항목 수가 3개가 아닙니다.")
+                for i, point in enumerate(points, 1):
+                    if not isinstance(point, dict):
+                        issues.append(f"news-detail.points[{i}]가 객체가 아닙니다.")
+                        continue
+                    if not _is_nonempty_string(point.get("label")):
+                        issues.append(f"news-detail.points[{i}].label이 비어 있습니다.")
+                    elif len(point["label"]) > 45:
+                        issues.append(f"news-detail.points[{i}].label이 너무 깁니다.")
+                    if not _is_nonempty_string(point.get("desc")):
+                        issues.append(f"news-detail.points[{i}].desc가 비어 있습니다.")
+                    elif len(point["desc"]) > 105:
+                        issues.append(f"news-detail.points[{i}].desc가 너무 깁니다.")
+
+        elif expected_type == "news-closing":
+            _check_string_list(content.get("summary"), "news-closing.summary", 3, 90, issues)
+            for field in ("source_link", "cta"):
+                if not _is_nonempty_string(content.get(field)):
+                    issues.append(f"news-closing.{field} 필드가 비어 있습니다.")
+            if len(str(content.get("cta", ""))) > 80:
+                issues.append("news-closing.cta가 너무 깁니다.")
+
+    return not issues, issues
+
+
+def build_quality_validation_payload(data):
+    """Build a compact payload so AI quality checks do not receive truncated JSON."""
+    lines = [
+        f"제목: {data.get('title', '')}",
+        f"원문: {data.get('source_url', '')}",
+        "슬라이드 요약:",
+    ]
+    for slide in data.get("slides", []):
+        content = slide.get("content", {})
+        slide_type = slide.get("type", "")
+        if slide_type == "news-thumbnail":
+            body = f"topic={content.get('topic', '')} / hook={content.get('hook', '')}"
+        elif slide_type == "news-summary":
+            body = " | ".join(content.get("key_points", []))
+        elif slide_type == "news-why":
+            body = " | ".join(content.get("points", [])) + f" / {content.get('one_liner', '')}"
+        elif slide_type == "news-detail":
+            point_texts = []
+            for point in content.get("points", []):
+                point_texts.append(f"{point.get('label', '')}: {point.get('desc', '')}")
+            body = " | ".join(point_texts)
+        elif slide_type == "news-closing":
+            body = " | ".join(content.get("summary", [])) + f" / CTA={content.get('cta', '')}"
+        else:
+            body = json.dumps(content, ensure_ascii=False)
+        lines.append(f"- {slide.get('slide_number')}. {slide_type}: {body}")
+    return "\n".join(lines)
+
+
 def validate_article_json(data, article):
     """생성된 JSON의 품질을 검증한다."""
-    if not anthropic or not os.environ.get("ANTHROPIC_API_KEY"):
+    structure_ok, structure_issues = validate_required_structure(data)
+    if not structure_ok:
+        return False, structure_issues
+
+    if not OpenAI or not os.environ.get("OPENAI_API_KEY"):
         return True, []
 
-    client = get_anthropic_client()
-
-    data_str = json.dumps(data, ensure_ascii=False, indent=2)[:3000]
+    quality_payload = build_quality_validation_payload(data)
     article_title = article['title']
     article_summary = article.get('summary', '')[:500]
 
-    validation_prompt = f"""다음 카드뉴스 JSON을 검증해주세요:
+    validation_prompt = f"""다음 인스타그램 카드뉴스 문안을 검증해주세요:
 
-{data_str}
+{quality_payload}
 
 원문 기사 제목: {article_title}
 원문 요약: {article_summary}
 
 검증 기준:
 1. 사실 왜곡: 원문과 다른 내용이 있는가?
-2. 슬라이드 구성: 필수 슬라이드(news-thumbnail, news-summary, news-closing)가 모두 있는가?
-3. 한국어 품질: 자연스러운 한국어인가?
-4. 길이 적절성: 슬라이드당 텍스트가 너무 길거나 짧지 않은가?
+2. 한국어 품질: 자연스럽고 모바일에서 읽기 쉬운가?
+3. 후킹 강도: 1~2장에서 저장/스와이프를 유도하는가?
+4. 길이 적절성: 한 슬라이드에 텍스트가 과밀하지 않은가?
 
 응답은 반드시 JSON만:
 {{"verified": true, "issues": []}} 또는 {{"verified": false, "issues": ["이슈"]}}"""
 
     try:
-        response = client.messages.create(
-            model=CLAUDE_MODEL,
-            max_tokens=512,
-            messages=[{"role": "user", "content": validation_prompt}],
-            system="인스타그램 카드뉴스 콘텐츠 품질 검증자. JSON만 응답."
+        result_text = create_openai_response(
+            prompt=validation_prompt,
+            instructions="인스타그램 카드뉴스 콘텐츠 품질 검증자입니다. JSON 문법이나 필수 슬라이드는 이미 코드로 검증되었습니다. 사실성, 한국어 가독성, 후킹, 텍스트 과밀만 판단하세요. JSON만 응답하세요.",
+            max_output_tokens=512,
         )
 
-        result_text = response.content[0].text.strip()
         result = extract_json(result_text)
         if result:
             return result.get("verified", True), result.get("issues", [])
